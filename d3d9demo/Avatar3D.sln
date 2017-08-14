@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Avatar3D", "Avatar3D.vcproj", "{3A2CE575-7A25-40B7-ADA1-B4D4ED2BED70}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{3A2CE575-7A25-40B7-ADA1-B4D4ED2BED70}.Debug.ActiveCfg = Debug|Win32
+		{3A2CE575-7A25-40B7-ADA1-B4D4ED2BED70}.Debug.Build.0 = Debug|Win32
+		{3A2CE575-7A25-40B7-ADA1-B4D4ED2BED70}.Release.ActiveCfg = Release|Win32
+		{3A2CE575-7A25-40B7-ADA1-B4D4ED2BED70}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
