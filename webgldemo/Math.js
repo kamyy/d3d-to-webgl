@@ -14,10 +14,6 @@ class Vector1x4 {
         this.w = w;
     }
 
-    toString() {
-        return "[Vector1x4 " + this.x + ", " + this.y + ", " + this.z + ", " + this.w + "]"; 
-    }
-
     add(rhs) {
         if (rhs instanceof Vector1x4) {
             return new Vector1x4(this.x + rhs.x, this.y + rhs.y, this.z + rhs.z);
@@ -81,6 +77,10 @@ class Vector1x4 {
         }
         return null;
     }
+
+    toString() {
+        return "[Vector1x4 " + this.x + ", " + this.y + ", " + this.z + ", " + this.w + "]"; 
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,12 +96,31 @@ class Matrix4x4 {
         this._41 = _41; this._42 = _42; this._43 = _43; this._44 = _44;
     }
 
-    toString() {
-        return "[Matrix4x4 " + 
-                this._11 + ", " + this._12 + ", " + this._13 + ", " + this._14 + ", " + 
-                this._21 + ", " + this._22 + ", " + this._23 + ", " + this._24 + ", " + 
-                this._31 + ", " + this._32 + ", " + this._33 + ", " + this._34 + ", " +
-                this._41 + ", " + this._42 + ", " + this._43 + ", " + this._44 + "]";
+    setRx(theta) {
+        const cosTheta = Math.cos(theta);
+        const sinTheta = Math.sin(theta);
+        this._11 = 1.0;        this._12 = 0.0;        this._13 = 0.0;        this._14 = 0.0;
+        this._21 = 0.0;        this._22 = cosTheta;   this._23 = sinTheta;   this._24 = 0.0;
+        this._31 = 0.0;        this._32 = -sinTheta;  this._33 = cosTheta;   this._34 = 0.0;
+        this._41 = 0.0;        this._42 = 0.0;        this._43 = 0.0;        this._44 = 1.0;
+    }
+
+    setRy(theta) {
+        const cosTheta = Math.cos(theta);
+        const sinTheta = Math.sin(theta);
+        this._11 = cosTheta;   this._12 = 0.0;        this._13 = -sinTheta;  this._14 = 0.0;
+        this._21 = 0.0;        this._22 = 1.0;        this._23 = 0.0;        this._24 = 0.0;
+        this._31 = sinTheta;   this._32 = 0.0;        this._33 = cosTheta;   this._34 = 0.0;
+        this._41 = 0.0;        this._42 = 0.0;        this._43 = 0.0;        this._44 = 1.0;
+    }
+
+    setRz(theta) {
+        const cosTheta = Math.cos(theta);
+        const sinTheta = Math.sin(theta);
+        this._11 = cosTheta;   this._12 = sinTheta;   this._13 = 0.0;        this._14 = 0.0;
+        this._21 = -sinTheta;  this._22 = cosTheta;   this._23 = 0.0;        this._24 = 0.0;
+        this._31 = 0.0;        this._32 = 0.0;        this._33 = 1.0;        this._34 = 0.0;
+        this._41 = 0.0;        this._42 = 0.0;        this._43 = 0.0;        this._44 = 1.0;
     }
 
     mul(rhs) {
@@ -160,6 +179,14 @@ class Matrix4x4 {
                                  this._41 + sx, this._42 * sy, this._43 * sz, this._44);
         }
         return null;
+    }
+
+    toString() {
+        return "[Matrix4x4 " + 
+                this._11 + ", " + this._12 + ", " + this._13 + ", " + this._14 + ", " + 
+                this._21 + ", " + this._22 + ", " + this._23 + ", " + this._24 + ", " + 
+                this._31 + ", " + this._32 + ", " + this._33 + ", " + this._34 + ", " +
+                this._41 + ", " + this._42 + ", " + this._43 + ", " + this._44 + "]";
     }
 }
 
