@@ -17,7 +17,6 @@ class RefFrame {
     }
 
     invalidateSubClass() {
-
     }
 
     invalidateSubtree() {
@@ -94,14 +93,11 @@ class RefFrame {
         if (relative2 == this || relative2 == null) { // relative to own axes
             const rotx = new Matrix4x4; rotx.setRx(theta);
             this.localMatrix = rotx.mul(this.localMatrix);
-
         } else if (relative2 == m_parent.get()) { // relative to parent
             const rotx = new Matrix4x4; rotx.setRx(theta);
             this.localMatrix = this.localMatrix.mul(rotx);
-
         } else { // relative to arbitrary axes
             throw new Error('Cannot rotate relative to arbitrary axis');
-
         }
         invalidateSubtree();
     }
@@ -110,14 +106,11 @@ class RefFrame {
         if (relative2 === this || relative2 === null) { // relative to own axes
             const roty = new Matrix4x4; roty.setRy(theta);
             this.localMatrix = roty.mul(this.localMatrix);
-
         } else if (relative2 == m_parent.get()) { // relative to parent
             const roty = new Matrix4x4; roty.setRy(theta);
             this.localMatrix = this.localMatrix.mul(roty);
-
         } else { // relative to arbitrary axes
             throw new Error('Cannot rotate relative to arbitrary axis');
-
         }
         invalidateSubtree();
     }
@@ -126,14 +119,11 @@ class RefFrame {
         if (relative2 === this || relative2 === null) { // relative to own axes
             const rotz = new Matrix4x4; rotz.setRz(theta);
             this.localMatrix = rotz.mul(this.localMatrix);
-
         } else if (relative2 == m_parent.get()) { // relative to parent
             const rotz = new Matrix4x4; rotz.setRz(theta);
             this.localMatrix = this.localMatrix.mul(rotz);
-
         } else { // relative to arbitrary axes
             throw new Error('Cannot rotate relative to arbitrary axis');
-
         }
         invalidateSubtree();
     }

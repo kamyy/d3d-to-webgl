@@ -1,5 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 class Shader {
     constructor(gl, filenameVS, filenameFS) {
         this.gl = gl;
@@ -23,14 +21,14 @@ class Shader {
         const requestVS = new XMLHttpRequest();
         requestVS.onreadystatechange = function() {
             if (requestVS.readyState === 4 && requestVS.status !== 404) {
-                this.vs = gl.createShader(gl.VERTEX_SHADER);
-                gl.shaderSource(this.vs, requestVS.responseText);
-                gl.compileShader(this.vs);
+                self.vs = gl.createShader(gl.VERTEX_SHADER);
+                gl.shaderSource(self.vs, requestVS.responseText);
+                gl.compileShader(self.vs);
 
-                if (!gl.getShaderParameter(this.vs, gl.COMPILE_STATUS)) {
-                    throw new Error('Error compiling shader!\n\n' + gl.getShaderInfoLog(this.vs));
+                if (!gl.getShaderParameter(self.vs, gl.COMPILE_STATUS)) {
+                    throw new Error('Error compiling shader!\n\n' + gl.getShaderInfoLog(self.vs));
                 } 
-                if (this.fs && !this.program) {
+                if (self.fs && !self.program) {
                     initProgram(gl);
                 }
             }
@@ -41,14 +39,14 @@ class Shader {
         const requestFS = new XMLHttpRequest();
         requestFS.onreadystatechange = function() {
             if (requestFS.readyState === 4 && requestFS.status !== 404) {
-                this.fs = gl.createShader(gl.FRAGMENT_SHADER);
-                gl.shaderSource(this.fs, requestFS.responseText);
-                gl.compileShader(this.fs);
+                self.fs = gl.createShader(gl.FRAGMENT_SHADER);
+                gl.shaderSource(self.fs, requestFS.responseText);
+                gl.compileShader(self.fs);
 
-                if (!gl.getShaderParameter(this.fs, gl.COMPILE_STATUS)) {
-                    throw new Error('Error compiling shader!\n\n' + gl.getShaderInfoLog(this.fs));
+                if (!gl.getShaderParameter(self.fs, gl.COMPILE_STATUS)) {
+                    throw new Error('Error compiling shader!\n\n' + gl.getShaderInfoLog(self.fs));
                 } 
-                if (this.vs && !this.program) {
+                if (self.vs && !self.program) {
                     initProgram(gl);
                 }
             }
@@ -103,30 +101,6 @@ class Shader {
             return true;
         }
         return false;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-class Shader_P3C4 extends Shader { 
-    constructor(gl) {
-        super(gl, 'P3C4.vs.glsl', 'P3C4.fs.glsl');
-    }
-
-    use(vertexBuffer) {
-        if (this.useProgram()) {
-            const a_pos = this.gl.getAttribLocation(this.program, 'a_pos');
-            const a_col = this.gl.getAttribLocation(this.program, 'a_col'); 
-
-            if (a_pos !== -1 && a_col !== -1) {
-                this.gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-                this.gl.vertexAttribPointer(a_pos, 3, this.gl.FLOAT, false, 28, 0);
-                this.gl.enableVertexAttribArray(a_pos);
-                this.gl.vertexAttribPointer(a_col, 4, this.gl.FLOAT, false, 28, 12);
-                this.gl.enableVertexAttribArray(a_col);
-                return true;
-            }
-        }
     }
 }
 
