@@ -1,6 +1,9 @@
 class ShaderP3C4 extends Shader { 
     constructor(gl) {
-        super(gl, 'P3C4.vs.glsl', 'P3C4.fs.glsl');
+        super(gl, 
+            'http://localhost:8888/glsl/P3C4.vs',
+            'http://localhost:8888/glsl/P3C4.fs'
+        );
     }
 
     use(vertexBuffer) {
