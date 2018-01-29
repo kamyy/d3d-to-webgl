@@ -26,10 +26,10 @@ class Shader {
                 gl.compileShader(self.vs);
 
                 if (!gl.getShaderParameter(self.vs, gl.COMPILE_STATUS)) {
-                    throw new Error('Cannot compile shader!\n\n' + gl.getShaderInfoLog(self.vs));
+                    throw new Error('Cannot compile ' + filenameVS + ' !\n\n' + gl.getShaderInfoLog(self.vs));
                 } 
                 if (self.fs && !self.program) {
-                    initProgram(gl);
+                    initProgram();
                 }
             }
         }
@@ -44,10 +44,10 @@ class Shader {
                 gl.compileShader(self.fs);
 
                 if (!gl.getShaderParameter(self.fs, gl.COMPILE_STATUS)) {
-                    throw new Error('Cannot compile shader!\n\n' + gl.getShaderInfoLog(self.fs));
+                    throw new Error('Cannot compile ' + filenameFS + ' !\n\n' + gl.getShaderInfoLog(self.fs));
                 } 
                 if (self.vs && !self.program) {
-                    initProgram(gl);
+                    initProgram();
                 }
             }
         }
@@ -57,7 +57,7 @@ class Shader {
 
     useProgram() {
         if (this.program) {
-            gl.useProgram(this.program);
+            this.gl.useProgram(this.program);
             return true;
         }
         return false;

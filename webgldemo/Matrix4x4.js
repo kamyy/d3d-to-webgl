@@ -9,31 +9,41 @@ class Matrix4x4 {
         this._41 = _41; this._42 = _42; this._43 = _43; this._44 = _44;
     }
 
-    setRx(theta) {
-        const cosTheta = Math.cos(theta);
-        const sinTheta = Math.sin(theta);
-        this._11 = 1.0;        this._12 = 0.0;        this._13 = 0.0;        this._14 = 0.0;
-        this._21 = 0.0;        this._22 = cosTheta;   this._23 = sinTheta;   this._24 = 0.0;
-        this._31 = 0.0;        this._32 = -sinTheta;  this._33 = cosTheta;   this._34 = 0.0;
-        this._41 = 0.0;        this._42 = 0.0;        this._43 = 0.0;        this._44 = 1.0;
+    static createId() {
+        return new Matrix4x4;
     }
 
-    setRy(theta) {
+    static createRx(theta) {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
-        this._11 = cosTheta;   this._12 = 0.0;        this._13 = -sinTheta;  this._14 = 0.0;
-        this._21 = 0.0;        this._22 = 1.0;        this._23 = 0.0;        this._24 = 0.0;
-        this._31 = sinTheta;   this._32 = 0.0;        this._33 = cosTheta;   this._34 = 0.0;
-        this._41 = 0.0;        this._42 = 0.0;        this._43 = 0.0;        this._44 = 1.0;
+        return new Matrix4x4(
+            undefined, undefined,  undefined, undefined,
+            undefined, +cosTheta,  +sinTheta, undefined,
+            undefined, -sinTheta,  +cosTheta, undefined,
+            undefined, undefined,  undefined, undefined
+        );
     }
 
-    setRz(theta) {
+    static createRy(theta) {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
-        this._11 = cosTheta;   this._12 = sinTheta;   this._13 = 0.0;        this._14 = 0.0;
-        this._21 = -sinTheta;  this._22 = cosTheta;   this._23 = 0.0;        this._24 = 0.0;
-        this._31 = 0.0;        this._32 = 0.0;        this._33 = 1.0;        this._34 = 0.0;
-        this._41 = 0.0;        this._42 = 0.0;        this._43 = 0.0;        this._44 = 1.0;
+        return new Matrix4x4(
+            +cosTheta, undefined, -sinTheta, undefined,
+            undefined, undefined, undefined, undefined,
+            +sinTheta, undefined, +cosTheta, undefined,
+            undefined, undefined, undefined, undefined
+        );
+    }
+
+    static createRz(theta) {
+        const cosTheta = Math.cos(theta);
+        const sinTheta = Math.sin(theta);
+        return new Matrix4x4(
+            +cosTheta, +sinTheta, undefined, undefined,
+            -sinTheta, +cosTheta, undefined, undefined,
+            undefined, undefined, undefined, undefined,
+            undefined, undefined, undefined, undefined
+        );
     }
 
     mul(rhs) {
@@ -58,7 +68,7 @@ class Matrix4x4 {
                                  this._41 * rhs._13 + this._42 * rhs._23 + this._43 * rhs._33 + this._44 * rhs._43,
                                  this._41 * rhs._14 + this._42 * rhs._24 + this._43 * rhs._34 + this._44 * rhs._44);
         }
-        return null;
+        throw new Error('rhs argument not a Matrix4x4!');
     }
 
     inverse() {
@@ -79,7 +89,7 @@ class Matrix4x4 {
                                  this._31, this._32, this._33, this._34,
                                  this._41 + tx, this._42 + ty, this._43 + tz, this._44);
         }
-        return null;
+        throw new Error('rhs argument not a Matrix4x4!');
     }
 
     postCatSxyz(sx, sy, sz) {
@@ -91,7 +101,7 @@ class Matrix4x4 {
                                  this._31 * sx, this._32 * sy, this._33 * sz, this._34,
                                  this._41 + sx, this._42 * sy, this._43 * sz, this._44);
         }
-        return null;
+        throw new Error('rhs argument not a Matrix4x4!');
     }
 
     toString() {

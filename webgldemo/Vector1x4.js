@@ -10,14 +10,14 @@ class Vector1x4 {
         if (rhs instanceof Vector1x4) {
             return new Vector1x4(this.x + rhs.x, this.y + rhs.y, this.z + rhs.z);
         }
-        return null;
+        throw new Error('rhs argument not a Vector1x4!');
     }
 
     sub(rhs) {
         if (rhs instanceof Vector1x4) {
             return new Vector1x4(this.x - rhs.x, this.y - rhs.y, this.z - rhs.z);
         }
-        return null;
+        throw new Error('rhs argument not a Vector1x4!');
     }
 
     neg() {
@@ -35,14 +35,14 @@ class Vector1x4 {
         if (typeof rhs === "number") {
             return new Vector1x4(this.x * rhs, this.y * rhs, this.z * rhs);
         }
-        return null;
+        throw new Error('rhs argument not a Vector1x4!');
     }
 
     div(rhs) {
         if (typeof rhs === "number") {
             return new Vector1x4(this.x / rhs, this.y / rhs, this.z / rhs);
         }
-        return null;
+        throw new Error('rhs argument not a Vector1x4!');
     }
 
     normalize() {
@@ -60,14 +60,14 @@ class Vector1x4 {
                                  this.z * rhs.x - this.x * rhs.z,
                                  this.x * rhs.y - this.y * rhs.x);
         }
-        return null;
+        throw new Error('rhs argument not a Vector1x4!');
     }
 
     dot(rhs) {
         if (rhs instanceof Vector1x4) {
             return (this.x * rhs.x) + (this.y * rhs.y) + (this.z * rhs.z);
         }
-        return null;
+        throw new Error('rhs argument not a Vector1x4!');
     }
 
     toString() {

@@ -1,9 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 class RefFrame {
     constructor(parent = null) {
         this.validSubtree = true;
         this.parent       = null;
+        this.child        = null;
         this.next         = null;
         this.localM       = new Matrix4x4;
         this.modelM       = new Matrix4x4;
@@ -14,9 +13,6 @@ class RefFrame {
             this.next          = parent.child;
             this.parent.child  = this;
         }
-    }
-
-    invalidateSubClass() {
     }
 
     invalidateSubtree() {
