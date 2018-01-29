@@ -7,13 +7,13 @@ class Shader {
 
         const self = this;
 
-        const initProgram = function() {
-            self.program = gl.createProgram();
-            gl.attachShader(self.program, self.vs);
-            gl.attachShader(self.program, self.fs);
-            gl.linkProgram(self.program);
+        const createProgram = function(gl, vs, fs) {
+            const program = gl.createProgram();
+            gl.attachShader(program, vs);
+            gl.attachShader(program, fs);
+            gl.linkProgram(program);
 
-            if (!gl.getProgramParameter(self.program, gl.LINK_STATUS)) {
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
                 throw new Error('Error linking shader program!\n\n');
             }
         }
@@ -28,8 +28,8 @@ class Shader {
                 if (!gl.getShaderParameter(self.vs, gl.COMPILE_STATUS)) {
                     throw new Error('Cannot compile ' + filenameVS + ' !\n\n' + gl.getShaderInfoLog(self.vs));
                 } 
-                if (self.fs && !self.program) {
-                    initProgram();
+                if (self.vs && self.fs && !self.program) {
+                    self.program = createProgram(gl, self.vs, self.fs);
                 }
             }
         }
@@ -46,8 +46,8 @@ class Shader {
                 if (!gl.getShaderParameter(self.fs, gl.COMPILE_STATUS)) {
                     throw new Error('Cannot compile ' + filenameFS + ' !\n\n' + gl.getShaderInfoLog(self.fs));
                 } 
-                if (self.vs && !self.program) {
-                    initProgram();
+                if (self.vs && self.fs && !self.program) {
+                    self.program = createProgram(gl, self.vs, self.fs);
                 }
             }
         }
