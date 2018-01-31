@@ -55,9 +55,19 @@ class Shader {
         requestFS.send();
     }
 
-    useProgram() {
+    useShaderProgramOn(subModel) {
         if (this.program) {
             this.gl.useProgram(this.program);
+            
+            // model view projection matrix
+            // model space camera pos
+            // model space omniLS pos
+
+            const modelM = subModel.modelMatrix;              // model space to world space matrix
+            const origin = new Vector1x4(0.0, 0.0, 0.0, 1.0); // camera space origin position
+            const up     = new Vector1x4(0.0, 0.0, 1.0, 0.0); // world space up direction
+
+            this.setModelSpaceUpDir(up.mul(modelM.inverse()));
             return true;
         }
         return false;
@@ -70,13 +80,13 @@ class Shader {
                                             matrix._12, matrix._22, matrix._32, matrix_42,
                                             matrix._13, matrix._23, matrix._33, matrix_43,
                                             matrix._14, matrix._24, matrix._34, matrix_44]);
-            this.gl.uniformMatrix4fv(location, false, array); // column major
+            this.gl.uniformMatrix4fv(location, false, array); // OpenGL is column major
             return true;
         }
         return false;
     }
 
-    setCameraPos(pos) {
+    setModelSpaceCameraPos(pos) {
         const location = this.gl.getUniformLocation(this.program, 'u_camera_pos');
         if (location && pos instanceof Vector1x4) {
             this.gl.uniform3f(location, pos.x, pos.y, pos.z);
@@ -85,7 +95,7 @@ class Shader {
         return false;
     }
 
-    setOmniLSPos(pos) {
+    setModelSpaceOmniLSPos(pos) {
         const location = this.gl.getUniformLocation(this.program, 'u_omniLS_pos');
         if (location && pos instanceof Vector1x4) {
             this.gl.uniform3f(location, pos.x, pos.y, pos.z);
@@ -94,7 +104,7 @@ class Shader {
         return false;
     }
 
-    setUpDir(dir) {
+    setModelSpaceUpDir(dir) {
         const location = this.gl.getUniformLocation(this.program, 'u_up_dir');
         if (location && dir instanceof Vector1x4) {
             this.gl.uniform3f(location, dir.x, dir.y, dir.z);
