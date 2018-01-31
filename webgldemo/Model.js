@@ -18,6 +18,7 @@ class SubModel {
 
         this.min = new Vector1x4(vertices[0].x, vertices[0].y, vertices[0].z);
         this.max = new Vector1x4(vertices[0].x, vertices[0].y, vertices[0].z);
+        this.depth = 0.0;
 
         for (let v of vertices) { 
             componentNames.forEach(name => vtxs.push(v[name]));
@@ -87,7 +88,6 @@ class SubModel {
             this.shader.drawPrimitives(this);
         } else {
             SubModel.translucents.push(this);
-            this.depth = 0.0;
         }
     }
 
@@ -99,7 +99,10 @@ class SubModel {
     }
 
     static drawTranslucents() {
-        // sort translucents by bounding box center z in projection space
+        for (let subModel of SubModel.translucents) {
+        
+        }
+        SubModel.translucents.sort((a, b) => b.depth - a.depth);
         SubModel.translucents.forEach(subModel => subModel.shader.drawPrimitives(subModel));
         SubModel.translucents.length = 0;
     }
