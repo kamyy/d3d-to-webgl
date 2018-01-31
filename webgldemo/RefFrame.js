@@ -87,10 +87,10 @@ class RefFrame {
 
     rotateX(theta, relative2) {
         if (relative2 == this || relative2 == null) { // relative to own axes
-            const rotx = new Matrix4x4; rotx.setRx(theta);
+            const rotx = Matrix4x4.createRx(theta);
             this.localMatrix = rotx.mul(this.localMatrix);
         } else if (relative2 == m_parent.get()) { // relative to parent
-            const rotx = new Matrix4x4; rotx.setRx(theta);
+            const rotx = Matrix4x4.createRx(theta);
             this.localMatrix = this.localMatrix.mul(rotx);
         } else { // relative to arbitrary axes
             throw new Error('Cannot rotate relative to arbitrary axis');
@@ -100,10 +100,10 @@ class RefFrame {
 
     rotateY(theta, relative2) {
         if (relative2 === this || relative2 === null) { // relative to own axes
-            const roty = new Matrix4x4; roty.setRy(theta);
+            const roty = Matrix4x4.createRy(theta);
             this.localMatrix = roty.mul(this.localMatrix);
         } else if (relative2 == m_parent.get()) { // relative to parent
-            const roty = new Matrix4x4; roty.setRy(theta);
+            const roty = Matrix4x4.createRy(theta);
             this.localMatrix = this.localMatrix.mul(roty);
         } else { // relative to arbitrary axes
             throw new Error('Cannot rotate relative to arbitrary axis');
@@ -113,10 +113,10 @@ class RefFrame {
 
     rotateZ(theta, relative2) {
         if (relative2 === this || relative2 === null) { // relative to own axes
-            const rotz = new Matrix4x4; rotz.setRz(theta);
+            const rotz = Matrix4x4.createRz(theta);
             this.localMatrix = rotz.mul(this.localMatrix);
         } else if (relative2 == m_parent.get()) { // relative to parent
-            const rotz = new Matrix4x4; rotz.setRz(theta);
+            const rotz = Matrix4x4.createRz(theta);
             this.localMatrix = this.localMatrix.mul(rotz);
         } else { // relative to arbitrary axes
             throw new Error('Cannot rotate relative to arbitrary axis');
