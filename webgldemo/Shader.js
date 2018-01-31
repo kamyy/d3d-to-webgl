@@ -5,8 +5,6 @@ class Shader {
         this.fs = null;
         this.program = null;
 
-        const self = this;
-
         const createProgram = function(gl, vs, fs) {
             const program = gl.createProgram();
             gl.attachShader(program, vs);
@@ -16,20 +14,21 @@ class Shader {
             if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
                 throw new Error('Error linking shader program!\n\n');
             }
+            return program;
         }
 
         const requestVS = new XMLHttpRequest();
-        requestVS.onreadystatechange = function() {
+        requestVS.onreadystatechange = () => {
             if (requestVS.readyState === 4 && requestVS.status !== 404) {
-                self.vs = gl.createShader(gl.VERTEX_SHADER);
-                gl.shaderSource(self.vs, requestVS.responseText);
-                gl.compileShader(self.vs);
+                this.vs = gl.createShader(gl.VERTEX_SHADER);
+                gl.shaderSource(this.vs, requestVS.responseText);
+                gl.compileShader(this.vs);
 
-                if (!gl.getShaderParameter(self.vs, gl.COMPILE_STATUS)) {
-                    throw new Error('Cannot compile ' + filenameVS + ' !\n\n' + gl.getShaderInfoLog(self.vs));
+                if (!gl.getShaderParameter(this.vs, gl.COMPILE_STATUS)) {
+                    throw new Error('Cannot compile ' + filenameVS + ' !\n\n' + gl.getShaderInfoLog(this.vs));
                 } 
-                if (self.vs && self.fs && !self.program) {
-                    self.program = createProgram(gl, self.vs, self.fs);
+                if (this.vs && this.fs && !this.program) {
+                    this.program = createProgram(gl, this.vs, this.fs);
                 }
             }
         }
@@ -37,17 +36,17 @@ class Shader {
         requestVS.send();
 
         const requestFS = new XMLHttpRequest();
-        requestFS.onreadystatechange = function() {
+        requestFS.onreadystatechange = () => {
             if (requestFS.readyState === 4 && requestFS.status !== 404) {
-                self.fs = gl.createShader(gl.FRAGMENT_SHADER);
-                gl.shaderSource(self.fs, requestFS.responseText);
-                gl.compileShader(self.fs);
+                this.fs = gl.createShader(gl.FRAGMENT_SHADER);
+                gl.shaderSource(this.fs, requestFS.responseText);
+                gl.compileShader(this.fs);
 
-                if (!gl.getShaderParameter(self.fs, gl.COMPILE_STATUS)) {
-                    throw new Error('Cannot compile ' + filenameFS + ' !\n\n' + gl.getShaderInfoLog(self.fs));
+                if (!gl.getShaderParameter(this.fs, gl.COMPILE_STATUS)) {
+                    throw new Error('Cannot compile ' + filenameFS + ' !\n\n' + gl.getShaderInfoLog(this.fs));
                 } 
-                if (self.vs && self.fs && !self.program) {
-                    self.program = createProgram(gl, self.vs, self.fs);
+                if (this.vs && this.fs && !this.program) {
+                    this.program = createProgram(gl, this.vs, this.fs);
                 }
             }
         }
@@ -55,7 +54,7 @@ class Shader {
         requestFS.send();
     }
 
-    useShaderProgramOn(subModel) {
+    drawPrimitives(subModel) {
         if (this.program) {
             this.gl.useProgram(this.program);
             

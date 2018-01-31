@@ -4,7 +4,7 @@ class ShaderP3C4 extends Shader {
     }
 
     drawPrimitives(subModel) {
-        if (this.useShaderProgramOn(subModel)) {
+        if (super.drawPrimitives(subModel)) {
             const a_pos = this.gl.getAttribLocation(this.program, 'a_pos');
             const a_col = this.gl.getAttribLocation(this.program, 'a_col'); 
 
