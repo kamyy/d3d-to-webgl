@@ -55,7 +55,6 @@ class Camera extends RefFrame {
                                                                  m_clipDistanceN,
                                                                  m_clipDistanceF);
         memcpy(&m_projMatrix, &xm, sizeof(m_projMatrix));
-        */
 
         // flip y and z vertex coordinates to convert from RHS to LHS
         // for D3D by switching around rows 2 and 3
@@ -72,6 +71,7 @@ class Camera extends RefFrame {
         this._projMatrix.m_33 = z;
         this._projMatrix.m_34 = w;
 
+        */
         return this._projMatrix; 
     }
 
@@ -80,6 +80,6 @@ class Camera extends RefFrame {
     }
 }
 
-Camera.g_cameraArray = [];
-Camera.g_camTgtArray = [];
+Camera.cameraArray = [];
+Camera.camTgtArray = [];
 
