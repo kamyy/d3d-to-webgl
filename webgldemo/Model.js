@@ -1,6 +1,5 @@
 class SubModel {
     constructor(model, shader, material, vertices, indices) {
-        const gl = shader.gl;
         const nrms = [];
         const vtxs = [];
         const componentNames = shader.getVertexComponentNames();
@@ -9,9 +8,9 @@ class SubModel {
         this.shader = shader;
         this.material = material;
 
-        this.nrmBuffer = gl.createBuffer();
-        this.vtxBuffer = gl.createBuffer();
-        this.idxBuffer = gl.createBuffer();
+        this.nrmBuffer = g_GL.createBuffer();
+        this.vtxBuffer = g_GL.createBuffer();
+        this.idxBuffer = g_GL.createBuffer();
 
         this.nrmBuffer.vtxCount = 0;
         this.vtxBuffer.vtxCount = vertices.length;
@@ -73,14 +72,14 @@ class SubModel {
             if (v.z < this.min.z) { this.min.z = v.z; } else if (v.z > this.max.z) { this.max.z = v.z; }
         }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.nrmBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(nrms), gl.STATIC_DRAW);
+        g_GL.bindBuffer(g_GL.ARRAY_BUFFER, this.nrmBuffer);
+        g_GL.bufferData(g_GL.ARRAY_BUFFER, new Float32Array(nrms), g_GL.STATIC_DRAW);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vtxBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vtxs), gl.STATIC_DRAW);
+        g_GL.bindBuffer(g_GL.ARRAY_BUFFER, this.vtxBuffer);
+        g_GL.bufferData(g_GL.ARRAY_BUFFER, new Float32Array(vtxs), g_GL.STATIC_DRAW);
 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.idxBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, this.idxBuffer);
+        g_GL.bufferData(g_GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), g_GL.STATIC_DRAW);
     }
 
     drawPrimitives(noAlpha) {

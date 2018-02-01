@@ -1,12 +1,14 @@
 class Material {
-    static getMaterial(name) {
-        if(!Material.map.has(name)) {
-            Material.map.set(name, new Material());
-        }
+    static get(name) {
         return Material.map.get(name);
     }
 
     constructor() {
+        if (Material.map.has(name)) {
+            return Material.map.get(name);
+        }
+        Material.map.set(name, this);
+
         this._textures = [null, null, null, null, null, null, null, null];
         this._diff = new Color(0.5, 0.5, 0.5);
         this._spec = new Color(0.5, 0.5, 0.5);
