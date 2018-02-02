@@ -70,7 +70,7 @@ class Shader {
             // model space camera pos
             // model space omniLS pos
 
-            setModelSpaceUpDir(subModel);
+            setModelSpaceUpDir(subModel.model);
             return true;
         }
         return false;
@@ -107,10 +107,10 @@ class Shader {
         return false;
     }
 
-    setModelSpaceUpDir(subModel) {
+    setModelSpaceUpDir(model) {
         const location = g_GL.getUniformLocation(this.program, 'u_up_dir');
-        if (location && subModel instanceof RefFrame) {
-            const modelUp = g_worldUp.mul(subModel.modelMatrix.inverse());
+        if (location && model instanceof RefFrame) {
+            const modelUp = g_worldUp.mul(model.modelMatrix.inverse());
             g_GL.uniform3f(location, modelUp.x, modelUp.y, modelUp.z);
             return true;
         }
