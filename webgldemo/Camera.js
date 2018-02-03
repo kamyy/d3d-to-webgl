@@ -37,7 +37,7 @@ class Camera extends RefFrame {
         this._clipDistanceN = clipDistance;
     }
 
-    set clipDistanceF(float clipDistance) {
+    set clipDistanceF(clipDistance) {
         this._clipDistanceF = clipDistance;
     }
 

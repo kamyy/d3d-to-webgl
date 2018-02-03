@@ -1,5 +1,5 @@
 class Color {
-    constructor(float r = 0.0, float g = 0.0, float b = 0.0, float a = 1.0) {
+    constructor(r = 0.0, g = 0.0, b = 0.0, a = 1.0) {
         this.r = r; this.g = g; this.b = b; this.a = a;
     }
 

@@ -53,7 +53,7 @@ class RefFrame {
         // worldMatrix = localMatrix * parent->worldMatrix
         // worldMatrix / parent->worldMatrix = localMatrix
         this.localM = matrix.mul(this.parent.modelMatrix.inverse());
-        invalidateSubtree();
+        this.invalidateSubtree();
     }
 
     translate(v, relative2) {
@@ -66,7 +66,7 @@ class RefFrame {
             this.localM._43 = z + (v.x * this.localM._13) + (v.y * this.localM._23) + (v.z * this.localM._33);
 
         } else if (relative2.parent === null) { // relative to root axes
-            Vector1x4 d = relative2.mapPos(new Vector1x4(v.x, v.y, v.z, 0.0), m_parent.get());
+            const d = relative2.mapPos(new Vector1x4(v.x, v.y, v.z, 0.0), m_parent.get());
             this.localM._41 += d.m_x;
             this.localM._42 += d.m_y;
             this.localM._43 += d.m_z;
@@ -108,7 +108,7 @@ class RefFrame {
         } else { // relative to arbitrary axes
             throw new Error('Cannot rotate relative to arbitrary axis');
         }
-        invalidateSubtree();
+        this.invalidateSubtree();
     }
 
     rotateZ(theta, relative2) {
@@ -121,7 +121,7 @@ class RefFrame {
         } else { // relative to arbitrary axes
             throw new Error('Cannot rotate relative to arbitrary axis');
         }
-        invalidateSubtree();
+        this.invalidateSubtree();
     }
 
     mapPos(v, tgt) {

@@ -1,6 +1,6 @@
 class ShaderP3N3 extends Shader {
     constructor() {
-        super('P3N3', 'http://localhost:8888/glsl/P3N3.vs', 'http://localhost:8888/glsl/P3N3.fs');
+        super('P3N3', 'http://localhost:8888/glsl/P3N3.vert', 'http://localhost:8888/glsl/P3N3.frag');
     }
 
     get vertexComponentNames() {

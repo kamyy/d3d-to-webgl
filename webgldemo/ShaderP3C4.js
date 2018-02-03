@@ -1,6 +1,6 @@
 class ShaderP3C4 extends Shader { 
     constructor() {
-        super('P3C4', 'http://localhost:8888/glsl/P3C4.vs', 'http://localhost:8888/glsl/P3C4.fs');
+        super('P3C4', 'http://localhost:8888/glsl/P3C4.vert', 'http://localhost:8888/glsl/P3C4.frag');
     }
 
     drawPrimitives(subModel) {

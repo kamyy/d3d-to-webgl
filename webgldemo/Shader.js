@@ -13,10 +13,10 @@ class Shader {
         this.fs = null;
         this.program = null;
 
-        const createProgram = function(vs, fs) {
+        const initProgram = () => {
             const program = g_GL.createProgram();
-            g_GL.attachShader(program, vs);
-            g_GL.attachShader(program, fs);
+            g_GL.attachShader(program, this.vs);
+            g_GL.attachShader(program, this.fs);
             g_GL.linkProgram(program);
 
             if (!g_GL.getProgramParameter(program, g_GL.LINK_STATUS)) {
@@ -36,7 +36,7 @@ class Shader {
                     throw new Error('Cannot compile ' + filenameVS + ' !\n\n' + g_GL.getShaderInfoLog(this.vs));
                 } 
                 if (this.vs && this.fs && !this.program) {
-                    this.program = createProgram(g_GL, this.vs, this.fs);
+                    this.program = initProgram();
                 }
             }
         }
@@ -54,7 +54,7 @@ class Shader {
                     throw new Error('Cannot compile ' + filenameFS + ' !\n\n' + g_GL.getShaderInfoLog(this.fs));
                 } 
                 if (this.vs && this.fs && !this.program) {
-                    this.program = createProgram(g_GL, this.vs, this.fs);
+                    this.program = initProgram();
                 }
             }
         }
@@ -104,11 +104,11 @@ class Shader {
     setModelViewProjMatrix(matrix) {
         const location = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
         if (location && matrix instanceof Matrix4x4) {
-            const array = new Float32Array([matrix._11, matrix._21, matrix._31, matrix_41,
-                                            matrix._12, matrix._22, matrix._32, matrix_42,
-                                            matrix._13, matrix._23, matrix._33, matrix_43,
-                                            matrix._14, matrix._24, matrix._34, matrix_44]);
-            g_GL.uniformMatrix4fv(location, false, array); // OpenGL is column major
+            const array = new Float32Array([matrix._11, matrix._12, matrix._13, matrix_14,
+                                            matrix._21, matrix._22, matrix._23, matrix_24,
+                                            matrix._31, matrix._32, matrix._33, matrix_34,
+                                            matrix._41, matrix._42, matrix._43, matrix_44]);
+            g_GL.uniformMatrix4fv(location, false, array);  // Important OpenGL stores sequence in column-major format
             return true;
         }
         return false;
