@@ -62,18 +62,43 @@ class Shader {
         requestFS.send();
     }
 
+    get vertexClass() {
+        return class {
+            constructor(...v) {
+                const n = this.getVertexComponentNames();
+                if (n.length !== v.length) {
+                    throw new Error('Number of vertex component names !== number of vertex component values.');
+                } else {
+                    for (let i = 0; i < n.length; ++i) {
+                        this[n[i]] = v[i];
+                    }
+                }
+            }
+        };
+    }
+
     drawPrimitives(subModel) {
         if (this.program) {
             g_GL.useProgram(this.program);
-            
+            //
             // model view projection matrix
             // model space camera pos
             // model space omniLS pos
+            this.setModelSpaceUpDir(subModel.model);
 
-            setModelSpaceUpDir(subModel.model);
-            return true;
+            g_GL.bindBuffer(g_GL.ARRAY_BUFFER, subModel.vtxBuffer);
+            g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, subModel.idxBuffer);
+
+            for (d of this.vertexAttributeDescs) {
+                const location = g_GL.getAttribLocation(this.program, d.attrib);
+                if (location !== -1) {
+                    g_GL.vertexAttribPointer(location, d.length, g_GL.FLOAT, false, d.stride, d.offset);
+                    g_GL.enableVertexAttribArray(location);
+                }
+            }
+
+            g_GL.drawElements(g_GL_TRIANGLES, subModel.vtxBuffer.vtxCount, g_GL.UNSIGNED_SHORT, 0);
         }
-        return false;
     }
 
     setModelViewProjMatrix(matrix) {
