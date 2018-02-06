@@ -5,19 +5,17 @@ class ShaderP3C4 extends Shader {
 
     drawPrimitives(subModel) {
         if (this.program) {
+            const { model, nrmBuffer } = subModel;
+
             g_GL.useProgram(this.program);
-            //
-            // model view projection matrix
-            // model space camera pos
-            // model space omniLS pos
-            this.setModelSpaceUpDir(subModel.model);
+            this.setUniformModelSpaceUpDir(model);
 
-            g_GL.bindBuffer(g_GL.ARRAY_BUFFER, subModel.nrmBuffer);
+            g_GL.bindBuffer(g_GL.ARRAY_BUFFER, nrmBuffer);
 
-            for (d of this.vertexAttributeDescs) {
-                const location = g_GL.getAttribLocation(this.program, d.attrib);
+            for (desc of this.vertexAttributeDescs) {
+                const location = g_GL.getAttribLocation(this.program, desc.attrib);
                 if (location !== -1) {
-                    g_GL.vertexAttribPointer(location, d.length, g_GL.FLOAT, false, d.stride, d.offset);
+                    g_GL.vertexAttribPointer(location, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
                     g_GL.enableVertexAttribArray(location);
                 }
             }

@@ -1,13 +1,11 @@
-class Material {
-    static get(name) {
-        return Material.map.get(name);
-    }
+const g_materialMap = new Map();
 
+class Material {
     constructor(name) {
-        if (Material.map.has(name)) {
-            return Material.map.get(name);
+        if (g_materialMap.has(name)) {
+            return g_materialMap.get(name);
         }
-        Material.map.set(name, this);
+        g_materialMap.set(name, this);
 
         this.textures = [null, null, null, null, null, null, null, null];
         this.diff = new Color(0.5, 0.5, 0.5);
@@ -16,6 +14,4 @@ class Material {
         this.isTranslucent = false;
     }
 }
-
-Material.map = new Map();
 

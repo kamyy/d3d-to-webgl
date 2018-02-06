@@ -1,26 +1,26 @@
 class Color {
-    constructor(r = 0.0, g = 0.0, b = 0.0, a = 1.0) {
-        this.r = r; this.g = g; this.b = b; this.a = a;
+    constructor(r = 0.0, g = 0.0, b = 0.0) {
+        this.r = r; this.g = g; this.b = b;
     }
 
     mul(rhs) {
         if (rhs instanceof Color) {
-            return new Color(this.r * rhs.r, this.g * rhs.g, this.b * rhs.b, this.a * rhs.a);
+            return new Color(this.r * rhs.r, this.g * rhs.g, this.b * rhs.b);
         }
-        return new Color(this.r * rhs, this.g * rhs, this.b * rhs, this.a * rhs);
+        return new Color(this.r * rhs, this.g * rhs, this.b * rhs);
     }
 
     add(rhs) {
         if (rhs instanceof Color) {
-            return new Color(this.r + rhs.r, this.g + rhs.g, this.b + rhs.b, this.a + rhs.a);
+            return new Color(this.r + rhs.r, this.g + rhs.g, this.b + rhs.b);
         }
-        return new Color(this.r + rhs, this.g + rhs, this.b + rhs, this.a + rhs);
+        return new Color(this.r + rhs, this.g + rhs, this.b + rhs);
     }
 
     sub(rhs) {
         if (rhs instanceof Color) {
-            return new Color(this.r - rhs.r, this.g - rhs.g, this.b - rhs.b, this.a - rhs.a);
+            return new Color(this.r - rhs.r, this.g - rhs.g, this.b - rhs.b);
         }
-        return new Color(this.r - rhs, this.g - rhs, this.b - rhs, this.a - rhs);
+        return new Color(this.r - rhs, this.g - rhs, this.b - rhs);
     }
 }
