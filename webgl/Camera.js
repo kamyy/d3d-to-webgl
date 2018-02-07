@@ -5,53 +5,21 @@ const CAMERA_DEFAULT_FOV = 1.0;
 class Camera extends RefFrame {
     constructor(parent, fieldOfView, aspectRatio, clipDistanceN, clipDistanceF) {
         super(parent);
-        this._fieldOfView = fieldOfView;
-        this._aspectRatio = aspectRatio;
-        this._clipDistanceN = clipDistanceN;
-        this._clipDistanceF = clipDistanceF;
-        this._viewMatrix = null;
-        this._projMatrix = null;
+        this.fieldOfView = fieldOfView;
+        this.aspectRatio = aspectRatio;
+        this.clipDistanceN = clipDistanceN;
+        this.clipDistanceF = clipDistanceF;
+        this.viewMatrix = null;
+        this.projMatrix = null;
     }
 
-    get fieldOfView() {
-        return this._fieldOfView;
-    }
-
-    get aspectRatio() {
-        return this._aspectRatio;
-    }
-
-    get clipDistanceN() {
-        return _clipDistanceN;
-    }
-
-    get clipDistanceF() {
-        return _clipDistanceF;
-    }
-
-    set fieldOfView(fieldOfView) {
-        this._fieldOfView = fieldOfView;
-    }
-
-    set aspectRatio(aspectRatio) {
-        this._aspectRatio = aspectRatio;
-    }
-
-    set clipDistanceN(clipDistance) {
-        this._clipDistanceN = clipDistance;
-    }
-
-    set clipDistanceF(clipDistance) {
-        this._clipDistanceF = clipDistance;
-    }
-
-    get viewMatrix() {
+    getViewMatrix() {
         // right-handed camera system where +ve y-axis points in view direction
-        this._viewMatrix = this.modelMatrix.inverse();
-        return this._viewMatrix;
+        this.viewMatrix = this.modelMatrix.inverse();
+        return this.viewMatrix;
     }
 
-    get projMatrix() {
+    getProjMatrix() {
         /*
         // standard D3D left-handed projection matrix
         DirectX::XMMATRIX xm = DirectX::XMMatrixPerspectiveFovLH(m_fieldOfView,
@@ -76,10 +44,10 @@ class Camera extends RefFrame {
         this._projMatrix.m_34 = w;
 
         */
-        return this._projMatrix; 
+        return this.projMatrix; 
     }
 
     get viewProjMatrix() {
-        return this.viewMatrix.mul(this.projMatrix);
+        return this.getViewMatrix.mul(this.getProjMatrix);
     }
 }
