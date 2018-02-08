@@ -93,6 +93,10 @@ namespace d3d11demo {
                const BYTE* psBlob, size_t psSize);
        ~Shader();
 
+        const std::string& getName() const {
+            return m_name;
+        }
+
         void applyShaderToD3D11() const;
     };
 

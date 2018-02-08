@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "ASE.h"
+#include "json/single_include/nlohmann/json.hpp"
 
 #include <direct.h>
 
@@ -170,6 +171,7 @@ namespace d3d11demo {
         ON_WM_MOUSEMOVE()
 
         ON_COMMAND(ID_FILE_OPENASE, OnFileOpen)
+        ON_COMMAND(ID_FILE_SAVEJSON, OnFileSave)
         ON_COMMAND(ID_FILE_EXIT, OnFileExit)
 
         ON_COMMAND_RANGE(ID_VIEW_CAMERA1, ID_VIEW_CAMERA3, OnViewCameras)
@@ -311,6 +313,14 @@ namespace d3d11demo {
                 file = dialog.GetPathName();
                 m_app->loadScene(ase);
             }
+        }
+    }
+
+    void D3D11DemoCFrameWnd::OnFileSave() {
+        CFileDialog dialog(FALSE, "js", NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+            "Scene Export Files (*.json)|*.json||");
+        if (dialog.DoModal() == IDOK) {
+            m_app->saveScene(dialog.GetPathName());
         }
     }
 
@@ -646,6 +656,15 @@ namespace d3d11demo {
                                              LightsDlg::getAttenCoeff1(),
                                              LightsDlg::getAttenCoeff2(),
                                              m_activeCamera);
+    }
+
+    void D3D11DemoCWinApp::saveScene(const char* filename) {
+        nlohmann::json scene;
+
+        scene["Materials"] = Material::getMaterialMap();
+
+        ofstream of(filename);
+        of << setw(4) << scene;
     }
 
     void D3D11DemoCWinApp::freeScene() {

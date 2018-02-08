@@ -3,6 +3,7 @@
 // Used by Resource.rc
 //
 #define IDR_AVATAR3D                    102
+#define ID_FILE_SAVEJSON                109
 #define ID_FILE_OPENASE                 110
 #define ID_FILE_EXIT                    111
 #define IDS_AVG_FPS                     112

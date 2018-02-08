@@ -16,6 +16,10 @@ namespace d3d11demo {
         s_materialMap[m_name] = this;
     }
 
+    const MaterialMap& Material::getMaterialMap() {
+        return Material::s_materialMap;
+    }
+
     void Material::initSingleton() {
         assert(s_materialMap.empty());
     }
@@ -72,6 +76,10 @@ namespace d3d11demo {
         }
     }
 
+    const Texture* Material::getTexture(uint32_t stage) const {
+        return m_textures[stage];
+    }
+
     Texture* Material::getTexture(uint32_t stage) {
         return m_textures[stage];
     }
@@ -80,7 +88,39 @@ namespace d3d11demo {
         m_shader = shader;
     }
 
+    const Shader* Material::getShader() const {
+        return m_shader;
+    }
+
     Shader* Material::getShader() {
         return m_shader;
+    }
+
+    void to_json(nlohmann::json& materials, const MaterialMap& map) {
+        for (auto& p : map) {
+            const Material* mat = p.second;
+
+            nlohmann::json obj = {
+                { "name", p.first.c_str() },
+                { "diff", { {"r", mat->getDiff().m_r}, {"g", mat->getDiff().m_g}, {"b", mat->getDiff().m_b} } },
+                { "spec", { {"r", mat->getSpec().m_r}, {"g", mat->getSpec().m_g}, {"b", mat->getSpec().m_b} } },
+                { "shinyExponent", mat->getShininess()  },
+                { "isTranslucent", mat->isTranslucent() },
+                { "shaderProgram", mat->getShader()->getName().c_str() },
+                { "textures", { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr } }
+            };
+
+            const Texture* stage0 = mat->getTexture(0);
+            if (stage0) {
+                obj["textures"][0] = stage0->getName();
+            }
+
+            const Texture* stage1 = mat->getTexture(1);
+            if (stage1) {
+                obj["textures"][1] = stage1->getName();
+            }
+
+            materials.push_back(obj);
+        }
     }
 }

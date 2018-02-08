@@ -31,6 +31,10 @@ namespace d3d11demo {
         Texture(const std::string& name);
        ~Texture();
 
+        const std::string& getName() const {
+            return m_name;
+        }
+
         void setSamplerStateDesc(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressU, D3D11_TEXTURE_ADDRESS_MODE addressV);
         void applyTextureToD3D11(uint32_t stage) const;
 

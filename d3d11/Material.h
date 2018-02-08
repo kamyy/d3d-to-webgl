@@ -3,6 +3,7 @@
 #define Material_h
 
 #include "Color.h"
+#include "json/single_include/nlohmann/json.hpp"
 
 namespace d3d11demo {
 
@@ -29,16 +30,19 @@ namespace d3d11demo {
         explicit Material(const std::string& name);
 
     public:
+        static const MaterialMap& getMaterialMap();
         static void initSingleton();
         static void freeSingleton();
         static Material* get(const std::string& name);
 
         void applyMaterialToD3D11() const;
 
-        void     setTexture(uint32_t stage, Texture* texture);
+        void           setTexture(uint32_t stage, Texture* texture);
+        const Texture* getTexture(uint32_t stage) const;
         Texture* getTexture(uint32_t stage);
 
-        void    setShader(class Shader* shader);
+        void          setShader(class Shader* shader);
+        const Shader* getShader() const;
         Shader* getShader();
 
         void         setDiff(const Color& c) { m_diff = c; }
@@ -52,6 +56,8 @@ namespace d3d11demo {
 
         bool isTranslucent() const { return m_translucent; }
     };
+
+    void to_json(nlohmann::json& materials, const MaterialMap& map);
 
 }
 

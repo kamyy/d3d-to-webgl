@@ -75,6 +75,7 @@ namespace d3d11demo {
         afx_msg void OnMouseMove(UINT flags, CPoint point);
 
         afx_msg void OnFileOpen();
+        afx_msg void OnFileSave();
         afx_msg void OnFileExit();
 
         afx_msg void OnViewCameras(UINT id);
@@ -132,6 +133,7 @@ namespace d3d11demo {
         virtual BOOL OnIdle(LONG n) override;
 
         void loadScene(const ASE& ase);
+        void saveScene(const char* filename);
         void freeScene();
         void render();
 
