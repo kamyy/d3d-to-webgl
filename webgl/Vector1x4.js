@@ -26,10 +26,10 @@ class Vector1x4 {
 
     mul(rhs) {
         if (rhs instanceof Matrix4x4) {
-            const x = this.x * rhs._11 + this.y * rhs._21 + this.z * rhs._31 + this.w * rhs._41;
-            const y = this.x * rhs._12 + this.y * rhs._22 + this.z * rhs._32 + this.w * rhs._42;
-            const z = this.x * rhs._13 + this.y * rhs._23 + this.z * rhs._33 + this.w * rhs._43;
-            const w = this.x * rhs._14 + this.y * rhs._24 + this.z * rhs._34 + this.w * rhs._44;
+            const x = this.x * rhs.m[_11] + this.y * rhs.m[_21] + this.z * rhs.m[_31] + this.w * rhs.m[_41];
+            const y = this.x * rhs.m[_12] + this.y * rhs.m[_22] + this.z * rhs.m[_32] + this.w * rhs.m[_42];
+            const z = this.x * rhs.m[_13] + this.y * rhs.m[_23] + this.z * rhs.m[_33] + this.w * rhs.m[_43];
+            const w = this.x * rhs.m[_14] + this.y * rhs.m[_24] + this.z * rhs.m[_34] + this.w * rhs.m[_44];
             return new Vector1x4(x, y, z, w);
         }
         if (typeof rhs === "number") {

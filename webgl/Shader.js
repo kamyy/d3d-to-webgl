@@ -27,7 +27,7 @@ class Shader {
 
         const requestVS = new XMLHttpRequest();
         requestVS.onreadystatechange = () => {
-            if (requestVS.readyState === 4 && requestVS.status !== 404) {
+            if (requestVS.readyState === 4 && requestVS.status === 200) {
                 this.vs = g_GL.createShader(g_GL.VERTEX_SHADER);
                 g_GL.shaderSource(this.vs, requestVS.responseText);
                 g_GL.compileShader(this.vs);
@@ -45,7 +45,7 @@ class Shader {
 
         const requestFS = new XMLHttpRequest();
         requestFS.onreadystatechange = () => {
-            if (requestFS.readyState === 4 && requestFS.status !== 404) {
+            if (requestFS.readyState === 4 && requestFS.status === 200) {
                 this.fs = g_GL.createShader(g_GL.FRAGMENT_SHADER);
                 g_GL.shaderSource(this.fs, requestFS.responseText);
                 g_GL.compileShader(this.fs);
@@ -116,11 +116,7 @@ class Shader {
     setUniformModelViewProjMatrix(model) {
         const location = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
         if (location && matrix instanceof Matrix4x4) {
-            const array = new Float32Array([matrix._11, matrix._12, matrix._13, matrix_14,
-                                            matrix._21, matrix._22, matrix._23, matrix_24,
-                                            matrix._31, matrix._32, matrix._33, matrix_34,
-                                            matrix._41, matrix._42, matrix._43, matrix_44]);
-            g_GL.uniformMatrix4fv(location, false, array); // OpenGL stores array sequence in column-major format
+            g_GL.uniformMatrix4fv(location, false, matrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
         }
     }
 

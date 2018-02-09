@@ -40,7 +40,7 @@ class RefFrame {
     }
 
     set localMatrix(matrix) {
-        this.localM = matrix;
+        this.localM = new Matrix4x4(matrix);
         this.invalidateSubtree();
     }
 
@@ -61,26 +61,26 @@ class RefFrame {
             const x = this.localM._41;
             const y = this.localM._42;
             const z = this.localM._43;
-            this.localM._41 = x + (v.x * this.localM._11) + (v.y * this.localM._21) + (v.z * this.localM._31);
-            this.localM._42 = y + (v.x * this.localM._12) + (v.y * this.localM._22) + (v.z * this.localM._32);
-            this.localM._43 = z + (v.x * this.localM._13) + (v.y * this.localM._23) + (v.z * this.localM._33);
+            this.localM.m[_41] = x + (v.x * this.localM.m[_11]) + (v.y * this.localM.m[_21]) + (v.z * this.localM.m[_31]);
+            this.localM.m[_42] = y + (v.x * this.localM.m[_12]) + (v.y * this.localM.m[_22]) + (v.z * this.localM.m[_32]);
+            this.localM.m[_43] = z + (v.x * this.localM.m[_13]) + (v.y * this.localM.m[_23]) + (v.z * this.localM.m[_33]);
 
         } else if (relative2.parent === null) { // relative to root axes
             const d = relative2.mapPos(new Vector1x4(v.x, v.y, v.z, 0.0), m_parent.get());
-            this.localM._41 += d.m_x;
-            this.localM._42 += d.m_y;
-            this.localM._43 += d.m_z;
+            this.localM.m[_41] += d.m_x;
+            this.localM.m[_42] += d.m_y;
+            this.localM.m[_43] += d.m_z;
 
         } else if (relative2 === this.parent) { // relative to parent axes
-            this.localM._41 += v.x;
-            this.localM._42 += v.y;
-            this.localM._43 += v.z;
+            this.localM.m[_41] += v.x;
+            this.localM.m[_42] += v.y;
+            this.localM.m[_43] += v.z;
 
         } else { // relative to arbitrary axes
             const d = relative2.mapPos(new Vector1x4(v.x, v.y, v.z, 0.0), this.parent);
-            this.localM._41 += d.m_x;
-            this.localM._42 += d.m_y;
-            this.localM._43 += d.m_z;
+            this.localM.m[_41] += d.m_x;
+            this.localM.m[_42] += d.m_y;
+            this.localM.m[_43] += d.m_z;
         }
         this.invalidateSubtree();
     }
