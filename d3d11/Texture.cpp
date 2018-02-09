@@ -15,7 +15,8 @@ namespace d3d11demo {
     void Texture::initD3D11Resources() {
         assert(!m_shaderResourceView && !m_samplerState);
 
-        const char* ansi_name = m_name.c_str();
+        std::string file_name = m_name + ".dds";
+        const char* ansi_name = file_name.c_str();
         size_t      s = strlen(ansi_name) + 1;
         wchar_t*    wide_name = new wchar_t[s];
         size_t      n = 0;
