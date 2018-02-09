@@ -309,7 +309,12 @@ namespace d3d11demo {
 
         CFileDialog dialog(TRUE, "ASE", file, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST,
             "3DS-Max ASCII Export Files (*.ase)|*.ASE||");
+
         if (dialog.DoModal() == IDOK) {
+            Shader::freeSingleton();
+            Texture::freeSingleton();
+            Material::freeSingleton();
+
             ASE ase;
             if (!ase.read(dialog.GetPathName())) {
                 MessageBox("Error reading 3DS-Max ASE file!", NULL, MB_OK | MB_ICONERROR);
