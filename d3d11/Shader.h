@@ -8,6 +8,8 @@
 #include "Light.h"
 #include "Math.h"
 
+#include "json/single_include/nlohmann/json.hpp"
+
 /*
 // concatenated world view projection transform
 setVSConstReg(6, 1, Vector1x4(s_omniLS->m_coeff0, s_omniLS->m_coeff1, s_omniLS->m_coeff2, 0.f));
@@ -18,7 +20,10 @@ setPSConstReg(1, 1, s_ambientLS->m_upperHemisphereColor);
 
 namespace d3d11demo {
 
+    using json = nlohmann::json;
+
     using ShaderMap = std::map<std::string, class Shader*>;
+    using VtxVector = std::vector<float>;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -110,6 +115,7 @@ namespace d3d11demo {
                 : m_x(x), m_y(y), m_z(z), m_r(r), m_g(g), m_b(b), m_a(a) {}
 
         bool operator<(const Vertex_P3C4& rhs) const { return memcmp(this, &rhs, sizeof(float) * 7) < 0; }
+        operator VtxVector() const { return { m_x, m_y, m_z, m_r, m_g, m_b }; }
     };
 
     struct Shader_P3C4 : public Shader {
@@ -125,6 +131,7 @@ namespace d3d11demo {
     struct Vertex_P3N3 {
         float m_x, m_y, m_z, m_nx, m_ny, m_nz;
         bool operator<(const Vertex_P3N3& rhs) const { return memcmp(this, &rhs, sizeof(float) * 6) < 0; }
+        operator VtxVector() const { return { m_x, m_y, m_z, m_nx, m_ny, m_nz }; }
     };
 
     struct Shader_P3N3 : public Shader {
@@ -140,6 +147,7 @@ namespace d3d11demo {
     struct Vertex_P3N3T2 {
         float m_x, m_y, m_z, m_nx, m_ny, m_nz, m_u0, m_v0;
         bool operator<(const Vertex_P3N3T2& rhs) const { return memcmp(this, &rhs, sizeof(float) * 8) < 0; }
+        operator VtxVector() const { return { m_x, m_y, m_z, m_nx, m_ny, m_nz, m_u0, m_v0 }; }
     };
 
     struct Shader_P3N3T2 : public Shader {
@@ -158,6 +166,7 @@ namespace d3d11demo {
         float m_bx, m_by, m_bz;
         float m_u0, m_v0;
         bool operator<(const Vertex_P3N3B3T2& rhs) const { return memcmp(this, &rhs, sizeof(float) * 11) < 0; }
+        operator VtxVector() const { return { m_x, m_y, m_z, m_nx, m_ny, m_nz, m_bx, m_by, m_bz, m_u0, m_v0 }; }
     };
 
     struct Shader_P3N3B3T2 : public Shader {

@@ -7,6 +7,8 @@
 
 namespace d3d11demo {
 
+    using json = nlohmann::json;
+
     class Shader;
     class Texture;
 
@@ -30,10 +32,12 @@ namespace d3d11demo {
         explicit Material(const std::string& name);
 
     public:
-        static const MaterialMap& getMaterialMap();
+        static const MaterialMap& getMap();
         static void initSingleton();
         static void freeSingleton();
         static Material* get(const std::string& name);
+
+        const std::string& getName() const { return m_name; };
 
         void applyMaterialToD3D11() const;
 
@@ -57,7 +61,7 @@ namespace d3d11demo {
         bool isTranslucent() const { return m_translucent; }
     };
 
-    void to_json(nlohmann::json& materials, const MaterialMap& map);
+    void to_json(json& out, const MaterialMap& map);
 
 }
 

@@ -9,7 +9,11 @@
 #include "Shader.h"
 #include "Math.h"
 
+#include "json/single_include/nlohmann/json.hpp"
+
 namespace d3d11demo {
+
+    using json = nlohmann::json;
 
     const float NORMAL_SCALE = 0.25f;
     const float TANGENT_SCALE = 0.25f;
@@ -50,6 +54,7 @@ namespace d3d11demo {
         virtual void freeD3D11Resources() override = 0;
         virtual void drawPrimitives(bool noAlpha) const = 0;
         virtual void drawAllNormals() const = 0;
+        virtual json toJSON() const = 0;
 
         explicit DrawBatchBase(const DrawableModel* model, const Material* mtl) : m_model(model), m_mtl(mtl) {}
         virtual ~DrawBatchBase() {};
@@ -192,6 +197,30 @@ namespace d3d11demo {
             g_app.getD3D11DeviceContext()->IASetVertexBuffers(0, 1, &m_nrmBuf, &stride, &offset);
             g_app.getD3D11DeviceContext()->Draw((UINT)m_nrms.size(), 0);
         }
+
+        virtual json toJSON() const override {
+            json piece = {
+                { "material", m_mtl->getName().c_str() },
+                { "min", { m_min.m_x, m_min.m_y, m_min.m_z } },
+                { "max", { m_max.m_x, m_max.m_y, m_max.m_z } }
+            };
+
+            VtxVector nrms;
+            for (VtxVector n : m_nrms) {
+                nrms.insert(nrms.end(), n.begin(), n.end());
+            }
+
+            VtxVector vtxs;
+            for (VtxVector v : m_vtxs) {
+                vtxs.insert(vtxs.end(), v.begin(), v.end());
+            }
+
+            piece["nrms"] = nrms;
+            piece["vtxs"] = vtxs;
+            piece["idxs"] = m_idxs;
+
+            return piece;
+        }
     };
 
     struct DrawBatch_Vertex_P3N3B3T2 : public DrawBatch<Vertex_P3N3B3T2> {
@@ -246,6 +275,8 @@ namespace d3d11demo {
         void applyModelSpaceToD3D11() const;
         void draw(bool bNoAlpha) const;
         void drawVertexNormals() const;
+
+        virtual json toJSON() const override;
     };
 
 }

@@ -7,11 +7,14 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "ASE.h"
+
 #include "json/single_include/nlohmann/json.hpp"
 
 #include <direct.h>
 
 namespace d3d11demo {
+
+    using json = nlohmann::json;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -217,6 +220,7 @@ namespace d3d11demo {
         m_rsrcUserMgr->initD3DResources();
         */
     }
+
 
     D3D11DemoCFrameWnd::D3D11DemoCFrameWnd() {
         m_app = (D3D11DemoCWinApp*)AfxGetApp();
@@ -659,12 +663,13 @@ namespace d3d11demo {
     }
 
     void D3D11DemoCWinApp::saveScene(const char* filename) {
-        nlohmann::json scene;
-
-        scene["Materials"] = Material::getMaterialMap();
-
+        json obj = {
+            { "sceneRoot", m_worldSpace->toJSON() },
+            { "materials", Material::getMap() },
+            { "textures", Texture::getMap() }
+        };
         ofstream of(filename);
-        of << setw(4) << scene;
+        of << setw(4) << obj;
     }
 
     void D3D11DemoCWinApp::freeScene() {

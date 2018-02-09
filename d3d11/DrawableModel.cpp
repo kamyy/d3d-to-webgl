@@ -123,4 +123,22 @@ namespace d3d11demo {
         }
     }
 
+    json DrawableModel::toJSON() const {
+        const Matrix4x4& m = getModelMatrix();
+
+        json node = {
+            { "nodeType", "Model" },
+            { "modelMatrix", { m.m_11, m.m_12, m.m_13, m.m_14, m.m_21, m.m_22, m.m_23, m.m_24, m.m_31, m.m_32, m.m_33, m.m_34, m.m_41, m.m_42, m.m_43, m.m_44 } },
+        };
+
+        for (auto p : m_drawBatches) {
+            node["pieces"].push_back(p->toJSON());
+        }
+
+        for (auto p = getChild(); p != nullptr; p = p->getNext()) {
+            node["children"].push_back(p->toJSON());
+        }
+
+        return node;
+    }
 }

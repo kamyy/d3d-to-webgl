@@ -46,6 +46,10 @@ namespace d3d11demo {
         }
     }
 
+    const TextureMap& Texture::getMap() {
+        return Texture::s_textureMap;
+    }
+
     void Texture::initSingleton() {
         assert(s_textureMap.empty());
     }
@@ -108,5 +112,16 @@ namespace d3d11demo {
     void Texture::applyTextureToD3D11(uint32_t stage) const {
         g_app.getD3D11DeviceContext()->PSSetShaderResources(stage, 1, &m_shaderResourceView);
         g_app.getD3D11DeviceContext()->PSSetSamplers(stage, 1, &m_samplerState);
+    }
+
+    void to_json(json& out, const TextureMap& map) {
+        for (auto& p : map) {
+            json obj = {
+                { "name", p.first.c_str() },
+                { "hasAlpha", p.second->hasAlpha() },
+            };
+
+            out.push_back(obj);
+        }
     }
 }

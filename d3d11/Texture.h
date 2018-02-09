@@ -4,7 +4,11 @@
 
 #include "D3D11Resource.h"
 
+#include "json/single_include/nlohmann/json.hpp"
+
 namespace d3d11demo {
+
+    using json = nlohmann::json;
 
     using TextureMap = std::map<std::string, class Texture*>;
 
@@ -24,6 +28,7 @@ namespace d3d11demo {
         virtual void freeD3D11Resources() override;
 
     public:
+        static const TextureMap& getMap();
         static void initSingleton();
         static void freeSingleton();
         static Texture* get(const std::string& name);
@@ -43,6 +48,7 @@ namespace d3d11demo {
         }
     };
 
+    void to_json(json& out, const TextureMap& map);
 }
 
 #endif

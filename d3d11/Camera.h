@@ -4,7 +4,11 @@
 
 #include "RefFrame.h"
 
+#include "json/single_include/nlohmann/json.hpp"
+
 namespace d3d11demo {
+
+    using json = nlohmann::json;
 
     const float CAMERA_DEFAULT_N_CLIP_DISTANCE = 0.50f;
     const float CAMERA_DEFAULT_F_CLIP_DISTANCE = 100.f;
@@ -56,6 +60,8 @@ namespace d3d11demo {
         const Matrix4x4 getProjMatrix();
         const Matrix4x4 getViewProjMatrix();
 
+        virtual json toJSON() const override;
+
     protected:
         float m_fieldOfView;
         float m_aspectRatio;
@@ -70,8 +76,7 @@ namespace d3d11demo {
         Camera operator=(const Camera&) const;
     };
 
-    typedef std::vector<shared_ptr<Camera>>   CameraArray;
-    typedef std::vector<shared_ptr<RefFrame>> CamTgtArray;
+    typedef std::vector<shared_ptr<Camera>> CameraArray;
 
 }
 

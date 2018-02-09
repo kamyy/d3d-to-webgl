@@ -167,7 +167,6 @@ namespace d3d11demo {
             return m_d3dDeviceContext;
         }
 
-
     };
 
     extern D3D11DemoCWinApp g_app;

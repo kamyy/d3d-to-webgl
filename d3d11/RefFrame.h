@@ -4,7 +4,11 @@
 
 #include "Math.h"
 
+#include "json/single_include/nlohmann/json.hpp"
+
 namespace d3d11demo {
+
+    using json = nlohmann::json;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -31,6 +35,12 @@ namespace d3d11demo {
 
         shared_ptr<RefFrame> getParent() { return m_parent; }
 
+        RefFrame* getChild() const { return m_child; }
+        RefFrame* getChild() { return m_child; }
+
+        RefFrame* getNext() const { return m_next; }
+        RefFrame* getNext() { return m_next; }
+
         const Matrix4x4& getLocalMatrix() const;
         const Matrix4x4& getModelMatrix() const;
         void setLocalMatrix(const Matrix4x4& m);
@@ -42,8 +52,9 @@ namespace d3d11demo {
         void rotateZ(float theta, const RefFrame* relative2 = nullptr);
 
         Vector1x4 mapPos(const Vector1x4& v, const RefFrame* tgt) const;
-    };
 
+        virtual json toJSON() const;
+    };
 }
 
 #endif

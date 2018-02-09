@@ -16,7 +16,7 @@ namespace d3d11demo {
         s_materialMap[m_name] = this;
     }
 
-    const MaterialMap& Material::getMaterialMap() {
+    const MaterialMap& Material::getMap() {
         return Material::s_materialMap;
     }
 
@@ -96,14 +96,14 @@ namespace d3d11demo {
         return m_shader;
     }
 
-    void to_json(nlohmann::json& materials, const MaterialMap& map) {
+    void to_json(json& out, const MaterialMap& map) {
         for (auto& p : map) {
             const Material* mat = p.second;
 
             nlohmann::json obj = {
                 { "name", p.first.c_str() },
-                { "diff", { {"r", mat->getDiff().m_r}, {"g", mat->getDiff().m_g}, {"b", mat->getDiff().m_b} } },
-                { "spec", { {"r", mat->getSpec().m_r}, {"g", mat->getSpec().m_g}, {"b", mat->getSpec().m_b} } },
+                { "diff", { mat->getDiff().m_r, mat->getDiff().m_g, mat->getDiff().m_b } },
+                { "spec", { mat->getSpec().m_r, mat->getSpec().m_g, mat->getSpec().m_b } },
                 { "shinyExponent", mat->getShininess()  },
                 { "isTranslucent", mat->isTranslucent() },
                 { "shaderProgram", mat->getShader()->getName().c_str() },
@@ -120,7 +120,7 @@ namespace d3d11demo {
                 obj["textures"][1] = stage1->getName();
             }
 
-            materials.push_back(obj);
+            out.push_back(obj);
         }
     }
 }
