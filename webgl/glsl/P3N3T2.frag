@@ -1,6 +1,6 @@
 precision highp float;
 
-2niform vec4 u_int; // omniLS intensity
+uniform vec3 u_int; // omniLS intensity
 uniform vec3 u_gnd; // ground hemisphere light intensity
 uniform vec3 u_sky; // sky hemisphere light intensity
 
@@ -27,7 +27,7 @@ void main() {
     float self_shadow = clamp(4.0 * n_dot_l, 0.0, 1.0);
 
     vec3 ambient = u_ambi * mix(u_gnd, u_sky, dot(n, u_up_dir) * 0.5 + 0.5);
-    vec3 diffuse = d * u_int * n_dot_l;
+    vec3 diffuse = d.xyz * u_int * n_dot_l;
 
     gl_FragColor.xyz = ambient + (self_shadow * v_a) * (diffuse + u_spec.xyz * pow(v_dot_r, u_spec.a));
     gl_FragColor.a   = d.a;

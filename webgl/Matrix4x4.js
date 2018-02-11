@@ -20,19 +20,14 @@ const _44 = 15;
 
 class Matrix4x4 {
     constructor(elements) {
-        this.m = [ 1.0, 0.0, 0.0, 0.0,
-                   0.0, 1.0, 0.0, 0.0,
-                   0.0, 0.0, 1.0, 0.0,
-                   0.0, 0.0, 0.0, 1.0 ];
-
-        if (elements instanceof Matrix4x4) {
-            elements = elements.m;
-        }
-
-        if (Array.isArray(elements)) {
-            for (let i = 0; i < elements.length; ++i) {
-                this.m[i] = elements[i];
-            }
+        if (typeof elements === 'undefined') {
+            this.m = Array.of(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        } else if (elements instanceof Matrix4x4) {
+            this.m = Array.from(elements.m);
+        } else if (Array.isArray(elements) && elements.length === 16) {
+            this.m = Array.from(elements);
+        } else {
+            throw new Error('Cannot construct Matrix4x4!');
         }
     }
 
@@ -97,7 +92,7 @@ class Matrix4x4 {
                 this.m[_41] * rhs.m[_14] + this.m[_42] * rhs.m[_24] + this.m[_43] * rhs.m[_34] + this.m[_44] * rhs.m[_44]
             ]);
         }
-        throw new Error('rhs argument not a Matrix4x4!');
+        throw new Error('RHS argument not a Matrix4x4!');
     }
 
     inverse() {
@@ -122,7 +117,7 @@ class Matrix4x4 {
                 this.m[_41] + tx, this.m[_42] + ty, this.m[_43] + tz, this.m[_44]
             ]);
         }
-        throw new Error('rhs argument not a Matrix4x4!');
+        throw new Error('RHS argument not a Matrix4x4!');
     }
 
     postCatSxyz(sx, sy, sz) {
@@ -136,7 +131,7 @@ class Matrix4x4 {
                 this.m[_41] + sx, this.m[_42] * sy, this.m[_43] * sz, this.m[_44]
             ]);
         }
-        throw new Error('rhs argument not a Matrix4x4!');
+        throw new Error('RHS argument not a Matrix4x4!');
     }
 
     toFloat32Array() {

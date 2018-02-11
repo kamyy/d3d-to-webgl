@@ -1,15 +1,14 @@
 let g_GL = null; // GL rendering context:
-const g_textureMap = new Map();
-const g_materialMap = new Map();
 
 function main() {
     g_GL = document.getElementById('webgl').getContext("webgl");
     if (g_GL) {
 
         Object.defineProperties(g_GL, { 
+
             initScene: {
                 value: function() {
-                    this.worldSpace = new RefFrame();
+                    this.rootSpace = null;
                     this.cameras = [];
                     this.cameraIdx = 0;
                     this.mirrorCam = null;
@@ -27,10 +26,13 @@ function main() {
             },
 
             loadScene: {
-                value: function() {
-                    const initTextures = function(json) {
+                value: function(url) {
+
+                    const initTextures = json => {
+                        this.mapOfTextures = new Map();
+
                         for (t of json.textures) {
-                            g_textureMap.set(t.name, t);
+                            this.mapOfTextures.set(t.name, t);
 
                             t.texture = g_GL.createTexture();
                             const img = new Image();
@@ -45,15 +47,20 @@ function main() {
                                 g_GL.generateMipmap(g_GL.TEXTURE_2D);
                             };
 
-                            img.src = 'http://localhost:8888/textures/' + t.name + '.img';
+                            img.crossOrigin = 'anonymous';
+                            img.src = 'http://localhost:8888/textures/' + t.name + '.png';
                         }
                     };
 
-                    const initMaterials = function(json) {
-                        json.materials.forEach(material => g_materialMap.set(material.name, material));
+                    const initMaterials = json => {
+                        this.mapOfMaterials = new Map();
+
+                        for (m of json.materials) {
+                            this.mapOfMaterials.set(m.name, m);
+                        }
                     };
 
-                    const initSceneGraph = function(json) {
+                    const initSceneGraph = json => {
 
                     };
 
@@ -83,7 +90,7 @@ function main() {
                     return this.cameraIdx;
                 },
                 set: function(idx) { 
-                    this.cameraIdx; = idx;
+                    this.cameraIdx = idx;
                 }
             }
         });
