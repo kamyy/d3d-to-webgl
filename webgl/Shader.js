@@ -68,7 +68,7 @@ class Shader {
         return class {
             constructor(...vals) {
                 if (keys.length !== vals.length) {
-                    throw new Error('Number of vertex component names !== number of vertex component values.');
+                    throw new Error('Number of vertex component names !== number of vertex component values!');
                 }
                 for (let i = 0; i < keys.length; ++i) {
                     this[keys[i]] = vals[i];
@@ -108,8 +108,8 @@ class Shader {
 
     setUniformAttenuationCoeffs() {
         const location = g_GL.getUniformLocation(this.program, 'u_attnCoeffs');
-        if (location && g_webGLdemo.omniDirLS instanceof OmniDirLS) {
-            g_GL.uniform3f(location, g_webGLdemo.omniDirLS.coeff0, g_webGLdemo.omniDirLS.coeff1, g_webGLdemo.omniDirLS.coeff2);
+        if (location && g_GL.omniDirLS instanceof OmniDirLS) {
+            g_GL.uniform3f(location, g_GL.omniDirLS.coeff0, g_GL.omniDirLS.coeff1, g_GL.omniDirLS.coeff2);
         }
     }
 
@@ -122,36 +122,36 @@ class Shader {
 
     setUniformModelSpaceCameraPos(model) {
         const location = g_GL.getUniformLocation(this.program, 'u_camera_pos');
-        if (location && g_webGLdemo.activeCamera instanceof Camera && model instanceof Model) {
-            const pos = g_webGLdemo.activeCamera.map(g_origin, model);
+        if (location && g_GL.activeCamera instanceof Camera && model instanceof Model) {
+            const pos = g_GL.activeCamera.map(g_origin, model);
             g_GL.uniform3f(location, pos.x, pos.y, pos.z);
         }
     }
 
     setUniformModelSpaceOmniLSPos(model) {
         const location = g_GL.getUniformLocation(this.program, 'u_omniLS_pos');
-        if (location && g_webGLdemo.omniDirLS instanceof OmniDirLS && model instanceof Model) {
-            const pos = g_webGLdemo.omniDirLS.map(g_origin, model);
+        if (location && g_GL.omniDirLS instanceof OmniDirLS && model instanceof Model) {
+            const pos = g_GL.omniDirLS.map(g_origin, model);
             g_GL.uniform3f(location, pos.x, pos.y, pos.z);
         }
     }
 
     setUniformLightingProperties() {
         const loc0 = g_GL.getUniformLocation(this.program, 'u_int');
-        if (loc0 && g_webGLdemo.omniDirLS instanceof OmniDirLS) {
-            const c = g_webGLdemo.omniDirLS.color;
+        if (loc0 && g_GL.omniDirLS instanceof OmniDirLS) {
+            const c = g_GL.omniDirLS.color;
             g_GL.uniform3f(loc0, c.r, c.g, c.b);
         }
 
         const loc1 = g_GL.getUniformLocation(this.program, 'u_gnd');
-        if (loc1 && g_webGLdemo.ambientLS instanceof AmbientLS) {
-            const c = g_webGLdemo.ambientLS.lowerHemisphereColor;
+        if (loc1 && g_GL.ambientLS instanceof AmbientLS) {
+            const c = g_GL.ambientLS.lowerHemisphereColor;
             g_GL.uniform3f(loc1, c.r, c.g, c.b);
         }
 
         const loc2 = g_GL.getUniformLocation(this.program, 'u_sky');
-        if (loc2 && g_webGLdemo.ambientLS instanceof AmbientLS) {
-            const c = g_webGLdemo.ambientLS.upperHemisphereColor;
+        if (loc2 && g_GL.ambientLS instanceof AmbientLS) {
+            const c = g_GL.ambientLS.upperHemisphereColor;
             g_GL.uniform3f(loc2, c.r, c.g, c.b);
         }
     }
@@ -159,19 +159,23 @@ class Shader {
     setUniformMaterialProperties(material) {
         const loc0 = g_GL.getUniformLocation(this.program, 'u_ambi');
         if (loc0) {
-            g_GL.uniform3f(loc0, material.diff.r, material.diff.g, material.diff.b);
+            g_GL.uniform3f(loc0, material.diff[0], material.diff[1], material.diff[2]);
         }
 
         const loc1 = g_GL.getUniformLocation(this.program, 'u_diff');
-        if (loc1 && g_webGLdemo.omniDirLS instanceof OmniDirLS) {
-            const c = g_webGLdemo.omniDirLS.color.mul(material.diff);
-            g_GL.uniform3f(loc1, c.r, c.g, c.b);
+        if (loc1 && g_GL.omniDirLS instanceof OmniDirLS) {
+            const r = g_GL.omniDirLS.color[0] * material.diff[0];
+            const g = g_GL.omniDirLS.color[1] * material.diff[1];
+            const b = g_GL.omniDirLS.color[2] * material.diff[2];
+            g_GL.uniform3f(loc1, r, g, b);
         }
 
         const loc2 = g_GL.getUniformLocation(this.program, 'u_spec');
-        if (loc2 && g_webGLdemo.omniDirLS instanceof OmniDirLS) {
-            const c = g_webGLdemo.omniDirLS.color.mul(material.spec);
-            g_GL.uniform4f(loc2, c.r, c.g, c.b, material.shinyExponent);
+        if (loc2 && g_GL.omniDirLS instanceof OmniDirLS) {
+            const r = g_GL.omniDirLS.color[0] * material.spec[0];
+            const g = g_GL.omniDirLS.color[1] * material.spec[1];
+            const b = g_GL.omniDirLS.color[2] * material.spec[2];
+            g_GL.uniform4f(loc2, r, g, b, material.shinyExponent);
         }
 
         const loc3 = g_GL.getUniformLocation(this.program, 'u_smpl');
