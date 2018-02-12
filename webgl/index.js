@@ -5,64 +5,26 @@ function main() {
     if (g_GL) {
 
         Object.defineProperties(g_GL, { 
-
-            initScene: {
-                value: function() {
-                    this.rootSpace = null;
+            loadScene: {
+                value: function(url) {
+                    this.rootSpace = new RefFrame();
                     this.cameras = [];
                     this.cameraIdx = 0;
                     this.mirrorCam = null;
                     this.mirrorObj = null;
-                    this.ambientLS = null;
+                    this.ambientLS = new AmbientLS([0.25, 0.25, 0.25], [0.25, 0.25, 0.25]);
                     this.omniDirLS = null;
                     this.drawWirefrm = false;
                     this.drawNormals = false;
                     this.sceneLoaded = false;
 
-                    new ShaderP3C4();
-                    new ShaderP3N3();
-                    new ShaderP3N3T2();
-                }
-            },
+                    this.mapOfShaders = new Map();
+                    this.mapOfTextures = new Map();
+                    this.mapOfMaterials = new Map();
 
-            loadScene: {
-                value: function(url) {
-
-                    const initTextures = json => {
-                        this.mapOfTextures = new Map();
-
-                        for (t of json.textures) {
-                            this.mapOfTextures.set(t.name, t);
-
-                            t.texture = g_GL.createTexture();
-                            const img = new Image();
-
-                            img.onload = function() {
-                                g_GL.bindTexture(g_GL.TEXTURE_2D, t.texture);
-                                if (t.hasAlpha) {
-                                    g_GL.texImage2D(g_GL.TEXTURE_2D, 0, g_GL.RGBA, g_GL.RGBA, g_GL.UNSIGNED_BYTE, this);
-                                } else {
-                                    g_GL.texImage2D(g_GL.TEXTURE_2D, 0, g_GL.RGB,  g_GL.RGB,  g_GL.UNSIGNED_BYTE, this);
-                                }
-                                g_GL.generateMipmap(g_GL.TEXTURE_2D);
-                            };
-
-                            img.crossOrigin = 'anonymous';
-                            img.src = 'http://localhost:8888/textures/' + t.name + '.png';
-                        }
-                    };
-
-                    const initMaterials = json => {
-                        this.mapOfMaterials = new Map();
-
-                        for (m of json.materials) {
-                            this.mapOfMaterials.set(m.name, m);
-                        }
-                    };
-
-                    const initSceneGraph = json => {
-
-                    };
+                    this.mapOfShaders.set('P3C4', new ShaderP3C4());
+                    this.mapOfShaders.set('P3N3', new ShaderP3N3());
+                    this.mapOfShaders.set('P3N3T2', new ShaderP3N3T2());
 
                     const request = new XMLHttpRequest();
                     request.overrideMimeType("application/json");
@@ -75,7 +37,45 @@ function main() {
                         }
                     }
                     request.open('GET', url, true);
-                    request.send();
+                    request.send();                    
+
+                    const initTextures = (json) => {
+                        for (let t of json.textures) {
+                            this.mapOfTextures.set(t.name, t);
+
+                            t.texture = this.createTexture();
+                            const img = new Image();
+
+                            img.onload = () => {
+                                this.bindTexture(this.TEXTURE_2D, t.texture);
+                                if (t.hasAlpha) {
+                                    this.texImage2D(this.TEXTURE_2D, 0, this.RGBA, this.RGBA, this.UNSIGNED_BYTE, img);
+                                } else {
+                                    this.texImage2D(this.TEXTURE_2D, 0, this.RGB,  this.RGB,  this.UNSIGNED_BYTE, img);
+                                }
+                                this.generateMipmap(this.TEXTURE_2D);
+                            };
+
+                            img.crossOrigin = 'anonymous';
+                            img.src = 'http://localhost:8888/textures/' + t.name + '.png';
+                        }
+                    };
+
+                    const initMaterials = (json) => {
+                        for (let m of json.materials) {
+                            this.mapOfMaterials.set(m.name, m);
+                            m.textures.forEach((name, idx) => {
+                                if (name) {
+                                    m.textures[idx] = this.mapOfTextures.get(name); 
+                                }
+                            });
+                            m.shaderProgram = this
+                        }
+                    };
+
+                    const initSceneGraph = (json) => {
+
+                    };
                 }
             },
 
@@ -95,7 +95,6 @@ function main() {
             }
         });
 
-        g_GL.initScene();
         g_GL.loadScene('http://localhost:8888/json/goku.json');
 
         g_GL.clearColor(0.0, 0.0, 0.0, 1.0);

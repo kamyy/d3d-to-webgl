@@ -1,20 +1,12 @@
 class ShaderP3N3T2 extends Shader {
     constructor() {
-        super('P3N3T2', 'http://localhost:8888/glsl/P3N3T2.vert', 'http://localhost:8888/glsl/P3N3T2.frag');
-    }
-
-    get vertexComponentNames() {
-        return ShaderP3N3T2.vertexComponentNames;
+        super('http://localhost:8888/glsl/P3N3T2.vert', 'http://localhost:8888/glsl/P3N3T2.frag');
     }
 
     get vertexAttributeDescs() {
         return ShaderP3N3T2.vertexAttributeDescs;
     }
 }
-
-ShaderP3N3T2.vertexComponentNames = [
-    'x', 'y', 'z', 'nx', 'ny', 'nz', 's', 't'
-];
 
 ShaderP3N3T2.vertexAttributeDescs = [ 
     {   attrib: 'a_pos',

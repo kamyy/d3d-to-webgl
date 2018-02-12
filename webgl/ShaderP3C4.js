@@ -1,11 +1,11 @@
 class ShaderP3C4 extends Shader { 
     constructor() {
-        super('P3C4', 'http://localhost:8888/glsl/P3C4.vert', 'http://localhost:8888/glsl/P3C4.frag');
+        super('http://localhost:8888/glsl/P3C4.vert', 'http://localhost:8888/glsl/P3C4.frag');
     }
 
-    drawPrimitives(subModel) {
+    drawNormals(modelPiece) {
         if (this.program) {
-            const { model, nrmBuffer } = subModel;
+            const { model, nrmBuffer } = modelPiece;
 
             g_GL.useProgram(this.program);
             this.setUniformModelSpaceUpDir(model);
@@ -20,22 +20,14 @@ class ShaderP3C4 extends Shader {
                 }
             }
 
-            g_GL.drawArray(g_GL.LINES, 0, subModel.nrmBuffer.vtxCount);
+            g_GL.drawArray(g_GL.LINES, 0, modelPiece.nrms.length);
         }
-    }
-
-    get vertexComponentNames() {
-        return ShaderP3C4.vertexComponentNames;
     }
 
     get vertexAttributeDescs() {
         return ShaderP3C4.vertexAttributeDescs;
     }
 }
-
-ShaderP3C4.vertexComponentNames = [
-    'x', 'y', 'z', 'r', 'g', 'b', 'a'
-];
 
 ShaderP3C4.vertexAttributeDescs = [ 
     {   attrib: 'a_pos',

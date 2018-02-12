@@ -1,14 +1,8 @@
 const g_up        = new Vector1x4(0.0, 0.0, 1.0, 0.0); // up direction 
 const g_origin    = new Vector1x4(0.0, 0.0, 0.0, 1.0); // origin
-const g_shaderMap = new Map();
 
 class Shader {
-    constructor(name, vertShaderURL, fragShaderURL) {
-        if (g_shaderMap.has(name)) {
-            return g_shaderMap.get(name);
-        }
-        g_shaderMap.set(name, this);
-
+    constructor(vertShaderURL, fragShaderURL) {
         this.vs = null;
         this.fs = null;
         this.program = null;
@@ -62,135 +56,100 @@ class Shader {
         requestFS.send();
     }
 
-    get vertexClass() {
-        const keys = this.vertexComponentNames;
-
-        return class {
-            constructor(...vals) {
-                if (keys.length !== vals.length) {
-                    throw new Error('Number of vertex component names !== number of vertex component values!');
-                }
-                for (let i = 0; i < keys.length; ++i) {
-                    this[keys[i]] = vals[i];
-                }
-            }
-        };
-    }
-
-    drawPrimitives(subModel) {
+    drawTriangles(model, modelPiece) {
         if (this.program) {
-            const { model, material, vtxBuffer, idxBuffer } = subModel;
+            const { material, vtxBuffer, idxBuffer } = modelPiece;
 
             g_GL.useProgram(this.program);
-
-            this.setUniformAttenuationCoeffs(model);
-            this.setUniformModelSpaceCameraPos(model);
-            this.setUniformModelSpaceOmniLSPos(model);
-            this.setUniformModelSpaceUpDir(model);
-
-            this.setUniformLightingProperties();
-            this.setUniformMaterialProperties(material);
-
+            this.setUniformVariablesInVertShader(model);
+            this.setUniformVariablesInFragShader(model, material);
             g_GL.bindBuffer(g_GL.ARRAY_BUFFER,         vtxBuffer);
             g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, idxBuffer);
 
-            for (desc of this.vertexAttributeDescs) {
-                const location = g_GL.getAttribLocation(this.program, desc.attrib);
-                if (location !== -1) {
-                    g_GL.vertexAttribPointer(location, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
-                    g_GL.enableVertexAttribArray(location);
+            for (let desc of this.vertexAttributeDescs) {
+                const loc = g_GL.getAttribLocation(this.program, desc.attrib);
+                if (loc !== -1) {
+                    g_GL.vertexAttribPointer(loc, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
+                    g_GL.enableVertexAttribArray(loc);
                 }
             }
 
-            g_GL.drawElements(g_GL_TRIANGLES, subModel.vtxBuffer.vtxCount, g_GL.UNSIGNED_SHORT, 0);
+            g_GL.drawElements(g_GL_TRIANGLES, modelPiece.idxs.length, g_GL.UNSIGNED_SHORT, 0);
         }
     }
 
-    setUniformAttenuationCoeffs() {
-        const location = g_GL.getUniformLocation(this.program, 'u_attnCoeffs');
-        if (location && g_GL.omniDirLS instanceof OmniDirLS) {
-            g_GL.uniform3f(location, g_GL.omniDirLS.coeff0, g_GL.omniDirLS.coeff1, g_GL.omniDirLS.coeff2);
+    setUniformVariablesInVertShader(model) {
+        const loc0 = g_GL.getUniformLocation(this.program, 'u_attnCoeffs');
+        if (loc0 && g_GL.omniDirLS instanceof OmniDirLS) {
+            g_GL.uniform3f(loc0, g_GL.omniDirLS.coeff0, g_GL.omniDirLS.coeff1, g_GL.omniDirLS.coeff2);
         }
-    }
 
-    setUniformModelViewProjMatrix(model) {
-        const location = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
-        if (location && matrix instanceof Matrix4x4) {
-            g_GL.uniformMatrix4fv(location, false, matrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
+        const loc1 = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
+        if (loc1 && matrix instanceof Matrix4x4) {
+            g_GL.uniformMatrix4fv(loc1, false, matrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
         }
-    }
 
-    setUniformModelSpaceCameraPos(model) {
-        const location = g_GL.getUniformLocation(this.program, 'u_camera_pos');
-        if (location && g_GL.activeCamera instanceof Camera && model instanceof Model) {
+        const loc2 = g_GL.getUniformLocation(this.program, 'u_camera_pos');
+        if (loc2 && g_GL.activeCamera instanceof Camera && model instanceof Model) {
             const pos = g_GL.activeCamera.map(g_origin, model);
-            g_GL.uniform3f(location, pos.x, pos.y, pos.z);
+            g_GL.uniform3f(loc2, pos.x, pos.y, pos.z);
         }
-    }
 
-    setUniformModelSpaceOmniLSPos(model) {
-        const location = g_GL.getUniformLocation(this.program, 'u_omniLS_pos');
-        if (location && g_GL.omniDirLS instanceof OmniDirLS && model instanceof Model) {
+        const loc3 = g_GL.getUniformLocation(this.program, 'u_omniLS_pos');
+        if (loc3 && g_GL.omniDirLS instanceof OmniDirLS && model instanceof Model) {
             const pos = g_GL.omniDirLS.map(g_origin, model);
-            g_GL.uniform3f(location, pos.x, pos.y, pos.z);
+            g_GL.uniform3f(loc3, pos.x, pos.y, pos.z);
         }
     }
 
-    setUniformLightingProperties() {
+    setUniformVariablesInFragShader(model, material) {
         const loc0 = g_GL.getUniformLocation(this.program, 'u_int');
         if (loc0 && g_GL.omniDirLS instanceof OmniDirLS) {
-            const c = g_GL.omniDirLS.color;
-            g_GL.uniform3f(loc0, c.r, c.g, c.b);
+            g_GL.uniform3f(loc0, g_GL.omniDirLS.color[0], g_GL.omniDirLS.color[1], g_GL.omniDirLS.color[2]);
         }
 
         const loc1 = g_GL.getUniformLocation(this.program, 'u_gnd');
         if (loc1 && g_GL.ambientLS instanceof AmbientLS) {
-            const c = g_GL.ambientLS.lowerHemisphereColor;
-            g_GL.uniform3f(loc1, c.r, c.g, c.b);
+            g_GL.uniform3f(loc1, g_GL.ambientLS.lowerHemisphereColor[0], g_GL.ambientLS.lowerHemisphereColor[1], g_GL.ambientLS.lowerHemisphereColor[2]);
         }
 
         const loc2 = g_GL.getUniformLocation(this.program, 'u_sky');
         if (loc2 && g_GL.ambientLS instanceof AmbientLS) {
-            const c = g_GL.ambientLS.upperHemisphereColor;
-            g_GL.uniform3f(loc2, c.r, c.g, c.b);
-        }
-    }
-
-    setUniformMaterialProperties(material) {
-        const loc0 = g_GL.getUniformLocation(this.program, 'u_ambi');
-        if (loc0) {
-            g_GL.uniform3f(loc0, material.diff[0], material.diff[1], material.diff[2]);
+            g_GL.uniform3f(loc2, g_GL.ambientLS.upperHemisphereColor[0], g_GL.ambientLS.upperHemisphereColor[1], g_GL.ambientLS.upperHemisphereColor[2]);
         }
 
-        const loc1 = g_GL.getUniformLocation(this.program, 'u_diff');
-        if (loc1 && g_GL.omniDirLS instanceof OmniDirLS) {
+        const loc3 = g_GL.getUniformLocation(this.program, 'u_ambi');
+        if (loc3) {
+            g_GL.uniform3f(loc3, material.diff[0], material.diff[1], material.diff[2]);
+        }
+
+        const loc4 = g_GL.getUniformLocation(this.program, 'u_diff');
+        if (loc4 && g_GL.omniDirLS instanceof OmniDirLS) {
             const r = g_GL.omniDirLS.color[0] * material.diff[0];
             const g = g_GL.omniDirLS.color[1] * material.diff[1];
             const b = g_GL.omniDirLS.color[2] * material.diff[2];
-            g_GL.uniform3f(loc1, r, g, b);
+            g_GL.uniform3f(loc4, r, g, b);
         }
 
-        const loc2 = g_GL.getUniformLocation(this.program, 'u_spec');
-        if (loc2 && g_GL.omniDirLS instanceof OmniDirLS) {
+        const loc5 = g_GL.getUniformLocation(this.program, 'u_spec');
+        if (loc5 && g_GL.omniDirLS instanceof OmniDirLS) {
             const r = g_GL.omniDirLS.color[0] * material.spec[0];
             const g = g_GL.omniDirLS.color[1] * material.spec[1];
             const b = g_GL.omniDirLS.color[2] * material.spec[2];
-            g_GL.uniform4f(loc2, r, g, b, material.shinyExponent);
+            g_GL.uniform4f(loc5, r, g, b, material.shinyExponent);
         }
 
-        const loc3 = g_GL.getUniformLocation(this.program, 'u_smpl');
-        if (loc3 && material.textures[0]) {
+        const loc6 = g_GL.getUniformLocation(this.program, 'u_smpl');
+        if (loc6 && material.textures[0]) {
             g_GL.activeTexture(g_GL.TEXTURE0);
             g_GL.bindTexture(g_GL.TEXTURE_2D, material.textures[0]);
-            g_GL.uniform1i(loc3, 0);
+            g_GL.uniform1i(loc6, 0);
         }
-    }
 
-    setUniformModelSpaceUpDir(model) {
-        const location = g_GL.getUniformLocation(this.program, 'u_up_dir');
-        if (location && model instanceof Model) {
+        const loc7 = g_GL.getUniformLocation(this.program, 'u_up_dir');
+        if (loc7 && model instanceof Model) {
             const dir = g_up.mul(model.modelMatrix.inverse());
-            g_GL.uniform3f(location, dir.x, dir.y, dir.z);
+            g_GL.uniform3f(loc7, dir.x, dir.y, dir.z);
         }
     }
 }

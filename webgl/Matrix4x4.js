@@ -20,7 +20,7 @@ const _44 = 15;
 
 class Matrix4x4 {
     constructor(elements) {
-        if (typeof elements === 'undefined') {
+        if (!elements) {
             this.m = Array.of(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
         } else if (elements instanceof Matrix4x4) {
             this.m = Array.from(elements.m);
