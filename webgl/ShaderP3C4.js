@@ -3,24 +3,23 @@ class ShaderP3C4 extends Shader {
         super('http://localhost:8888/glsl/P3C4.vert', 'http://localhost:8888/glsl/P3C4.frag');
     }
 
-    drawNormals(modelPiece) {
+    drawNormals(model, modelPiece) {
         if (this.program) {
-            const { model, nrmBuffer } = modelPiece;
-
             g_GL.useProgram(this.program);
-            this.setUniformModelSpaceUpDir(model);
+            this.setUniformVariablesInVertShader(model);
+            this.setUniformVariablesInFragShader(model);
 
-            g_GL.bindBuffer(g_GL.ARRAY_BUFFER, nrmBuffer);
+            g_GL.bindBuffer(g_GL.ARRAY_BUFFER, modelPiece.nrmBuffer);
 
-            for (desc of this.vertexAttributeDescs) {
-                const location = g_GL.getAttribLocation(this.program, desc.attrib);
-                if (location !== -1) {
-                    g_GL.vertexAttribPointer(location, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
-                    g_GL.enableVertexAttribArray(location);
+            for (let desc of this.vertexAttributeDescs) {
+                const loc = g_GL.getAttribLocation(this.program, desc.attrib);
+                if (loc !== -1) {
+                    g_GL.vertexAttribPointer(loc, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
+                    g_GL.enableVertexAttribArray(loc);
                 }
             }
 
-            g_GL.drawArray(g_GL.LINES, 0, modelPiece.nrms.length);
+            g_GL.drawArray(g_GL.LINES, 0, modelPiece.nrmVtxCount);
         }
     }
 

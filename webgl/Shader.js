@@ -1,5 +1,5 @@
-const g_up        = new Vector1x4(0.0, 0.0, 1.0, 0.0); // up direction 
-const g_origin    = new Vector1x4(0.0, 0.0, 0.0, 1.0); // origin
+const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
+const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
 
 class Shader {
     constructor(vertShaderURL, fragShaderURL) {
@@ -74,7 +74,7 @@ class Shader {
                 }
             }
 
-            g_GL.drawElements(g_GL_TRIANGLES, modelPiece.idxs.length, g_GL.UNSIGNED_SHORT, 0);
+            g_GL.drawElements(g_GL_TRIANGLES, modelPiece.triVtxCount, g_GL.UNSIGNED_SHORT, 0);
         }
     }
 
@@ -85,8 +85,9 @@ class Shader {
         }
 
         const loc1 = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
-        if (loc1 && matrix instanceof Matrix4x4) {
-            g_GL.uniformMatrix4fv(loc1, false, matrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
+        if (loc1) {
+            modelViewMatrix = g_GL.activeCamera.modelMatrix.inverse().mul(model.modelMatrix);
+            g_GL.uniformMatrix4fv(loc1, false, modelViewMatrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
         }
 
         const loc2 = g_GL.getUniformLocation(this.program, 'u_camera_pos');

@@ -7,6 +7,43 @@ function main() {
         Object.defineProperties(g_GL, { 
             loadScene: {
                 value: function(url) {
+
+                    function initTextures(json) {
+                        for (let texture of json.textures) {
+                            g_GL.mapOfTextures.set(texture.name, g_GL.createTexture());
+
+                            const image = new Image();
+                            image.onload = () => {
+                                g_GL.bindTexture(g_GL.TEXTURE_2D, g_GL.mapOfTextures.get(texture.name));
+                                if (texture.hasAlpha) {
+                                    g_GL.texImage2D(g_GL.TEXTURE_2D, 0, g_GL.RGBA, g_GL.RGBA, g_GL.UNSIGNED_BYTE, image);
+                                } else {
+                                    g_GL.texImage2D(g_GL.TEXTURE_2D, 0, g_GL.RGB,  g_GL.RGB,  g_GL.UNSIGNED_BYTE, image);
+                                }
+                                g_GL.generateMipmap(g_GL.TEXTURE_2D);
+                            };
+
+                            image.crossOrigin = 'anonymous';
+                            image.src = 'http://localhost:8888/textures/' + texture.name + '.png';
+                        }
+                    }
+
+                    function initMaterials(json) {
+                        for (let m of json.materials) {
+                            g_GL.mapOfMaterials.set(m.name, m);
+                            m.textures.forEach((t, i) => {
+                                if (t) {
+                                    m.textures[i] = g_GL.mapOfTextures.get(t); 
+                                }
+                            });
+                            m.shader = g_GL.mapOfShaders.get(m.shaderProgram);
+                        }
+                    }
+
+                    function initSceneGraph(json) {
+
+                    }
+
                     this.rootSpace = new RefFrame();
                     this.cameras = [];
                     this.cameraIdx = 0;
@@ -38,44 +75,6 @@ function main() {
                     }
                     request.open('GET', url, true);
                     request.send();                    
-
-                    const initTextures = (json) => {
-                        for (let t of json.textures) {
-                            this.mapOfTextures.set(t.name, t);
-
-                            t.texture = this.createTexture();
-                            const img = new Image();
-
-                            img.onload = () => {
-                                this.bindTexture(this.TEXTURE_2D, t.texture);
-                                if (t.hasAlpha) {
-                                    this.texImage2D(this.TEXTURE_2D, 0, this.RGBA, this.RGBA, this.UNSIGNED_BYTE, img);
-                                } else {
-                                    this.texImage2D(this.TEXTURE_2D, 0, this.RGB,  this.RGB,  this.UNSIGNED_BYTE, img);
-                                }
-                                this.generateMipmap(this.TEXTURE_2D);
-                            };
-
-                            img.crossOrigin = 'anonymous';
-                            img.src = 'http://localhost:8888/textures/' + t.name + '.png';
-                        }
-                    };
-
-                    const initMaterials = (json) => {
-                        for (let m of json.materials) {
-                            this.mapOfMaterials.set(m.name, m);
-                            m.textures.forEach((name, idx) => {
-                                if (name) {
-                                    m.textures[idx] = this.mapOfTextures.get(name); 
-                                }
-                            });
-                            m.shaderProgram = this
-                        }
-                    };
-
-                    const initSceneGraph = (json) => {
-
-                    };
                 }
             },
 
