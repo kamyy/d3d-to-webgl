@@ -9,6 +9,8 @@ function main() {
 
                 for (let t of textures) {
                     g_GL.mapOfTextures.set(t.name, g_GL.createTexture());
+                    g_GL.bindTexture(g_GL.TEXTURE_2D, g_GL.mapOfTextures.get(t.name));
+                    g_GL.texImage2D(gl.TEXTURE_2D, 0, g_GL.RGBA, 1, 1, 0, g_GL.RGBA, g_GL.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
 
                     const image = new Image();
                     image.onload = () => {
@@ -67,7 +69,7 @@ function main() {
                 }
 
                 if (!parent) {
-                    g_GL.rootSpace = refFrame;
+                    g_GL.rootNode = refFrame;
                 }
             }
 
@@ -86,19 +88,19 @@ function main() {
         };
 
         g_GL.drawScene = function() {
-            function drawGraph(node) {
+            function drawModels(node) {
                 if (node) {
                     if (node instanceof Model) {
                         node.draw(true);
                     }
                     for (let child of node.children()) {
-                        drawGraph(child);
+                        drawModels(child);
                     }
                 }
             }
 
-            g_GL.clear(g_GL.COLOR_BUFFER_BIT);
-            drawGraph(g_GL.rootSpace);
+            g_GL.clear(g_GL.COLOR_BUFFER_BIT | g_GL.DEPTH_BUFFER_BIT);
+            drawModels(g_GL.rootNode);
 
             requestAnimationFrame(g_GL.drawScene);
         };
@@ -119,7 +121,7 @@ function main() {
             }
         });
 
-        g_GL.rootSpace = null;
+        g_GL.rootNode  = null;
         g_GL.cameras   = [];
         g_GL.cameraIdx = 0;
         g_GL.mirrorCam = null;
@@ -135,7 +137,14 @@ function main() {
             ['P3N3T2', new ShaderP3N3T2()]
         ]);
 
+        g_GL.enable(g_GL.DEPTH_TEST);
+        g_GL.enable(g_GL.BLEND);
+        g_GL.blendFunc(g_GL.SRC_ALPHA, g_GL.ONE_MINUS_SRC_ALPHA);
+
+        g_GL.clearStencil(1.0);
         g_GL.clearColor(0.392156899, 0.584313750, 0.929411829, 1.0);
+        g_GL.clearDepth(1.0);
+
         g_GL.loadScene('http://localhost:8888/json/goku.json');
         g_GL.drawScene();
 
