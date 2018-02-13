@@ -1,5 +1,5 @@
 class RefFrame {
-    constructor(parent = null) {
+    constructor(parent = null, node = null) {
         this.validSubtree = true;
         this.parent       = null;
         this.child        = null;
@@ -13,6 +13,10 @@ class RefFrame {
             this.next          = parent.child;
             this.parent.child  = this;
         }
+
+        if (node) {
+           this.modelMatrix = new Matrix4x4(node.modelMatrix); 
+        }
     }
 
     invalidateSubtree() {
@@ -21,7 +25,6 @@ class RefFrame {
                 i.invalidateSubtree();
             }
             this.validSubtree = false;
-            this.invalidateSubClass();
         }
     }
 
@@ -33,6 +36,10 @@ class RefFrame {
             }
             this.validSubtree = true;
         }
+    }
+
+    *children() {
+        for (let sibling = this.child; sibling !== null; sibling = sibling.next) { yield sibling; }
     }
 
     get localMatrix() {

@@ -3,12 +3,12 @@ const CAMERA_DEFAULT_F_CLIP_DISTANCE = 100.;
 const CAMERA_DEFAULT_FOV = 1.0;
 
 class Camera extends RefFrame {
-    constructor(parent, fieldOfView, aspectRatio, clipDistanceN, clipDistanceF) {
-        super(parent);
-        this.fieldOfView = fieldOfView;
-        this.aspectRatio = aspectRatio;
-        this.clipDistanceN = clipDistanceN;
-        this.clipDistanceF = clipDistanceF;
+    constructor(parent, node) {
+        super(parent, node);
+        this.fieldOfView = node.fieldOfView;
+        this.aspectRatio = node.aspectRatio;
+        this.clipDistanceN = node.clipDistanceN;
+        this.clipDistanceF = node.clipDistanceF;
         this.viewMatrix = null;
         this.projMatrix = null;
     }

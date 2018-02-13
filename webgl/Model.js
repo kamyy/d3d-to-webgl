@@ -1,11 +1,10 @@
 class Model extends RefFrame {
-    constructor(parent, jsonModel) {
-        super(parent);
-        
-        this.modelMatrix = new Matrix4x4(jsonModel.modelMatrix);
-        this.modelPieces = jsonModel.pieces;
+    constructor(parent, node) {
+        super(parent, node);
 
-        for (let piece of this.pieces) {
+        this.modelPieces = node.pieces;
+
+        for (let piece of this.modelPieces) {
             piece.material  = g_GL.mapOfMaterials.get(piece.material);
             piece.nrmBuffer = g_GL.createBuffer();
             piece.vtxBuffer = g_GL.createBuffer();
@@ -20,8 +19,8 @@ class Model extends RefFrame {
             g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, piece.idxBuffer);
             g_GL.bufferData(g_GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(piece.idxs), g_GL.STATIC_DRAW);
 
-            piece.nrmVtxCount = nrms.length;
-            piece.triVtxCount = idxs.length;
+            piece.nrmVtxCount = piece.nrms.length;
+            piece.triVtxCount = piece.idxs.length;
             piece.nrms = null;
             piece.vtxs = null;
             piece.idxs = null;

@@ -74,7 +74,7 @@ class Shader {
                 }
             }
 
-            g_GL.drawElements(g_GL_TRIANGLES, modelPiece.triVtxCount, g_GL.UNSIGNED_SHORT, 0);
+            g_GL.drawElements(g_GL.TRIANGLES, modelPiece.triVtxCount, g_GL.UNSIGNED_SHORT, 0);
         }
     }
 
@@ -86,19 +86,19 @@ class Shader {
 
         const loc1 = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
         if (loc1) {
-            modelViewMatrix = g_GL.activeCamera.modelMatrix.inverse().mul(model.modelMatrix);
+            let modelViewMatrix = g_GL.activeCamera.modelMatrix.inverse().mul(model.modelMatrix);
             g_GL.uniformMatrix4fv(loc1, false, modelViewMatrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
         }
 
         const loc2 = g_GL.getUniformLocation(this.program, 'u_camera_pos');
         if (loc2 && g_GL.activeCamera instanceof Camera && model instanceof Model) {
-            const pos = g_GL.activeCamera.map(g_origin, model);
+            const pos = g_GL.activeCamera.mapPos(g_origin, model);
             g_GL.uniform3f(loc2, pos.x, pos.y, pos.z);
         }
 
         const loc3 = g_GL.getUniformLocation(this.program, 'u_omniLS_pos');
         if (loc3 && g_GL.omniDirLS instanceof OmniDirLS && model instanceof Model) {
-            const pos = g_GL.omniDirLS.map(g_origin, model);
+            const pos = g_GL.omniDirLS.mapPos(g_origin, model);
             g_GL.uniform3f(loc3, pos.x, pos.y, pos.z);
         }
     }
