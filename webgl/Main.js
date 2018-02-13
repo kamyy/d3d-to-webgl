@@ -1,5 +1,8 @@
 let g_GL = null; // GL rendering context:
 
+// In this demo model, view and world space all use a right-handed coordinate system such that 
+// +ve x points right, +ve y points into the screen and +ve z points up.
+
 function main() {
     g_GL = document.getElementById('webgl').getContext("webgl");
     if (g_GL) {
@@ -10,7 +13,7 @@ function main() {
                 for (let t of textures) {
                     g_GL.mapOfTextures.set(t.name, g_GL.createTexture());
                     g_GL.bindTexture(g_GL.TEXTURE_2D, g_GL.mapOfTextures.get(t.name));
-                    g_GL.texImage2D(gl.TEXTURE_2D, 0, g_GL.RGBA, 1, 1, 0, g_GL.RGBA, g_GL.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+                    g_GL.texImage2D(g_GL.TEXTURE_2D, 0, g_GL.RGBA, 1, 1, 0, g_GL.RGBA, g_GL.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
 
                     const image = new Image();
                     image.onload = () => {
@@ -121,7 +124,6 @@ function main() {
             }
         });
 
-        g_GL.rootNode  = null;
         g_GL.cameras   = [];
         g_GL.cameraIdx = 0;
         g_GL.mirrorCam = null;

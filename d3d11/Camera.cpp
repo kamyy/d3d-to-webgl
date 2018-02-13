@@ -30,9 +30,20 @@ namespace d3d11demo {
                                                                  m_clipDistanceN,
                                                                  m_clipDistanceF);
         memcpy(&m_proj, &xm, sizeof(m_proj));
+        /*
+        flip y and z vertex coordinates to convert from RHS to LHS
+        for D3D by switching around rows 2 and 3
 
-        // flip y and z vertex coordinates to convert from RHS to LHS
-        // for D3D by switching around rows 2 and 3
+        |x y z 1| |1 0 0 0| = |x, z, y 1|
+                  |0 0 1 0|
+                  |0 1 0 0|
+                  |0 0 0 1|
+
+        |1 0 0 0| |a b c d| = | a b c d |
+        |0 0 1 0| |e f g h|   | i j k l |
+        |0 1 0 0| |i j k l|   | e f g h |
+        |0 0 0 1| |m n o p|   | m n o p |
+        */
         const float x = m_proj.m_21;
         const float y = m_proj.m_22;
         const float z = m_proj.m_23;
@@ -47,6 +58,8 @@ namespace d3d11demo {
         m_proj.m_34 = w;
 
         return m_proj;
+
+
     }
 
     const Matrix4x4 Camera::getViewProjMatrix() {

@@ -86,8 +86,8 @@ class Shader {
 
         const loc1 = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
         if (loc1) {
-            let modelViewMatrix = g_GL.activeCamera.modelMatrix.inverse().mul(model.modelMatrix);
-            g_GL.uniformMatrix4fv(loc1, false, modelViewMatrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
+            let modelViewProjMatrix = model.modelMatrix.mul(g_GL.activeCamera.viewProjMatrix);
+            g_GL.uniformMatrix4fv(loc1, false, modelViewProjMatrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
         }
 
         const loc2 = g_GL.getUniformLocation(this.program, 'u_camera_pos');
