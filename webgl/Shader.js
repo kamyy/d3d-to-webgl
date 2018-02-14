@@ -101,6 +101,13 @@ class Shader {
             const pos = g_GL.omniDirLS.mapPos(g_origin, model);
             g_GL.uniform3f(loc3, pos.x, pos.y, pos.z);
         }
+
+        const loc4 = g_GL.getUniformLocation(this.program, 'u_up_dir');
+        if (loc4 && model instanceof Model) {
+            const worldUp = new Vector1x4(0, 0, 1, 0);
+            const modelUp = worldUp.mul(model.modelMatrix.inverse());
+            g_GL.uniform3f(loc4, modelUp.x, modelUp.y, modelUp.z);
+        }
     }
 
     setUniformVariablesInFragShader(model, material) {
@@ -147,10 +154,17 @@ class Shader {
             g_GL.uniform1i(loc6, 0);
         }
 
-        const loc7 = g_GL.getUniformLocation(this.program, 'u_up_dir');
-        if (loc7 && model instanceof Model) {
+        const loc7 = g_GL.getUniformLocation(this.program, 'u_norm');
+        if (loc7 && material.textures[1]) {
+            g_GL.activeTexture(g_GL.TEXTURE1);
+            g_GL.bindTexture(g_GL.TEXTURE_2D, material.textures[1]);
+            g_GL.uniform1i(loc7, 1);
+        }
+
+        const loc8 = g_GL.getUniformLocation(this.program, 'u_up_dir');
+        if (loc8 && model instanceof Model) {
             const dir = g_up.mul(model.modelMatrix.inverse());
-            g_GL.uniform3f(loc7, dir.x, dir.y, dir.z);
+            g_GL.uniform3f(loc8, dir.x, dir.y, dir.z);
         }
     }
 }

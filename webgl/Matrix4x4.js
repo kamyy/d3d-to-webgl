@@ -21,7 +21,7 @@ const _44 = 15;
 class Matrix4x4 {
     constructor(elements) {
         if (!elements) {
-            this.m = Array.of(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+            this.m = Array.of(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         } else if (elements instanceof Matrix4x4) {
             this.m = Array.from(elements.m);
         } else if (Array.isArray(elements) && elements.length === 16) {
@@ -39,10 +39,10 @@ class Matrix4x4 {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
-            1.0,       0.0,        0.0, 0.0,
-            0.0, +cosTheta,  +sinTheta, 0.0,
-            0.0, -sinTheta,  +cosTheta, 0.0,
-            0.0,       0.0,        0.0, 1.0
+            1,         0,          0, 0,
+            0, +cosTheta,  +sinTheta, 0,
+            0, -sinTheta,  +cosTheta, 0,
+            0,         0,          0, 1
         ]);
     }
 
@@ -50,10 +50,10 @@ class Matrix4x4 {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
-            +cosTheta, 0.0, -sinTheta, 0.0,
-            0.0,       1.0,       0.0, 0.0,
-            +sinTheta, 0.0, +cosTheta, 0.0,
-            0.0,       0.0,       0.0, 1.0
+            +cosTheta, 0, -sinTheta, 0,
+            0,         1,         0, 0,
+            +sinTheta, 0, +cosTheta, 0,
+            0,         0,         0, 1
         ]);
     }
 
@@ -61,10 +61,10 @@ class Matrix4x4 {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
-            +cosTheta, +sinTheta, 0.0, 0.0,
-            -sinTheta, +cosTheta, 0.0, 0.0,
-                  0.0,       0.0, 1.0, 0.0,
-                  0.0,       0.0, 0.0, 1.0
+            +cosTheta, +sinTheta, 0, 0,
+            -sinTheta, +cosTheta, 0, 0,
+                    0,         0, 1, 0,
+                    0,         0, 0, 1
         ]);
     }
 
@@ -97,12 +97,12 @@ class Matrix4x4 {
 
     inverse() {
         return new Matrix4x4([
-            this.m[_11], this.m[_21], this.m[_31], 0.0,
-            this.m[_12], this.m[_22], this.m[_32], 0.0,
-            this.m[_13], this.m[_23], this.m[_33], 0.0,
+            this.m[_11], this.m[_21], this.m[_31], 0,
+            this.m[_12], this.m[_22], this.m[_32], 0,
+            this.m[_13], this.m[_23], this.m[_33], 0,
             -(this.m[_41] * this.m[_11] + this.m[_42] * this.m[_12] + this.m[_43] * this.m[_13]),
             -(this.m[_41] * this.m[_21] + this.m[_42] * this.m[_22] + this.m[_43] * this.m[_23]),
-            -(this.m[_41] * this.m[_31] + this.m[_42] * this.m[_32] + this.m[_43] * this.m[_33]), 1.0
+            -(this.m[_41] * this.m[_31] + this.m[_42] * this.m[_32] + this.m[_43] * this.m[_33]), 1
         ]);
     }
 

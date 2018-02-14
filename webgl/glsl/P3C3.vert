@@ -6,7 +6,7 @@ attribute vec4 a_col;
 varying vec4 v_col;
 
 void main() {
-    gl_Position = a_pos * u_model_view_proj_matrix;
+    gl_Position = u_model_view_proj_matrix * a_pos;
     v_col       = a_col;
 }
 

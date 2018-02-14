@@ -1,7 +1,13 @@
-let g_GL = null; // GL rendering context:
-
 // In this demo model, view and world space all use a right-handed coordinate system such that 
 // +ve x points right, +ve y points into the screen and +ve z points up.
+
+const DRAW_TARGET = Object.freeze({
+    MODEL:   Symbol("model"),
+    MIRROR:  Symbol("mirror"),
+    NORMALS: Symbol("normals")
+});
+
+let g_GL = null; // GL rendering context:
 
 function main() {
     g_GL = document.getElementById('webgl').getContext("webgl");
@@ -91,19 +97,30 @@ function main() {
         };
 
         g_GL.drawScene = function() {
-            function drawModels(node) {
+            function draw(node, drawTarget) {
                 if (node) {
                     if (node instanceof Model) {
-                        node.draw(true);
+                        switch(drawTarget) {
+                        case DRAW_TARGET.MODEL:
+                            node.drawModel();
+                            break;
+                        case DRAW_TARGET.MIRROR:
+                            node.drawMirror();
+                            break;
+                        case DRAW_TARGET.NORMALS:
+                            node.drawNormals();
+                            break;
+                        }
                     }
                     for (let child of node.children()) {
-                        drawModels(child);
+                        draw(child, drawTarget);
                     }
                 }
             }
 
             g_GL.clear(g_GL.COLOR_BUFFER_BIT | g_GL.DEPTH_BUFFER_BIT);
-            drawModels(g_GL.rootNode);
+            draw(g_GL.rootNode, DRAW_TARGET.MODEL);
+            draw(g_GL.rootNode, DRAW_TARGET.NORMALS);
 
             requestAnimationFrame(g_GL.drawScene);
         };
@@ -128,15 +145,16 @@ function main() {
         g_GL.cameraIdx = 0;
         g_GL.mirrorCam = null;
         g_GL.mirrorObj = null;
-        g_GL.ambientLS = new AmbientLS([0.25, 0.25, 0.25], [0.25, 0.25, 0.25]);
+        g_GL.ambientLS = new AmbientLS([0.15, 0.15, 0.15], [0.15, 0.15, 0.15]);
         g_GL.omniDirLS = null;
         g_GL.drawWirefrm = false;
         g_GL.drawNormals = false;
 
         g_GL.mapOfShaders = new Map([
-            ['P3C4',   new ShaderP3C4()], 
-            ['P3N3',   new ShaderP3N3()], 
-            ['P3N3T2', new ShaderP3N3T2()]
+            ['P3C3',     new ShaderP3C3()], 
+            ['P3N3',     new ShaderP3N3()], 
+            ['P3N3T2',   new ShaderP3N3T2()],
+            ['P3N3B3T2', new ShaderP3N3B3T2()]
         ]);
 
         g_GL.enable(g_GL.DEPTH_TEST);
