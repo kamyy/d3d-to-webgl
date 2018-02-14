@@ -8,7 +8,7 @@ class ShaderP3N3B3T2 extends Shader {
     }
 }
 
-ShaderP3N3B3T2.vertexAttributeDescs = [ 
+ShaderP3N3B3T2.vertexAttributeDescs = Object.freeze([ 
     {   attrib: 'a_pos',
         length: 3,
         stride: 44,
@@ -29,4 +29,4 @@ ShaderP3N3B3T2.vertexAttributeDescs = [
         stride: 44,
         offset: 36
     }
-];
+]);
