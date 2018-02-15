@@ -69,6 +69,7 @@ function main() {
                     case 'MirrorCamera':
                         refFrame = new Camera(parent, node);
                         g_GL.mirrorCam = refFrame; 
+                        break;
                     case 'Model':
                         refFrame = new Model(parent, node); 
                         break;
