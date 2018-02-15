@@ -1,11 +1,63 @@
-// In this demo model, view and world space all use a right-handed coordinate system such that 
+// Model, view and world space all use a right-handed coordinate system such that 
 // +ve x points right, +ve y points into the screen and +ve z points up.
 
 let g_GL = null; // GL rendering context:
 
 function main() {
-    g_GL = document.getElementById('webgl').getContext("webgl");
+    const canvas = document.getElementById('webgl');
+
+    g_GL = canvas.getContext("webgl");
     if (g_GL) {
+        let buttonDown = false;
+        let lx = 0;
+        let ly = 0;
+        
+        canvas.onmousedown = function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX;
+            const y = event.clientY;
+
+            if (event.button === 0 && x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
+                buttonDown = true; 
+                lx = x; 
+                ly = y;
+            }
+        };
+
+        window.onmousemove = function(event) {
+            const TXYZ_SCALAR = 0.01;
+            const RXYZ_SCALAR = 0.25;
+            const x = event.clientX;
+            const y = event.clientY;
+
+            if (buttonDown && (x != lx || y != ly)) {
+                const camera = g_GL.activeCamera;
+                const target = g_GL.activeCamera.parent;
+
+                if (event.ctrlKey) {
+                    target.rotateZ(degreesToRadians(lx - x) * RXYZ_SCALAR); // yaw camera target around it's own z-axis
+                    camera.rotateX(degreesToRadians(ly - y) * RXYZ_SCALAR, target); // pitch around camera target's x-axis
+
+                } else if (event.shiftKey) {
+                    camera.translate(new Vector1x4(0, (x - lx) * TXYZ_SCALAR, 0));
+                    
+                } else {
+                    const dx = (lx - x) * TXYZ_SCALAR;
+                    const dz = (y - ly) * TXYZ_SCALAR;
+                    const dv = camera.mapPos(new Vector1x4(dx, 0, dz, 0), target);
+                    target.translate(dv) // move target along own axes
+
+                }
+                lx = x;
+                ly = y;
+            }
+        };
+
+        window.onmouseup = function(event) {
+            if (event.button === 0) {
+                buttonDown = false;
+            }
+        };
 
         const DRAW = Object.freeze({
             NORMAL: Symbol("normal"),
@@ -137,7 +189,7 @@ function main() {
                                 let piece = obj.piece;
                                 piece.material.shader.drawTriangles(model, piece);
                             }
-                            g_GL.alphaPieces.clear();
+                            g_GL.alphaPieces.length = 0;
                             break;
 
                         }
@@ -146,10 +198,10 @@ function main() {
             }
 
             g_GL.clear(g_GL.COLOR_BUFFER_BIT | g_GL.DEPTH_BUFFER_BIT);
-            draw(g_GL.rootNode, DRAW_TARGET.MODEL);
+            draw(g_GL.rootNode, DRAW.PIECES);
 
             if (g_GL.drawNormals) {
-                draw(g_GL.rootNode, DRAW_TARGET.NORMALS);
+                draw(g_GL.rootNode, DRAW.NORMALS);
             }
 
             requestAnimationFrame(g_GL.drawScene);
@@ -171,7 +223,7 @@ function main() {
             }
         });
 
-        g_GL.cameras   = [];
+        g_GL.cameras = [];
         g_GL.cameraIdx = 0;
         g_GL.mirrorCam = null;
         g_GL.mirrorObj = null;
@@ -181,12 +233,12 @@ function main() {
         g_GL.drawWirefrm = false;
         g_GL.drawNormals = false;
 
-        g_GL.mapOfShaders = new Map([
+        g_GL.mapOfShaders = Object.freeze(new Map([
             ['P3C3',     new ShaderP3C3()], 
             ['P3N3',     new ShaderP3N3()], 
             ['P3N3T2',   new ShaderP3N3T2()],
             ['P3N3B3T2', new ShaderP3N3B3T2()]
-        ]);
+        ]));
 
         g_GL.depthFunc(g_GL.LESS);
         g_GL.enable(g_GL.DEPTH_TEST);
