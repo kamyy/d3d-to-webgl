@@ -1,11 +1,15 @@
 class Model extends RefFrame {
     constructor(parent, node) {
         super(parent, node);
+        this._floor = false;
 
         if (node.hasOwnProperty('pieces')) {
             this.modelPieces = node.pieces;
             for (let piece of this.modelPieces) {
                 piece.material  = g_GL.mapOfMaterials.get(piece.material);
+                if (piece.material.name === 'floor') {
+                    this._floor = true;
+                }
                 piece.nrmBuffer = g_GL.createBuffer();
                 piece.vtxBuffer = g_GL.createBuffer();
                 piece.idxBuffer = g_GL.createBuffer();
@@ -30,26 +34,24 @@ class Model extends RefFrame {
         }
     }
 
-    drawModel() {
-        for (let piece of this.modelPieces) {
-            if (piece.material.isTranslucent) {
-                piece.material.shader.drawTriangles(this, piece);
-            } else {
-                piece.material.shader.drawTriangles(this, piece);
-            }
-        }
-    }
-    
-    drawMirror() {
-        for (let piece of this.modelPieces) {
-            piece.material.shader.drawTriangles(this, piece);
-        }
+    get isFloor() {
+        return _floor;
     }
 
     drawNormals() {
         const shader = g_GL.mapOfShaders.get('P3C3');
         for (let piece of this.modelPieces) {
             shader.drawNormals(this, piece);
+        }
+    }
+
+    drawPieces(forReflection) {
+        for (let piece of this.modelPieces) {
+            if (!forReflection && piece.material.isTranslucent) {
+                g_GL.alphaPieces.push({model:this, piece:piece});
+            } else {
+                piece.material.shader.drawTriangles(this, piece);
+            }
         }
     }
 }

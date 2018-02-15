@@ -1,17 +1,18 @@
 // In this demo model, view and world space all use a right-handed coordinate system such that 
 // +ve x points right, +ve y points into the screen and +ve z points up.
 
-const DRAW_TARGET = Object.freeze({
-    MODEL:   Symbol("model"),
-    MIRROR:  Symbol("mirror"),
-    NORMALS: Symbol("normals")
-});
-
 let g_GL = null; // GL rendering context:
 
 function main() {
     g_GL = document.getElementById('webgl').getContext("webgl");
     if (g_GL) {
+
+        const DRAW = Object.freeze({
+            NORMAL: Symbol("normal"),
+            MIRROR: Symbol("mirror"),
+            PIECES: Symbol("pieces")
+        });
+
         g_GL.loadScene = function(url) {
             function initTextures(textures) {
                 g_GL.mapOfTextures = new Map();
@@ -72,6 +73,9 @@ function main() {
                         break;
                     case 'Model':
                         refFrame = new Model(parent, node); 
+                        if (refFrame.floor) {
+                           g_GL.mirrorObj = refFrame; 
+                        }
                         break;
                 }
 
@@ -81,7 +85,7 @@ function main() {
                     }
                 }
 
-                if (!parent) {
+                if (!parent && refFrame) {
                     g_GL.rootNode = refFrame;
                 }
             }
@@ -101,30 +105,52 @@ function main() {
         };
 
         g_GL.drawScene = function() {
-            function draw(node, drawTarget) {
+            function draw(node, type) {
                 if (node) {
-                    if (node instanceof Model) {
-                        switch(drawTarget) {
-                        case DRAW_TARGET.MODEL:
-                            node.drawModel();
+                    if (node instanceof Model && !node.mirror) {
+                        switch (type) {
+                        case DRAW.NORMAL:
+                            node.drawNormals(); // draw model pieces in scene graph for normals in vertices
                             break;
-                        case DRAW_TARGET.MIRROR:
-                            node.drawMirror();
+
+                        case DRAW.MIRROR:
+                            node.drawPieces(1); // draw model pieces in scene graph for reflection
                             break;
-                        case DRAW_TARGET.NORMALS:
-                            node.drawNormals();
+
+                        case DRAW.PIECES:
+                            node.drawPieces(0); // draw model pieces in scene graph
                             break;
                         }
                     }
                     for (let child of node.children()) {
-                        draw(child, drawTarget);
+                        draw(child, type);
+                    }
+
+                    if (node === g_GL.rootNode) {
+                        switch (type) {
+                        case DRAW.MIRROR: // last step draw hardwood floor that fakes a reflection 
+                            break;
+
+                        case DRAW.PIECES: // last step draw translucent model pieces back to front
+                            for (let obj of g_GL.alphaPieces) {
+                                let model = obj.model;
+                                let piece = obj.piece;
+                                piece.material.shader.drawTriangles(model, piece);
+                            }
+                            g_GL.alphaPieces.clear();
+                            break;
+
+                        }
                     }
                 }
             }
 
             g_GL.clear(g_GL.COLOR_BUFFER_BIT | g_GL.DEPTH_BUFFER_BIT);
             draw(g_GL.rootNode, DRAW_TARGET.MODEL);
-            //draw(g_GL.rootNode, DRAW_TARGET.NORMALS);
+
+            if (g_GL.drawNormals) {
+                draw(g_GL.rootNode, DRAW_TARGET.NORMALS);
+            }
 
             requestAnimationFrame(g_GL.drawScene);
         };
@@ -132,7 +158,7 @@ function main() {
         Object.defineProperties(g_GL, {
             activeCamera: {
                 get: function() { 
-                    return g_GL.cameras[g_GL.cameraIdx + 2];
+                    return g_GL.cameras[g_GL.cameraIdx];
                 } 
             },
             activeCamIdx: {
@@ -151,6 +177,7 @@ function main() {
         g_GL.mirrorObj = null;
         g_GL.ambientLS = new AmbientLS([0.15, 0.15, 0.15], [0.15, 0.15, 0.15]);
         g_GL.omniDirLS = null;
+        g_GL.alphaPieces = [];
         g_GL.drawWirefrm = false;
         g_GL.drawNormals = false;
 
