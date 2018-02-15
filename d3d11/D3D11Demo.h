@@ -140,6 +140,7 @@ namespace d3d11demo {
         shared_ptr<Camera> getCamera(uint32_t i) const;
         bool               setActiveCamera(uint32_t i);
         shared_ptr<Camera> getActiveCamera() const;
+        shared_ptr<Camera> getMirrorCamera() const;
 
         shared_ptr<AmbientLS> getAmbientLS() const;
         shared_ptr<OmniDirLS> getOmniDirLS() const;

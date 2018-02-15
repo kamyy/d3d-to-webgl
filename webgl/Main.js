@@ -66,6 +66,9 @@ function main() {
                         refFrame = new Camera(parent, node);
                         g_GL.cameras.push(refFrame); 
                         break;
+                    case 'MirrorCamera':
+                        refFrame = new Camera(parent, node);
+                        g_GL.mirrorCam = refFrame; 
                     case 'Model':
                         refFrame = new Model(parent, node); 
                         break;
@@ -120,7 +123,7 @@ function main() {
 
             g_GL.clear(g_GL.COLOR_BUFFER_BIT | g_GL.DEPTH_BUFFER_BIT);
             draw(g_GL.rootNode, DRAW_TARGET.MODEL);
-            draw(g_GL.rootNode, DRAW_TARGET.NORMALS);
+            //draw(g_GL.rootNode, DRAW_TARGET.NORMALS);
 
             requestAnimationFrame(g_GL.drawScene);
         };
@@ -128,7 +131,7 @@ function main() {
         Object.defineProperties(g_GL, {
             activeCamera: {
                 get: function() { 
-                    return g_GL.cameras[g_GL.cameraIdx];
+                    return g_GL.cameras[g_GL.cameraIdx + 2];
                 } 
             },
             activeCamIdx: {
@@ -157,15 +160,19 @@ function main() {
             ['P3N3B3T2', new ShaderP3N3B3T2()]
         ]);
 
+        g_GL.depthFunc(g_GL.LESS);
         g_GL.enable(g_GL.DEPTH_TEST);
+        g_GL.enable(g_GL.CULL_FACE);
+        g_GL.cullFace(g_GL.BACK);
+
         g_GL.enable(g_GL.BLEND);
         g_GL.blendFunc(g_GL.SRC_ALPHA, g_GL.ONE_MINUS_SRC_ALPHA);
 
-        g_GL.clearStencil(1.0);
+        //g_GL.clearStencil(1.0);
         g_GL.clearColor(0.392156899, 0.584313750, 0.929411829, 1.0);
         g_GL.clearDepth(1.0);
 
-        g_GL.loadScene('http://localhost:8888/json/goku.json');
+        g_GL.loadScene('http://localhost:8888/json/hardwood.json');
         g_GL.drawScene();
 
     } else {

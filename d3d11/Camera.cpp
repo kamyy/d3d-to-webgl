@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "D3D11Demo.h"
 #include "Camera.h"
 
 namespace d3d11demo {
@@ -69,8 +70,10 @@ namespace d3d11demo {
     json Camera::toJSON() const {
         const Matrix4x4& m = getModelMatrix();
 
+        const char* kindOfCamera = (this == g_app.getMirrorCamera().get()) ? "MirrorCamera" : "Camera";
+
         json node = {
-            { "nodeType", "Camera" },
+            { "nodeType", kindOfCamera },
             { "modelMatrix", { m.m_11, m.m_12, m.m_13, m.m_14, m.m_21, m.m_22, m.m_23, m.m_24, m.m_31, m.m_32, m.m_33, m.m_34, m.m_41, m.m_42, m.m_43, m.m_44 } },
             { "fieldOfView", m_fieldOfView },
             { "aspectRatio", m_aspectRatio },

@@ -769,6 +769,10 @@ namespace d3d11demo {
         return m_activeCamera;
     }
 
+    shared_ptr<Camera> D3D11DemoCWinApp::getMirrorCamera() const {
+        return m_mirrorCamera;
+    }
+
     shared_ptr<AmbientLS> D3D11DemoCWinApp::getAmbientLS() const {
         return m_ambientLS;
     }
