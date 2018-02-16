@@ -128,7 +128,7 @@ class Matrix4x4 {
                 this.m[_11] * sx, this.m[_12] * sy, this.m[_13] * sz, this.m[_14],
                 this.m[_21] * sx, this.m[_22] * sy, this.m[_23] * sz, this.m[_24],
                 this.m[_31] * sx, this.m[_32] * sy, this.m[_33] * sz, this.m[_34],
-                this.m[_41] + sx, this.m[_42] * sy, this.m[_43] * sz, this.m[_44]
+                this.m[_41] * sx, this.m[_42] * sy, this.m[_43] * sz, this.m[_44]
             ]);
         }
         throw new Error('RHS argument not a Matrix4x4!');

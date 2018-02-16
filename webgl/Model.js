@@ -34,8 +34,8 @@ class Model extends RefFrame {
         }
     }
 
-    get isFloor() {
-        return _floor;
+    isFloor() {
+        return this._floor;
     }
 
     drawNormals() {
