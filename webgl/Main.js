@@ -6,7 +6,12 @@ let g_GL = null; // GL rendering context:
 function main() {
     const canvas = document.getElementById('webgl');
 
-    g_GL = canvas.getContext("webgl");
+    g_GL = canvas.getContext("webgl", {
+        depth: true,
+        alpha: false,
+        stencil: true
+    });
+
     if (g_GL) {
         let buttonDown = false;
         let lx = 0;
@@ -125,7 +130,7 @@ function main() {
                         break;
                     case 'Model':
                         refFrame = new Model(parent, node); 
-                        if (refFrame.floor) {
+                        if (refFrame.isFloor()) {
                            g_GL.mirrorObj = refFrame; 
                         }
                         break;
@@ -159,50 +164,84 @@ function main() {
         g_GL.drawScene = function() {
             function draw(node, type) {
                 if (node) {
-                    if (node instanceof Model && !node.mirror) {
+                    if (node instanceof Model) {
                         switch (type) {
-                        case DRAW.NORMAL:
-                            node.drawNormals(); // draw model pieces in scene graph for normals in vertices
-                            break;
+                            case DRAW.NORMAL:
+                                node.drawNormals(); // draw model pieces in scene graph for normals in vertices
+                                break;
 
-                        case DRAW.MIRROR:
-                            node.drawPieces(1); // draw model pieces in scene graph for reflection
-                            break;
+                            case DRAW.MIRROR:
+                                if (node !== g_GL.mirrorObj) {
+                                    node.drawPieces(1); // draw model pieces in scene graph for reflection
+                                }
+                                break;
 
-                        case DRAW.PIECES:
-                            node.drawPieces(0); // draw model pieces in scene graph
-                            break;
+                            case DRAW.PIECES:
+                                if (node !== g_GL.mirrorObj) {
+                                    node.drawPieces(0); // draw model pieces in scene graph
+                                }
+                                break;
                         }
                     }
+
                     for (let child of node.children()) {
-                        draw(child, type);
+                        draw(child, type); // recurse
                     }
 
-                    if (node === g_GL.rootNode) {
-                        switch (type) {
-                        case DRAW.MIRROR: // last step draw hardwood floor that fakes a reflection 
-                            break;
-
-                        case DRAW.PIECES: // last step draw translucent model pieces back to front
-                            for (let obj of g_GL.alphaPieces) {
-                                let model = obj.model;
-                                let piece = obj.piece;
-                                piece.material.shader.drawTriangles(model, piece);
-                            }
-                            g_GL.alphaPieces.length = 0;
-                            break;
-
+                    if (node === g_GL.rootNode && type === DRAW.PIECES) {
+                        for (let obj of g_GL.alphaPieces) { // draw translucent pieces
+                            let model = obj.model;
+                            let piece = obj.piece;
+                            piece.material.shader.drawTriangles(model, piece);
                         }
+                        g_GL.alphaPieces.length = 0;
                     }
                 }
             }
 
-            g_GL.clear(g_GL.COLOR_BUFFER_BIT | g_GL.DEPTH_BUFFER_BIT);
-            draw(g_GL.rootNode, DRAW.PIECES);
+            g_GL.clear(g_GL.COLOR_BUFFER_BIT | g_GL.DEPTH_BUFFER_BIT | g_GL.STENCIL_BUFFER_BIT);
+            if (g_GL.mirrorObj) {
+                g_GL.disable(g_GL.BLEND); // disable alpha blending
 
-            if (g_GL.drawNormals) {
-                draw(g_GL.rootNode, DRAW.NORMALS);
+                g_GL.enable(g_GL.STENCIL_TEST);    // enable stencil buffer
+                g_GL.stencilFunc(g_GL.ALWAYS,1,1); // stencil test always passes
+                g_GL.stencilOp(g_GL.KEEP,          // if stencil test fail do nothing
+                               g_GL.INCR,          // if stencil test pass depth test fail write 1 to stencil
+                               g_GL.INCR);         // if stencil test pass depth test pass write 1 to stencil
+                g_GL.depthMask(false);                      // disable depth buffer writes
+                g_GL.colorMask(false, false, false, false); // disable color buffer writes
+                
+                g_GL.mirrorObj.drawPieces(1);      // draw mirror into stencil
+
+                g_GL.cullFace(g_GL.FRONT);         // cull CW triangles
+                g_GL.stencilFunc(g_GL.EQUAL,1,1);  // stencil test pass if stencil == 1
+                g_GL.stencilOp(g_GL.KEEP,          // if stencil test fail do nothing
+                               g_GL.KEEP,          // if stencil test pass depth test fail do nothing
+                               g_GL.KEEP);         // if stencil test pass depth test pass do nothing
+                g_GL.depthMask(true);                   // enable depth buffer writes
+                g_GL.colorMask(true, true, true, true); // enable color buffer writes
+
+                // generate reflection matrix using mirror model matrix and scaling by -1 in z-axis 
+                let m = new Matrix4x4(g_GL.activeCamera.modelMatrix); 
+                m = m.mul(g_GL.mirrorObj.modelMatrix.inverse()); // world space to mirror space
+                m = m.postCatSxyz(1, 1, -1);                     // to mirror reflection space
+                m = m.mul(g_GL.mirrorObj.modelMatrix);           // to world space xform
+
+                const savedCamera = g_GL.activeCamera; // restore this after rendering reflection
+                g_GL.activeCamera = g_GL.mirrorCam;    // make mirror camera rendering camera
+                g_GL.activeCamera.modelMatrix = m;     // apply mirror xform to mirror camera
+
+                draw(g_GL.rootNode, DRAW.MIRROR);   // draw reflection of model pieces into color buffer
+                
+                g_GL.clear(g_GL.DEPTH_BUFFER_BIT);  // clear depth buffer
+                g_GL.activeCamera = savedCamera;    // restore default camera
+                g_GL.disable(g_GL.STENCIL_TEST);    // disable stencil buffer
+                g_GL.cullFace(g_GL.BACK);           // cull CCW triangles
+                g_GL.enable(g_GL.BLEND);            // enable alpha blending
+
+                g_GL.mirrorObj.drawPieces(1);       // draw mirror into color buffer
             }
+            draw(g_GL.rootNode, DRAW.PIECES);
 
             requestAnimationFrame(g_GL.drawScene);
         };
@@ -211,7 +250,10 @@ function main() {
             activeCamera: {
                 get: function() { 
                     return g_GL.cameras[g_GL.cameraIdx];
-                } 
+                },
+                set: function(cam) {
+                    g_GL.cameras[g_GL.cameraIdx] = cam;
+                }
             },
             activeCamIdx: {
                 get: function() { 
@@ -240,17 +282,15 @@ function main() {
             ['P3N3B3T2', new ShaderP3N3B3T2()]
         ]));
 
-        g_GL.depthFunc(g_GL.LESS);
-        g_GL.enable(g_GL.DEPTH_TEST);
-        g_GL.enable(g_GL.CULL_FACE);
-        g_GL.cullFace(g_GL.BACK);
-
-        g_GL.enable(g_GL.BLEND);
+        g_GL.depthFunc(g_GL.LESS);    // less than depth test
+        g_GL.enable(g_GL.DEPTH_TEST); // enable depth testing
+        g_GL.enable(g_GL.CULL_FACE);  // enable backface culling
+        g_GL.enable(g_GL.BLEND);      // enable alpha blending
         g_GL.blendFunc(g_GL.SRC_ALPHA, g_GL.ONE_MINUS_SRC_ALPHA);
 
-        //g_GL.clearStencil(1.0);
-        g_GL.clearColor(0.392156899, 0.584313750, 0.929411829, 1.0);
-        g_GL.clearDepth(1.0);
+        g_GL.clearColor(0.392156899, 0.584313750, 0.929411829, 1.0); // cornflower blue
+        g_GL.clearDepth(1.0); // depth buffer clear value
+        g_GL.clearStencil(0); // stencil buffer clear value 
 
         g_GL.loadScene('http://localhost:8888/json/hardwood.json');
         g_GL.drawScene();
