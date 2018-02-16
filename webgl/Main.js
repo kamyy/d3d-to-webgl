@@ -39,7 +39,7 @@ function main() {
                 const camera = g_GL.activeCamera;
                 const target = g_GL.activeCamera.parent;
 
-                if (event.ctrlKey) {
+                if (event.altKey) {
                     target.rotateZ(degreesToRadians(lx - x) * RXYZ_SCALAR); // yaw camera target around it's own z-axis
                     camera.rotateX(degreesToRadians(ly - y) * RXYZ_SCALAR, target); // pitch around camera target's x-axis
 
