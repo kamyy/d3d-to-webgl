@@ -26,6 +26,10 @@ class ShaderP3C3 extends Shader {
     get vertexAttributeDescs() {
         return ShaderP3C3.vertexAttributeDescs;
     }
+
+    get vertexElementCount() {
+        return 6;
+    }
 }
 
 ShaderP3C3.vertexAttributeDescs = Object.freeze([ 

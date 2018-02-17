@@ -6,6 +6,7 @@ class Shader {
         this.vs = null;
         this.fs = null;
         this.program = null;
+        this.edgeBuffer = g_GL.createBuffer();
 
         const initProgram = () => {
             const program = g_GL.createProgram();
@@ -76,6 +77,50 @@ class Shader {
 
             g_GL.drawElements(g_GL.TRIANGLES, modelPiece.triVtxCount, g_GL.UNSIGNED_SHORT, 0);
         }
+    }
+
+    drawTriangleEdges(model, modelPiece) {
+        const camPosition = g_GL.activeCamera.mapPos(g_origin, model); // map camera position into model space
+        const edgeIndices = []; // each pair of indices represents a triangle edge
+
+        const idxs = modelPiece.idxs; // array of indices, every three indices represents a triangle
+        const vtxs = modelPiece.vtxs; // array of vertices, there are several contignuous numbers in a vertex 
+
+        for (let i = 0; i < idxs.length; i += 3) {
+            let j = idxs[i] * this.vertexElementCount; // index to 1st element of 1st vertex of triangle
+            const vx = camPosition.x - vtxs[j++];
+            const vy = camPosition.y - vtxs[j++];
+            const vz = camPosition.z - vtxs[j++];
+            const nx = vtxs[j++];
+            const ny = vtxs[j++];
+            const nz = vtxs[j];
+
+            if (vx * nx + vy * ny + vz * nz > 0) { // back face cull using 1st vertex of triangle
+                edgeIndices.push(idxs[i]);      // 1st edge of triangle
+                edgeIndices.push(idxs[i + 1]);
+                edgeIndices.push(idxs[i + 1]);  // 2nd edge of triangle
+                edgeIndices.push(idxs[i + 2]);
+                edgeIndices.push(idxs[i + 2]);  // 3rd edge of triangle
+                edgeIndices.push(idxs[i]);
+            }
+        }
+
+        g_GL.useProgram(this.program);
+        this.setUniformVariablesInVertShader(model);
+        this.setUniformVariablesInFragShader(model, modelPiece.material);
+        g_GL.bindBuffer(g_GL.ARRAY_BUFFER,         modelPiece.vtxBuffer);
+        g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, this.edgeBuffer);
+        g_GL.bufferData(g_GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(edgeIndices), g_GL.STATIC_DRAW);
+
+        for (let desc of this.vertexAttributeDescs) {
+            const loc = g_GL.getAttribLocation(this.program, desc.attrib);
+            if (loc !== -1) {
+                g_GL.vertexAttribPointer(loc, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
+                g_GL.enableVertexAttribArray(loc);
+            }
+        }
+
+        g_GL.drawElements(g_GL.LINES, edgeIndices.length, g_GL.UNSIGNED_SHORT, 0);
     }
 
     setUniformVariablesInVertShader(model) {

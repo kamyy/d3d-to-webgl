@@ -6,7 +6,7 @@ class Model extends RefFrame {
         if (node.hasOwnProperty('pieces')) {
             this.modelPieces = node.pieces;
             for (let piece of this.modelPieces) {
-                piece.material  = g_GL.mapOfMaterials.get(piece.material);
+                piece.material = g_GL.mapOfMaterials.get(piece.material);
                 if (piece.material.name === 'floor') {
                     this._floor = true;
                 }
@@ -23,11 +23,8 @@ class Model extends RefFrame {
                 g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, piece.idxBuffer);
                 g_GL.bufferData(g_GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(piece.idxs), g_GL.STATIC_DRAW);
 
-                piece.nrmVtxCount = piece.nrms.length / ShaderP3C3.vertexAttributeDescs[0].stride;
+                piece.nrmVtxCount = piece.nrms.length / g_GL.mapOfShaders.get('P3C3').vertexElementCount;
                 piece.triVtxCount = piece.idxs.length;
-                piece.nrms = null;
-                piece.vtxs = null;
-                piece.idxs = null;
             };
         } else {
             this.modelPieces = [];
@@ -52,6 +49,12 @@ class Model extends RefFrame {
             } else {
                 piece.material.shader.drawTriangles(this, piece);
             }
+        }
+    }
+
+    drawEdges() {
+        for (let piece of this.modelPieces) {
+            piece.material.shader.drawTriangleEdges(this, piece);
         }
     }
 }

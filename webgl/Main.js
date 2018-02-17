@@ -65,7 +65,6 @@ function main() {
         };
 
         const DRAW = Object.freeze({
-            NORMAL: Symbol("normal"),
             MIRROR: Symbol("mirror"),
             PIECES: Symbol("pieces")
         });
@@ -164,21 +163,16 @@ function main() {
         g_GL.drawScene = function() {
             function draw(node, type) {
                 if (node) {
-                    if (node instanceof Model) {
+                    if (node instanceof Model && node != g_GL.mirrorObj) {
                         switch (type) {
-                            case DRAW.NORMAL:
-                                node.drawNormals(); // draw model pieces in scene graph for normals in vertices
-                                break;
-
                             case DRAW.MIRROR:
-                                if (node !== g_GL.mirrorObj) {
-                                    node.drawPieces(1); // draw model pieces in scene graph for reflection
-                                }
+                                g_GL.drawWirefrm ? node.drawEdges() : node.drawPieces(1);
                                 break;
 
                             case DRAW.PIECES:
-                                if (node !== g_GL.mirrorObj) {
-                                    node.drawPieces(0); // draw model pieces in scene graph
+                                g_GL.drawWirefrm ? node.drawEdges() : node.drawPieces(0);
+                                if (g_GL.drawNormals) {
+                                    node.drawNormals();
                                 }
                                 break;
                         }
@@ -239,7 +233,8 @@ function main() {
                 g_GL.cullFace(g_GL.BACK);           // cull CCW triangles
                 g_GL.enable(g_GL.BLEND);            // enable alpha blending
 
-                g_GL.mirrorObj.drawPieces(1);       // draw mirror into color buffer
+                // draw mirror into color buffer
+                g_GL.drawWirefrm ? g_GL.mirrorObj.drawEdges() : g_GL.mirrorObj.drawPieces(1);
             }
             draw(g_GL.rootNode, DRAW.PIECES);
 
