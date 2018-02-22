@@ -1,4 +1,7 @@
-class Model extends RefFrame {
+import RefFrame from './RefFrame.js';
+import g_GL from './Main.js';
+
+export default class extends RefFrame {
     constructor(parent, node) {
         super(parent, node);
         this._floor = false;

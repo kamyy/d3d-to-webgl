@@ -1,4 +1,6 @@
-class Vector1x4 {
+import Matrix4x4, {_11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44 } from './Matrix4x4.js';
+
+export default class Vector1x4 {
     constructor(x = 0.0, y = 0.0, z = 0.0, w = 1.0) {
         this.x = x;
         this.y = y;

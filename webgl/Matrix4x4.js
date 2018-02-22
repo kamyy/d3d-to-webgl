@@ -1,24 +1,24 @@
-const _11 = 0; 
-const _12 = 1; 
-const _13 = 2; 
-const _14 = 3;
+export const _11 = 0; 
+export const _12 = 1; 
+export const _13 = 2; 
+export const _14 = 3;
 
-const _21 = 4; 
-const _22 = 5; 
-const _23 = 6; 
-const _24 = 7;
+export const _21 = 4; 
+export const _22 = 5; 
+export const _23 = 6; 
+export const _24 = 7;
 
-const _31 = 8; 
-const _32 = 9; 
-const _33 = 10; 
-const _34 = 11;
+export const _31 = 8; 
+export const _32 = 9; 
+export const _33 = 10; 
+export const _34 = 11;
 
-const _41 = 12; 
-const _42 = 13; 
-const _43 = 14; 
-const _44 = 15;
+export const _41 = 12; 
+export const _42 = 13; 
+export const _43 = 14; 
+export const _44 = 15;
 
-class Matrix4x4 {
+export default class Matrix4x4 {
     constructor(elements) {
         if (!elements) {
             this.m = Array.of(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);

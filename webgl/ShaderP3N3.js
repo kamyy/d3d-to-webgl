@@ -1,4 +1,6 @@
-class ShaderP3N3 extends Shader {
+import Shader from './Shader.js';
+
+export default class ShaderP3N3 extends Shader {
     constructor() {
         super('http://localhost:8888/glsl/P3N3.vert', 'http://localhost:8888/glsl/P3N3.frag');
     }

@@ -1,4 +1,7 @@
-class RefFrame {
+import Matrix4x4, {_11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44 } from './Matrix4x4.js';
+import Vector1x4 from './Vector1x4.js';
+
+export default class RefFrame {
     constructor(parent = null, node = null) {
         this.validSubtree = true;
         this.parent       = null;

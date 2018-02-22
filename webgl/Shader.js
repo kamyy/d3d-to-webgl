@@ -1,7 +1,14 @@
+import Vector1x4 from './Vector1x4.js';
+import AmbientLS from './AmbientLS.js';
+import OmniDirLS from './OmniDirLS.js';
+import Camera from './Camera.js';
+import Model from './Model.js';
+import g_GL from './Main.js';
+
 const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
 const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
 
-class Shader {
+export default class Shader {
     constructor(vertShaderURL, fragShaderURL) {
         this.vs = null;
         this.fs = null;

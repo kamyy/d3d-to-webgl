@@ -1,4 +1,7 @@
-class ShaderP3C3 extends Shader { 
+import Shader from './Shader.js';
+import g_GL from './Main.js';
+
+export default class ShaderP3C3 extends Shader { 
     constructor() {
         super('http://localhost:8888/glsl/P3C3.vert', 'http://localhost:8888/glsl/P3C3.frag');
     }

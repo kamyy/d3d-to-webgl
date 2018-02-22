@@ -1,4 +1,7 @@
-class Camera extends RefFrame {
+import Matrix4x4 from './Matrix4x4.js';
+import RefFrame from './RefFrame.js';
+
+export default class Camera extends RefFrame {
     constructor(parent, node) {
         super(parent, node);
         this._fieldOfView = node.fieldOfView;
@@ -54,3 +57,4 @@ class Camera extends RefFrame {
         return this._viewProjMatrix;
     }
 }
+
