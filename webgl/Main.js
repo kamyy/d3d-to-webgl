@@ -13,6 +13,8 @@ import ShaderP3N3 from './ShaderP3N3.js';
 import ShaderP3N3T2 from './ShaderP3N3T2.js';
 import ShaderP3N3B3T2 from './ShaderP3N3B3T2.js';
 
+import { degreesToRadians } from './Math.js';
+
 const canvas = document.getElementById('webgl');
 
 const g_GL = canvas.getContext("webgl", {
