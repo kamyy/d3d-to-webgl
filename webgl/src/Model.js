@@ -1,7 +1,9 @@
-import RefFrame from './RefFrame.js';
-import g_GL from './Main.js';
+import RefFrame from './RefFrame';
+import { g_GL } from './Render3D';
 
-export default class extends RefFrame {
+import { g_scene } from './App';
+
+export default class Model extends RefFrame {
     constructor(parent, node) {
         super(parent, node);
         this._floor = false;
@@ -9,7 +11,7 @@ export default class extends RefFrame {
         if (node.hasOwnProperty('pieces')) {
             this.modelPieces = node.pieces;
             for (let piece of this.modelPieces) {
-                piece.material = g_GL.mapOfMaterials.get(piece.material);
+                piece.material = g_scene.mapOfMaterials.get(piece.material);
                 if (piece.material.name === 'floor') {
                     this._floor = true;
                 }
@@ -26,7 +28,7 @@ export default class extends RefFrame {
                 g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, piece.idxBuffer);
                 g_GL.bufferData(g_GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(piece.idxs), g_GL.STATIC_DRAW);
 
-                piece.nrmVtxCount = piece.nrms.length / g_GL.mapOfShaders.get('P3C3').vertexElementCount;
+                piece.nrmVtxCount = piece.nrms.length / g_scene.mapOfShaders.get('P3C3').vertexElementCount;
                 piece.triVtxCount = piece.idxs.length;
             };
         } else {
@@ -39,7 +41,7 @@ export default class extends RefFrame {
     }
 
     drawNormals() {
-        const shader = g_GL.mapOfShaders.get('P3C3');
+        const shader = g_scene.mapOfShaders.get('P3C3');
         for (let piece of this.modelPieces) {
             shader.drawNormals(this, piece);
         }
@@ -48,7 +50,7 @@ export default class extends RefFrame {
     drawPieces(forReflection) {
         for (let piece of this.modelPieces) {
             if (!forReflection && piece.material.isTranslucent) {
-                g_GL.alphaPieces.push({model:this, piece:piece});
+                g_scene.alphaPieces.push({model:this, piece:piece});
             } else {
                 piece.material.shader.drawTriangles(this, piece);
             }

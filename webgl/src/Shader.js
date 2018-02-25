@@ -1,9 +1,11 @@
-import Vector1x4 from './Vector1x4.js';
-import AmbientLS from './AmbientLS.js';
-import OmniDirLS from './OmniDirLS.js';
-import Camera from './Camera.js';
-import Model from './Model.js';
-import g_GL from './Main.js';
+import Vector1x4 from './Vector1x4';
+import AmbientLS from './AmbientLS';
+import OmniDirLS from './OmniDirLS';
+import Camera from './Camera';
+import Model from './Model';
+
+import { g_GL } from './Render3D';
+import { g_scene } from './App';
 
 const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
 const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
@@ -87,7 +89,7 @@ export default class Shader {
     }
 
     drawTriangleEdges(model, modelPiece) {
-        const camPosition = g_GL.activeCamera.mapPos(g_origin, model); // map camera position into model space
+        const camPosition = g_scene.activeCamera.mapPos(g_origin, model); // map camera position into model space
         const edgeIndices = []; // each pair of indices represents a triangle edge
 
         const idxs = modelPiece.idxs; // array of indices, every three indices represents a triangle
@@ -132,25 +134,25 @@ export default class Shader {
 
     setUniformVariablesInVertShader(model) {
         const loc0 = g_GL.getUniformLocation(this.program, 'u_attnCoeffs');
-        if (loc0 && g_GL.omniDirLS instanceof OmniDirLS) {
-            g_GL.uniform3f(loc0, g_GL.omniDirLS.coeff0, g_GL.omniDirLS.coeff1, g_GL.omniDirLS.coeff2);
+        if (loc0 && g_scene.omniDirLS instanceof OmniDirLS) {
+            g_GL.uniform3f(loc0, g_scene.omniDirLS.coeff0, g_scene.omniDirLS.coeff1, g_scene.omniDirLS.coeff2);
         }
 
         const loc1 = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
         if (loc1) {
-            let modelViewProjMatrix = model.modelMatrix.mul(g_GL.activeCamera.viewProjMatrix);
+            let modelViewProjMatrix = model.modelMatrix.mul(g_scene.activeCamera.viewProjMatrix);
             g_GL.uniformMatrix4fv(loc1, false, modelViewProjMatrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
         }
 
         const loc2 = g_GL.getUniformLocation(this.program, 'u_camera_pos');
-        if (loc2 && g_GL.activeCamera instanceof Camera && model instanceof Model) {
-            const pos = g_GL.activeCamera.mapPos(g_origin, model);
+        if (loc2 && g_scene.activeCamera instanceof Camera && model instanceof Model) {
+            const pos = g_scene.activeCamera.mapPos(g_origin, model);
             g_GL.uniform3f(loc2, pos.x, pos.y, pos.z);
         }
 
         const loc3 = g_GL.getUniformLocation(this.program, 'u_omniLS_pos');
-        if (loc3 && g_GL.omniDirLS instanceof OmniDirLS && model instanceof Model) {
-            const pos = g_GL.omniDirLS.mapPos(g_origin, model);
+        if (loc3 && g_scene.omniDirLS instanceof OmniDirLS && model instanceof Model) {
+            const pos = g_scene.omniDirLS.mapPos(g_origin, model);
             g_GL.uniform3f(loc3, pos.x, pos.y, pos.z);
         }
 
@@ -164,18 +166,18 @@ export default class Shader {
 
     setUniformVariablesInFragShader(model, material) {
         const loc0 = g_GL.getUniformLocation(this.program, 'u_int');
-        if (loc0 && g_GL.omniDirLS instanceof OmniDirLS) {
-            g_GL.uniform3f(loc0, g_GL.omniDirLS.color[0], g_GL.omniDirLS.color[1], g_GL.omniDirLS.color[2]);
+        if (loc0 && g_scene.omniDirLS instanceof OmniDirLS) {
+            g_GL.uniform3f(loc0, g_scene.omniDirLS.color[0], g_scene.omniDirLS.color[1], g_scene.omniDirLS.color[2]);
         }
 
         const loc1 = g_GL.getUniformLocation(this.program, 'u_gnd');
-        if (loc1 && g_GL.ambientLS instanceof AmbientLS) {
-            g_GL.uniform3f(loc1, g_GL.ambientLS.lowerHemisphereColor[0], g_GL.ambientLS.lowerHemisphereColor[1], g_GL.ambientLS.lowerHemisphereColor[2]);
+        if (loc1 && g_scene.ambientLS instanceof AmbientLS) {
+            g_GL.uniform3f(loc1, g_scene.ambientLS.lowerHemisphereColor[0], g_scene.ambientLS.lowerHemisphereColor[1], g_scene.ambientLS.lowerHemisphereColor[2]);
         }
 
         const loc2 = g_GL.getUniformLocation(this.program, 'u_sky');
-        if (loc2 && g_GL.ambientLS instanceof AmbientLS) {
-            g_GL.uniform3f(loc2, g_GL.ambientLS.upperHemisphereColor[0], g_GL.ambientLS.upperHemisphereColor[1], g_GL.ambientLS.upperHemisphereColor[2]);
+        if (loc2 && g_scene.ambientLS instanceof AmbientLS) {
+            g_GL.uniform3f(loc2, g_scene.ambientLS.upperHemisphereColor[0], g_scene.ambientLS.upperHemisphereColor[1], g_scene.ambientLS.upperHemisphereColor[2]);
         }
 
         const loc3 = g_GL.getUniformLocation(this.program, 'u_ambi');
@@ -184,18 +186,18 @@ export default class Shader {
         }
 
         const loc4 = g_GL.getUniformLocation(this.program, 'u_diff');
-        if (loc4 && g_GL.omniDirLS instanceof OmniDirLS) {
-            const r = g_GL.omniDirLS.color[0] * material.diff[0];
-            const g = g_GL.omniDirLS.color[1] * material.diff[1];
-            const b = g_GL.omniDirLS.color[2] * material.diff[2];
+        if (loc4 && g_scene.omniDirLS instanceof OmniDirLS) {
+            const r = g_scene.omniDirLS.color[0] * material.diff[0];
+            const g = g_scene.omniDirLS.color[1] * material.diff[1];
+            const b = g_scene.omniDirLS.color[2] * material.diff[2];
             g_GL.uniform3f(loc4, r, g, b);
         }
 
         const loc5 = g_GL.getUniformLocation(this.program, 'u_spec');
-        if (loc5 && g_GL.omniDirLS instanceof OmniDirLS) {
-            const r = g_GL.omniDirLS.color[0] * material.spec[0];
-            const g = g_GL.omniDirLS.color[1] * material.spec[1];
-            const b = g_GL.omniDirLS.color[2] * material.spec[2];
+        if (loc5 && g_scene.omniDirLS instanceof OmniDirLS) {
+            const r = g_scene.omniDirLS.color[0] * material.spec[0];
+            const g = g_scene.omniDirLS.color[1] * material.spec[1];
+            const b = g_scene.omniDirLS.color[2] * material.spec[2];
             g_GL.uniform4f(loc5, r, g, b, material.shinyExponent);
         }
 

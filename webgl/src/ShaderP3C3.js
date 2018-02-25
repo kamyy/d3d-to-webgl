@@ -1,9 +1,10 @@
-import Shader from './Shader.js';
-import g_GL from './Main.js';
+import Shader from './Shader';
+
+import { g_GL } from './Render3D';
 
 export default class ShaderP3C3 extends Shader { 
     constructor() {
-        super('http://localhost:8888/glsl/P3C3.vert', 'http://localhost:8888/glsl/P3C3.frag');
+        super('/glsl/P3C3.vert', '/glsl/P3C3.frag');
     }
 
     drawNormals(model, modelPiece) {

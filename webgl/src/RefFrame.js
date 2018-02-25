@@ -7,8 +7,8 @@ export default class RefFrame {
         this.parent       = null;
         this.child        = null;
         this.next         = null;
-        this.localM       = new Matrix4x4;
-        this.modelM       = new Matrix4x4;
+        this.localM       = new Matrix4x4();
+        this.modelM       = new Matrix4x4();
 
         if (parent instanceof RefFrame) {
             this.validSubtree  = false;
@@ -98,7 +98,7 @@ export default class RefFrame {
     }
 
     rotateX(theta, relative2) {
-        if (relative2 == this || !relative2) { // relative to own axes
+        if (relative2 === this || !relative2) { // relative to own axes
             const rotx = Matrix4x4.createRx(theta);
             this.localMatrix = rotx.mul(this.localMatrix);
         } else if (relative2 === this.parent) { // relative to parent

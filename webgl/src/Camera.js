@@ -1,5 +1,5 @@
-import Matrix4x4 from './Matrix4x4.js';
-import RefFrame from './RefFrame.js';
+import Matrix4x4 from './Matrix4x4';
+import RefFrame from './RefFrame';
 
 export default class Camera extends RefFrame {
     constructor(parent, node) {

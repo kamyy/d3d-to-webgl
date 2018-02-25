@@ -1,4 +1,4 @@
-import RefFrame from './RefFrame.js';
+import RefFrame from './RefFrame';
 
 export default class OmniDirLS extends RefFrame {
     constructor(parent, node) { 

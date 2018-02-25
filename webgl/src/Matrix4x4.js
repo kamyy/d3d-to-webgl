@@ -32,7 +32,7 @@ export default class Matrix4x4 {
     }
 
     static createId() {
-        return new Matrix4x4;
+        return new Matrix4x4();
     }
 
     static createRx(theta) {
