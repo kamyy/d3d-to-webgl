@@ -13,6 +13,8 @@ import ShaderP3N3 from './ShaderP3N3';
 import ShaderP3N3T2 from './ShaderP3N3T2';
 import ShaderP3N3B3T2 from './ShaderP3N3B3T2';
 
+import { SelectComponent, CheckboxComponent } from './Components';
+
 const DRAW = Object.freeze({
     MIRROR: Symbol("mirror"),
     PIECES: Symbol("pieces")
@@ -46,16 +48,58 @@ export default class App extends Component {
         this.translucentPieces = [];
 
         this.drawScene = this.drawScene.bind(this);
+        
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+
+        this.onChangeCameraSelect = this.onChangeCameraSelect.bind(this);
+        this.onChangeDrawNormalsCheckbox = this.onChangeDrawNormalsCheckbox.bind(this);
+        this.onChangeDrawWirefrmCheckbox = this.onChangeDrawWirefrmCheckbox.bind(this);
+
         this.cacheTranslucentPiece = this.cacheTranslucentPiece.bind(this);
+
+        this.state = {
+            sceneName: ''
+        };
     }
 
     render() {
-        return <div className="App">
-            <canvas id='canvas' width='1280' height='720'>Please use a browser that supports WebGL</canvas>
-        </div>
+        const cameraOptions = ['One', 'Two', 'Three'].slice(0, this.cameras.length);
+        return (
+            <div className="App">
+                <div> 
+                    <canvas id='canvas' 
+                            width='1280' 
+                            height='720'>
+                        Please use a browser that supports WebGL
+                    </canvas> 
+                </div>
+
+                <fieldset> 
+                    <legend>Cameras</legend>
+                    <label htmlFor='CameraSelect'>Choose Camera </label>
+                    <SelectComponent id='CameraSelect' 
+                                     options={cameraOptions} 
+                                     onChange={this.onChangeCameraSelect} 
+                                     defaultIndex={this.activeCamIdx} /> 
+                </fieldset>
+
+                <fieldset> 
+                    <legend>Rendering</legend>
+                    <div> 
+                        <CheckboxComponent id='DrawNormalsCheckbox'
+                                           onChange={this.onChangeDrawNormalsCheckbox} />
+                        <label htmlFor='DrawNormalsCheckbox'>Draw Normals</label>
+                    </div> 
+                    <div> 
+                        <CheckboxComponent id='DrawWireframeCheckbox'
+                                           onChange={this.onChangeDrawWirefrmCheckbox} />
+                        <label htmlFor='DrawWireframeCheckbox'>Draw Wireframe</label>
+                    </div> 
+                </fieldset>
+            </div> 
+        )
     }
 
     degreesToRadians(degrees) {
@@ -102,6 +146,18 @@ export default class App extends Component {
         if (event.button === 0) {
             this.buttonDown = false;
         }
+    }
+
+    onChangeCameraSelect(idx) {
+        this.activeCamIdx = idx;
+    }
+
+    onChangeDrawNormalsCheckbox(checked) {
+        this.drawNormals = checked;
+    }
+
+    onChangeDrawWirefrmCheckbox(checked) {
+        this.drawWirefrm = checked;
     }
 
     componentDidMount() {
@@ -190,8 +246,6 @@ export default class App extends Component {
             const png  = new Image(); 
             png.onload = onLoad(text, png);
             png.src    = `/textures/${text.name}.png`;
-
-            //image.crossOrigin = 'anonymous';
         }
     }
 
@@ -215,17 +269,21 @@ export default class App extends Component {
             refFrame = new OmniDirLS(parent, node); 
             this.omniDirLS = refFrame;
             break;
+
         case 'RefFrame':
             refFrame = new RefFrame(parent, node); 
             break;
+
         case 'Camera':
             refFrame = new Camera(parent, node);
             this.cameras.push(refFrame); 
             break;
+
         case 'MirrorCamera':
             refFrame = new Camera(parent, node);
             this.mirrorCam = refFrame; 
             break;
+
         case 'Model':
             refFrame = new Model(parent, node, 
                 this.mapOfMaterials,
@@ -235,6 +293,7 @@ export default class App extends Component {
                 this.mirrorObj = refFrame; 
             }
             break;
+
         default:
             break;
         }
@@ -263,6 +322,9 @@ export default class App extends Component {
                     this.initTextures(scene.textures);
                     this.initMaterials(scene.materials);
                     this.initSceneGraph(scene.sceneRoot);
+                    this.setState({
+                        sceneName: url
+                    });
                 }
             };
             request.open('GET', url, true);
@@ -353,7 +415,7 @@ export default class App extends Component {
         }
 
         this.drawNode(this.rootNode, DRAW.PIECES); // draw all models in scene graph
-        this.drawTranslucentPieces()
+        this.drawTranslucentPieces();
 
         requestAnimationFrame(this.drawScene);
     }
