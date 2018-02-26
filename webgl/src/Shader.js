@@ -1,29 +1,29 @@
+import Model from './Model';
+import Camera from './Camera';
 import Vector1x4 from './Vector1x4';
 import AmbientLS from './AmbientLS';
 import OmniDirLS from './OmniDirLS';
-import Camera from './Camera';
-import Model from './Model';
 
-import { g_GL } from './Render3D';
-import { g_scene } from './App';
+import { GL } from './App';
 
 const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
 const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
 
 export default class Shader {
-    constructor(vertShaderURL, fragShaderURL) {
+    constructor(vertShaderURL, fragShaderURL, app) {
+        this.app = app;
         this.vs = null;
         this.fs = null;
         this.program = null;
-        this.edgeBuffer = g_GL.createBuffer();
+        this.edgeBuffer = GL.createBuffer();
 
         const initProgram = () => {
-            const program = g_GL.createProgram();
-            g_GL.attachShader(program, this.vs);
-            g_GL.attachShader(program, this.fs);
-            g_GL.linkProgram(program);
+            const program = GL.createProgram();
+            GL.attachShader(program, this.vs);
+            GL.attachShader(program, this.fs);
+            GL.linkProgram(program);
 
-            if (!g_GL.getProgramParameter(program, g_GL.LINK_STATUS)) {
+            if (!GL.getProgramParameter(program, GL.LINK_STATUS)) {
                 throw new Error('Error linking shader program!\n');
             }
             return program;
@@ -32,12 +32,12 @@ export default class Shader {
         const requestVS = new XMLHttpRequest();
         requestVS.onreadystatechange = () => {
             if (requestVS.readyState === 4 && requestVS.status === 200) {
-                this.vs = g_GL.createShader(g_GL.VERTEX_SHADER);
-                g_GL.shaderSource(this.vs, requestVS.responseText);
-                g_GL.compileShader(this.vs);
+                this.vs = GL.createShader(GL.VERTEX_SHADER);
+                GL.shaderSource(this.vs, requestVS.responseText);
+                GL.compileShader(this.vs);
 
-                if (!g_GL.getShaderParameter(this.vs, g_GL.COMPILE_STATUS)) {
-                    throw new Error('Error compling ' + vertShaderURL + ' !\n' + g_GL.getShaderInfoLog(this.vs));
+                if (!GL.getShaderParameter(this.vs, GL.COMPILE_STATUS)) {
+                    throw new Error('Error compling ' + vertShaderURL + ' !\n' + GL.getShaderInfoLog(this.vs));
                 } 
                 if (this.vs && this.fs && !this.program) {
                     this.program = initProgram();
@@ -50,12 +50,12 @@ export default class Shader {
         const requestFS = new XMLHttpRequest();
         requestFS.onreadystatechange = () => {
             if (requestFS.readyState === 4 && requestFS.status === 200) {
-                this.fs = g_GL.createShader(g_GL.FRAGMENT_SHADER);
-                g_GL.shaderSource(this.fs, requestFS.responseText);
-                g_GL.compileShader(this.fs);
+                this.fs = GL.createShader(GL.FRAGMENT_SHADER);
+                GL.shaderSource(this.fs, requestFS.responseText);
+                GL.compileShader(this.fs);
 
-                if (!g_GL.getShaderParameter(this.fs, g_GL.COMPILE_STATUS)) {
-                    throw new Error('Error compling ' + fragShaderURL + ' !\n' + g_GL.getShaderInfoLog(this.fs));
+                if (!GL.getShaderParameter(this.fs, GL.COMPILE_STATUS)) {
+                    throw new Error('Error compling ' + fragShaderURL + ' !\n' + GL.getShaderInfoLog(this.fs));
                 } 
                 if (this.vs && this.fs && !this.program) {
                     this.program = initProgram();
@@ -70,26 +70,26 @@ export default class Shader {
         if (this.program) {
             const { material, vtxBuffer, idxBuffer } = modelPiece;
 
-            g_GL.useProgram(this.program);
+            GL.useProgram(this.program);
             this.setUniformVariablesInVertShader(model);
             this.setUniformVariablesInFragShader(model, material);
-            g_GL.bindBuffer(g_GL.ARRAY_BUFFER,         vtxBuffer);
-            g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, idxBuffer);
+            GL.bindBuffer(GL.ARRAY_BUFFER,         vtxBuffer);
+            GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, idxBuffer);
 
             for (let desc of this.vertexAttributeDescs) {
-                const loc = g_GL.getAttribLocation(this.program, desc.attrib);
+                const loc = GL.getAttribLocation(this.program, desc.attrib);
                 if (loc !== -1) {
-                    g_GL.vertexAttribPointer(loc, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
-                    g_GL.enableVertexAttribArray(loc);
+                    GL.vertexAttribPointer(loc, desc.length, GL.FLOAT, false, desc.stride, desc.offset);
+                    GL.enableVertexAttribArray(loc);
                 }
             }
 
-            g_GL.drawElements(g_GL.TRIANGLES, modelPiece.triVtxCount, g_GL.UNSIGNED_SHORT, 0);
+            GL.drawElements(GL.TRIANGLES, modelPiece.triVtxCount, GL.UNSIGNED_SHORT, 0);
         }
     }
 
     drawTriangleEdges(model, modelPiece) {
-        const camPosition = g_scene.activeCamera.mapPos(g_origin, model); // map camera position into model space
+        const camPosition = this.app.activeCamera.mapPos(g_origin, model); // map camera position into model space
         const edgeIndices = []; // each pair of indices represents a triangle edge
 
         const idxs = modelPiece.idxs; // array of indices, every three indices represents a triangle
@@ -114,111 +114,111 @@ export default class Shader {
             }
         }
 
-        g_GL.useProgram(this.program);
+        GL.useProgram(this.program);
         this.setUniformVariablesInVertShader(model);
         this.setUniformVariablesInFragShader(model, modelPiece.material);
-        g_GL.bindBuffer(g_GL.ARRAY_BUFFER,         modelPiece.vtxBuffer);
-        g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, this.edgeBuffer);
-        g_GL.bufferData(g_GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(edgeIndices), g_GL.STATIC_DRAW);
+        GL.bindBuffer(GL.ARRAY_BUFFER,         modelPiece.vtxBuffer);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.edgeBuffer);
+        GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(edgeIndices), GL.STATIC_DRAW);
 
         for (let desc of this.vertexAttributeDescs) {
-            const loc = g_GL.getAttribLocation(this.program, desc.attrib);
+            const loc = GL.getAttribLocation(this.program, desc.attrib);
             if (loc !== -1) {
-                g_GL.vertexAttribPointer(loc, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
-                g_GL.enableVertexAttribArray(loc);
+                GL.vertexAttribPointer(loc, desc.length, GL.FLOAT, false, desc.stride, desc.offset);
+                GL.enableVertexAttribArray(loc);
             }
         }
 
-        g_GL.drawElements(g_GL.LINES, edgeIndices.length, g_GL.UNSIGNED_SHORT, 0);
+        GL.drawElements(GL.LINES, edgeIndices.length, GL.UNSIGNED_SHORT, 0);
     }
 
     setUniformVariablesInVertShader(model) {
-        const loc0 = g_GL.getUniformLocation(this.program, 'u_attnCoeffs');
-        if (loc0 && g_scene.omniDirLS instanceof OmniDirLS) {
-            g_GL.uniform3f(loc0, g_scene.omniDirLS.coeff0, g_scene.omniDirLS.coeff1, g_scene.omniDirLS.coeff2);
+        const loc0 = GL.getUniformLocation(this.program, 'u_attnCoeffs');
+        if (loc0 && this.app.omniDirLS instanceof OmniDirLS) {
+            GL.uniform3f(loc0, this.app.omniDirLS.coeff0, this.app.omniDirLS.coeff1, this.app.omniDirLS.coeff2);
         }
 
-        const loc1 = g_GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
+        const loc1 = GL.getUniformLocation(this.program, 'u_model_view_proj_matrix');
         if (loc1) {
-            let modelViewProjMatrix = model.modelMatrix.mul(g_scene.activeCamera.viewProjMatrix);
-            g_GL.uniformMatrix4fv(loc1, false, modelViewProjMatrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
+            let modelViewProjMatrix = model.modelMatrix.mul(this.app.activeCamera.viewProjMatrix);
+            GL.uniformMatrix4fv(loc1, false, modelViewProjMatrix.toFloat32Array()); // OpenGL stores array sequence in column-major format
         }
 
-        const loc2 = g_GL.getUniformLocation(this.program, 'u_camera_pos');
-        if (loc2 && g_scene.activeCamera instanceof Camera && model instanceof Model) {
-            const pos = g_scene.activeCamera.mapPos(g_origin, model);
-            g_GL.uniform3f(loc2, pos.x, pos.y, pos.z);
+        const loc2 = GL.getUniformLocation(this.program, 'u_camera_pos');
+        if (loc2 && this.app.activeCamera instanceof Camera && model instanceof Model) {
+            const pos = this.app.activeCamera.mapPos(g_origin, model);
+            GL.uniform3f(loc2, pos.x, pos.y, pos.z);
         }
 
-        const loc3 = g_GL.getUniformLocation(this.program, 'u_omniLS_pos');
-        if (loc3 && g_scene.omniDirLS instanceof OmniDirLS && model instanceof Model) {
-            const pos = g_scene.omniDirLS.mapPos(g_origin, model);
-            g_GL.uniform3f(loc3, pos.x, pos.y, pos.z);
+        const loc3 = GL.getUniformLocation(this.program, 'u_omniLS_pos');
+        if (loc3 && this.app.omniDirLS instanceof OmniDirLS && model instanceof Model) {
+            const pos = this.app.omniDirLS.mapPos(g_origin, model);
+            GL.uniform3f(loc3, pos.x, pos.y, pos.z);
         }
 
-        const loc4 = g_GL.getUniformLocation(this.program, 'u_up_dir');
+        const loc4 = GL.getUniformLocation(this.program, 'u_up_dir');
         if (loc4 && model instanceof Model) {
             const worldUp = new Vector1x4(0, 0, 1, 0);
             const modelUp = worldUp.mul(model.modelMatrix.inverse());
-            g_GL.uniform3f(loc4, modelUp.x, modelUp.y, modelUp.z);
+            GL.uniform3f(loc4, modelUp.x, modelUp.y, modelUp.z);
         }
     }
 
     setUniformVariablesInFragShader(model, material) {
-        const loc0 = g_GL.getUniformLocation(this.program, 'u_int');
-        if (loc0 && g_scene.omniDirLS instanceof OmniDirLS) {
-            g_GL.uniform3f(loc0, g_scene.omniDirLS.color[0], g_scene.omniDirLS.color[1], g_scene.omniDirLS.color[2]);
+        const loc0 = GL.getUniformLocation(this.program, 'u_int');
+        if (loc0 && this.app.omniDirLS instanceof OmniDirLS) {
+            GL.uniform3f(loc0, this.app.omniDirLS.color[0], this.app.omniDirLS.color[1], this.app.omniDirLS.color[2]);
         }
 
-        const loc1 = g_GL.getUniformLocation(this.program, 'u_gnd');
-        if (loc1 && g_scene.ambientLS instanceof AmbientLS) {
-            g_GL.uniform3f(loc1, g_scene.ambientLS.lowerHemisphereColor[0], g_scene.ambientLS.lowerHemisphereColor[1], g_scene.ambientLS.lowerHemisphereColor[2]);
+        const loc1 = GL.getUniformLocation(this.program, 'u_gnd');
+        if (loc1 && this.app.ambientLS instanceof AmbientLS) {
+            GL.uniform3f(loc1, this.app.ambientLS.lowerHemisphereColor[0], this.app.ambientLS.lowerHemisphereColor[1], this.app.ambientLS.lowerHemisphereColor[2]);
         }
 
-        const loc2 = g_GL.getUniformLocation(this.program, 'u_sky');
-        if (loc2 && g_scene.ambientLS instanceof AmbientLS) {
-            g_GL.uniform3f(loc2, g_scene.ambientLS.upperHemisphereColor[0], g_scene.ambientLS.upperHemisphereColor[1], g_scene.ambientLS.upperHemisphereColor[2]);
+        const loc2 = GL.getUniformLocation(this.program, 'u_sky');
+        if (loc2 && this.app.ambientLS instanceof AmbientLS) {
+            GL.uniform3f(loc2, this.app.ambientLS.upperHemisphereColor[0], this.app.ambientLS.upperHemisphereColor[1], this.app.ambientLS.upperHemisphereColor[2]);
         }
 
-        const loc3 = g_GL.getUniformLocation(this.program, 'u_ambi');
+        const loc3 = GL.getUniformLocation(this.program, 'u_ambi');
         if (loc3) {
-            g_GL.uniform3f(loc3, material.diff[0], material.diff[1], material.diff[2]);
+            GL.uniform3f(loc3, material.diff[0], material.diff[1], material.diff[2]);
         }
 
-        const loc4 = g_GL.getUniformLocation(this.program, 'u_diff');
-        if (loc4 && g_scene.omniDirLS instanceof OmniDirLS) {
-            const r = g_scene.omniDirLS.color[0] * material.diff[0];
-            const g = g_scene.omniDirLS.color[1] * material.diff[1];
-            const b = g_scene.omniDirLS.color[2] * material.diff[2];
-            g_GL.uniform3f(loc4, r, g, b);
+        const loc4 = GL.getUniformLocation(this.program, 'u_diff');
+        if (loc4 && this.app.omniDirLS instanceof OmniDirLS) {
+            const r = this.app.omniDirLS.color[0] * material.diff[0];
+            const g = this.app.omniDirLS.color[1] * material.diff[1];
+            const b = this.app.omniDirLS.color[2] * material.diff[2];
+            GL.uniform3f(loc4, r, g, b);
         }
 
-        const loc5 = g_GL.getUniformLocation(this.program, 'u_spec');
-        if (loc5 && g_scene.omniDirLS instanceof OmniDirLS) {
-            const r = g_scene.omniDirLS.color[0] * material.spec[0];
-            const g = g_scene.omniDirLS.color[1] * material.spec[1];
-            const b = g_scene.omniDirLS.color[2] * material.spec[2];
-            g_GL.uniform4f(loc5, r, g, b, material.shinyExponent);
+        const loc5 = GL.getUniformLocation(this.program, 'u_spec');
+        if (loc5 && this.app.omniDirLS instanceof OmniDirLS) {
+            const r = this.app.omniDirLS.color[0] * material.spec[0];
+            const g = this.app.omniDirLS.color[1] * material.spec[1];
+            const b = this.app.omniDirLS.color[2] * material.spec[2];
+            GL.uniform4f(loc5, r, g, b, material.shinyExponent);
         }
 
-        const loc6 = g_GL.getUniformLocation(this.program, 'u_smpl');
+        const loc6 = GL.getUniformLocation(this.program, 'u_smpl');
         if (loc6 && material.textures[0]) {
-            g_GL.activeTexture(g_GL.TEXTURE0);
-            g_GL.bindTexture(g_GL.TEXTURE_2D, material.textures[0]);
-            g_GL.uniform1i(loc6, 0);
+            GL.activeTexture(GL.TEXTURE0);
+            GL.bindTexture(GL.TEXTURE_2D, material.textures[0]);
+            GL.uniform1i(loc6, 0);
         }
 
-        const loc7 = g_GL.getUniformLocation(this.program, 'u_norm');
+        const loc7 = GL.getUniformLocation(this.program, 'u_norm');
         if (loc7 && material.textures[1]) {
-            g_GL.activeTexture(g_GL.TEXTURE1);
-            g_GL.bindTexture(g_GL.TEXTURE_2D, material.textures[1]);
-            g_GL.uniform1i(loc7, 1);
+            GL.activeTexture(GL.TEXTURE1);
+            GL.bindTexture(GL.TEXTURE_2D, material.textures[1]);
+            GL.uniform1i(loc7, 1);
         }
 
-        const loc8 = g_GL.getUniformLocation(this.program, 'u_up_dir');
+        const loc8 = GL.getUniformLocation(this.program, 'u_up_dir');
         if (loc8 && model instanceof Model) {
             const dir = g_up.mul(model.modelMatrix.inverse());
-            g_GL.uniform3f(loc8, dir.x, dir.y, dir.z);
+            GL.uniform3f(loc8, dir.x, dir.y, dir.z);
         }
     }
 }

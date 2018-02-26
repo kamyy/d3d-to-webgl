@@ -1,29 +1,28 @@
 import Shader from './Shader';
-
-import { g_GL } from './Render3D';
+import { GL } from './App';
 
 export default class ShaderP3C3 extends Shader { 
-    constructor() {
-        super('/glsl/P3C3.vert', '/glsl/P3C3.frag');
+    constructor(app) {
+        super('/glsl/P3C3.vert', '/glsl/P3C3.frag', app);
     }
 
     drawNormals(model, modelPiece) {
         if (this.program) {
-            g_GL.useProgram(this.program);
+            GL.useProgram(this.program);
             this.setUniformVariablesInVertShader(model);
             this.setUniformVariablesInFragShader(model);
 
-            g_GL.bindBuffer(g_GL.ARRAY_BUFFER, modelPiece.nrmBuffer);
+            GL.bindBuffer(GL.ARRAY_BUFFER, modelPiece.nrmBuffer);
 
             for (let desc of this.vertexAttributeDescs) {
-                const loc = g_GL.getAttribLocation(this.program, desc.attrib);
+                const loc = GL.getAttribLocation(this.program, desc.attrib);
                 if (loc !== -1) {
-                    g_GL.vertexAttribPointer(loc, desc.length, g_GL.FLOAT, false, desc.stride, desc.offset);
-                    g_GL.enableVertexAttribArray(loc);
+                    GL.vertexAttribPointer(loc, desc.length, GL.FLOAT, false, desc.stride, desc.offset);
+                    GL.enableVertexAttribArray(loc);
                 }
             }
 
-            g_GL.drawArrays(g_GL.LINES, 0, modelPiece.nrmVtxCount);
+            GL.drawArrays(GL.LINES, 0, modelPiece.nrmVtxCount);
         }
     }
 

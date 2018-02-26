@@ -1,34 +1,34 @@
 import RefFrame from './RefFrame';
-import { g_GL } from './Render3D';
-
-import { g_scene } from './App';
+import { GL } from './App';
 
 export default class Model extends RefFrame {
-    constructor(parent, node) {
+    constructor(parent, node, mapOfMaterials, mapOfShaders) {
         super(parent, node);
-        this._floor = false;
+
+        this.shaderP3C3 = mapOfShaders.get('P3C3');
+        this.isTheFloor = false;
 
         if (node.hasOwnProperty('pieces')) {
             this.modelPieces = node.pieces;
             for (let piece of this.modelPieces) {
-                piece.material = g_scene.mapOfMaterials.get(piece.material);
+                piece.material = mapOfMaterials.get(piece.material);
                 if (piece.material.name === 'floor') {
-                    this._floor = true;
+                    this.isTheFloor = true;
                 }
-                piece.nrmBuffer = g_GL.createBuffer();
-                piece.vtxBuffer = g_GL.createBuffer();
-                piece.idxBuffer = g_GL.createBuffer();
+                piece.nrmBuffer = GL.createBuffer();
+                piece.vtxBuffer = GL.createBuffer();
+                piece.idxBuffer = GL.createBuffer();
 
-                g_GL.bindBuffer(g_GL.ARRAY_BUFFER, piece.nrmBuffer);
-                g_GL.bufferData(g_GL.ARRAY_BUFFER, new Float32Array(piece.nrms), g_GL.STATIC_DRAW);
+                GL.bindBuffer(GL.ARRAY_BUFFER, piece.nrmBuffer);
+                GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(piece.nrms), GL.STATIC_DRAW);
 
-                g_GL.bindBuffer(g_GL.ARRAY_BUFFER, piece.vtxBuffer);
-                g_GL.bufferData(g_GL.ARRAY_BUFFER, new Float32Array(piece.vtxs), g_GL.STATIC_DRAW);
+                GL.bindBuffer(GL.ARRAY_BUFFER, piece.vtxBuffer);
+                GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(piece.vtxs), GL.STATIC_DRAW);
 
-                g_GL.bindBuffer(g_GL.ELEMENT_ARRAY_BUFFER, piece.idxBuffer);
-                g_GL.bufferData(g_GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(piece.idxs), g_GL.STATIC_DRAW);
+                GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, piece.idxBuffer);
+                GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(piece.idxs), GL.STATIC_DRAW);
 
-                piece.nrmVtxCount = piece.nrms.length / g_scene.mapOfShaders.get('P3C3').vertexElementCount;
+                piece.nrmVtxCount = piece.nrms.length / this.shaderP3C3.vertexElementCount;
                 piece.triVtxCount = piece.idxs.length;
             };
         } else {
@@ -36,21 +36,16 @@ export default class Model extends RefFrame {
         }
     }
 
-    isFloor() {
-        return this._floor;
-    }
-
     drawNormals() {
-        const shader = g_scene.mapOfShaders.get('P3C3');
         for (let piece of this.modelPieces) {
-            shader.drawNormals(this, piece);
+            this.shaderP3C3.drawNormals(this, piece);
         }
     }
 
-    drawPieces(forReflection) {
+    drawPieces(forReflection, cacheTranslucentPiece) {
         for (let piece of this.modelPieces) {
             if (!forReflection && piece.material.isTranslucent) {
-                g_scene.alphaPieces.push({model:this, piece:piece});
+                cacheTranslucentPiece({model:this, piece:piece});
             } else {
                 piece.material.shader.drawTriangles(this, piece);
             }
@@ -63,4 +58,3 @@ export default class Model extends RefFrame {
         }
     }
 }
-

@@ -1,8 +1,8 @@
 import Shader from './Shader';
 
 export default class ShaderP3N3 extends Shader {
-    constructor() {
-        super('/glsl/P3N3.vert', '/glsl/P3N3.frag');
+    constructor(app) {
+        super('/glsl/P3N3.vert', '/glsl/P3N3.frag', app);
     }
 
     get vertexAttributeDescs() {
