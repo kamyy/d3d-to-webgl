@@ -278,6 +278,7 @@ export default class App extends Component {
         this.translucentPieces.forEach(({model, piece}) => {
             piece.material.shader.drawTriangles(model, piece);
         });
+        this.translucentPieces.length = 0;
     }
 
     drawNode(node, mode) {
