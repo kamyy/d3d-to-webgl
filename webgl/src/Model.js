@@ -2,10 +2,10 @@ import RefFrame from './RefFrame';
 import { GL } from './App';
 
 export default class Model extends RefFrame {
-    constructor(parent, node, mapOfMaterials, mapOfShaders) {
+    constructor(parent, node, mapOfMaterials) {
         super(parent, node);
 
-        this.shaderP3C3 = mapOfShaders.get('P3C3');
+        this.shaderP3C3 = GL.mapOfShaders.get('P3C3');
         this.isTheFloor = false;
 
         if (node.hasOwnProperty('pieces')) {
