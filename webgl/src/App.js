@@ -34,24 +34,37 @@ export default class App extends Component {
             new Scene('goku', this.getScene)
         ]
         this.currentScene = this.listOfScenes[0];
+
+        this.state = {
+            currentSceneName: this.currentScene.name
+        };
     }
 
     render() {
         return (
             <div className="App">
-                <nav> {
-                    this.listOfScenes.map(scene => 
-                        <button id={scene.name + '-button'} key={scene.name} onClick={this.onClickSceneTabButton}>{scene.name}</button>
-                    )
+                <nav className='scene-change-panel'> {
+                    this.listOfScenes.map(scene => {
+                        if (scene === this.currentScene) 
+                            return (
+                                <button className='scene-change-button' key={scene.name} 
+                                        onClick={this.onClickSceneTabButton} style={{color: 'cyan'}}> 
+                                    {scene.name} 
+                                </button>
+                            )
+                        else
+                            return (
+                                <button className='scene-change-button' key={scene.name} 
+                                        onClick={this.onClickSceneTabButton}> 
+                                    {scene.name} 
+                                </button>
+                            )
+                    })
                 } </nav>
 
-                <section>
-                    <canvas id='canvas' 
-                            width='1152' 
-                            height='648'>
-                        Please use a browser that supports WebGL
-                    </canvas> 
-                </section>
+                <canvas id='canvas' width='1152' height='648'>
+                    Please use a browser that supports WebGL
+                </canvas> 
 
                 <aside> {
                     this.listOfScenes.map(scene => <SceneUI scene={scene} key={scene.name} />)
@@ -156,6 +169,9 @@ export default class App extends Component {
             this.currentScene = this.listOfScenes[i];
             this.currentScene.loadScene();
             this.currentScene.drawScene();
+            this.setState({
+                currentSceneName: this.currentScene.name
+            });
         }
     }
 }

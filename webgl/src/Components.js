@@ -69,7 +69,7 @@ class CameraUI extends Component {
     }
 
     onChangeAspectRatio(event) {
-        const val = parseInt(event.target.value, 10);
+        const val = parseInt(event.target.value, 10) / 100.0;
         this.scene.activeCamera.aspectRatio = val;
         this.setState({ aspectRatio: val });
     }
@@ -82,9 +82,9 @@ class CameraUI extends Component {
 
         return (
             <fieldset> 
-                <legend>Cameras</legend>
+                <legend>Camera</legend>
 
-                <label htmlFor={cameraSelectId}>Camera</label>
+                <label htmlFor={cameraSelectId}>View</label>
                 <SelectUI   id={cameraSelectId} 
                             options={cameraSelectOptions} 
                             onChange={this.onChangeCameraSelect} />
@@ -96,7 +96,6 @@ class CameraUI extends Component {
                         id={fieldOfViewId}
                         min='30'
                         max='120'
-                        step='10'
                         value={this.state.fieldOfView} 
                         onChange={this.onChangeFieldOfView}
                         />
@@ -107,10 +106,9 @@ class CameraUI extends Component {
                     <input  
                         type='range' 
                         id={aspectRatioId} 
-                        min='0.5' 
-                        max='5'
-                        step='0.5'
-                        value={this.state.aspectRatio}
+                        min='50' 
+                        max='500'
+                        value={this.state.aspectRatio * 100}
                         onChange={this.onChangeAspectRatio} 
                         />
                 </div>

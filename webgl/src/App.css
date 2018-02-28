@@ -1,10 +1,45 @@
 .App {
-  text-align: center;
+  text-align: left;
+  margin: 8px;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+label, legend, button {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.scene-change-panel {
+  background-color: black;
+  border-radius: 8px;
+  opacity: 0.7;
+  width: 200px;
+  padding: 4px 8px 4px 8px;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}
+
+.scene-change-button {
+  color: cadetblue;
+  background-color: black;
+  border-style: none;
+  font-size: 16px;
+}
+
+.scene-change-button:hover {
+  color: white;
+}
+
+.scene-change-button:focus {
+  outline: none;
+}
+
+#canvas {
+  border: solid thin darkblue;
 }
 
 .App-header {
@@ -20,9 +55,4 @@
 
 .App-intro {
   font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
