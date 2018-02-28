@@ -30,7 +30,7 @@ export default class Model extends RefFrame {
 
                 piece.nrmVtxCount = piece.nrms.length / this.shaderP3C3.vertexElementCount;
                 piece.triVtxCount = piece.idxs.length;
-            };
+            }
         } else {
             this.modelPieces = [];
         }

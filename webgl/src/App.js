@@ -8,7 +8,7 @@ import ShaderP3N3 from './ShaderP3N3';
 import ShaderP3N3T2 from './ShaderP3N3T2';
 import ShaderP3N3B3T2 from './ShaderP3N3B3T2';
 
-import { SceneComponent } from './Components';
+import { SceneUI } from './Components';
 
 export let GL = null;
 
@@ -22,40 +22,47 @@ export default class App extends Component {
         this.lx = 0;
         this.ly = 0;
 
+        this.getScene = this.getScene.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.onClickSceneTabButton = this.onClickSceneTabButton.bind(this);
 
-        this.listOfScenes = [ new Scene('hardwood'), new Scene('biplane'), new Scene('goku') ]
+        this.listOfScenes = [ 
+            new Scene('hardwood', this.getScene), 
+            new Scene('biplane', this.getScene), 
+            new Scene('goku', this.getScene)
+        ]
         this.currentScene = this.listOfScenes[0];
-        this.getScene = this.getScene.bind(this);
     }
 
     render() {
         return (
             <div className="App">
-                <div>
-                    {
-                        this.listOfScenes.map(scene => { 
-                            const id = `${scene.name}-button`;
-                            return <button id={id} key={id}>{scene.name}</button>
-                        })
-                    }
-                </div>
-
-                <canvas id='canvas' 
-                        width='1280' 
-                        height='720'>
-                    Please use a browser that supports WebGL
-                </canvas> 
-
-                {
+                <nav> {
                     this.listOfScenes.map(scene => 
-                        <SceneComponent scene={scene} key={scene.name} />
+                        <button id={scene.name + '-button'} key={scene.name} onClick={this.onClickSceneTabButton}>{scene.name}</button>
                     )
-                }
+                } </nav>
+
+                <section>
+                    <canvas id='canvas' 
+                            width='1280' 
+                            height='720'>
+                        Please use a browser that supports WebGL
+                    </canvas> 
+                </section>
+
+                <aside> {
+                    this.listOfScenes.map(scene => <SceneUI scene={scene} key={scene.name} />)
+                } </aside>
+
+                <footer> 
+                    <p>MIT License</p>
+                    <p>Copyright (c) 2018 Kam Y Yip</p>
+                </footer>
             </div>
-        )
+        );
     }
 
     componentDidMount() {
@@ -88,7 +95,7 @@ export default class App extends Component {
                 ['P3N3B3T2', new ShaderP3N3B3T2(this.getScene)]
             ]));
 
-            this.currentScene.loadScene('hardwood');
+            this.currentScene.loadScene();
             this.currentScene.drawScene();
         }
     }
@@ -99,6 +106,12 @@ export default class App extends Component {
 
     degreesToRadians(degrees) {
         return degrees * Math.PI / 180.0;
+    }
+
+    onMouseUp(event) {
+        if (event.button === 0) {
+            this.buttonDown = false;
+        }
     }
 
     onMouseDown(event) {
@@ -117,7 +130,7 @@ export default class App extends Component {
         const x = event.clientX;
         const y = event.clientY;
 
-        if (this.currentScene.rootNode && this.buttonDown && (x !== this.lx || y !== this.ly)) {
+        if (this.currentScene.activeCamera && this.buttonDown && (x !== this.lx || y !== this.ly)) {
             const camera = this.currentScene.activeCamera;
             const target = this.currentScene.activeCamera.parent;
 
@@ -137,9 +150,12 @@ export default class App extends Component {
         }
     }
 
-    onMouseUp(event) {
-        if (event.button === 0) {
-            this.buttonDown = false;
+    onClickSceneTabButton(event) {
+        const i = this.listOfScenes.findIndex(scene => scene.name === event.target.textContent);
+        if (i > -1) {
+            this.currentScene = this.listOfScenes[i];
+            this.currentScene.loadScene();
+            this.currentScene.drawScene();
         }
     }
 }

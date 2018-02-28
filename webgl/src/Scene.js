@@ -13,7 +13,7 @@ const DRAW = Object.freeze({
 });
 
 export default class Scene {
-    constructor(name) {
+    constructor(name, getScene) {
         this.name = name;
         this.cameras = [];
         this.rootNode = null;
@@ -30,6 +30,8 @@ export default class Scene {
         this.mapOfMaterials = new Map();
         this.translucentPieces = [];
 
+        this.getScene = getScene;
+
         this.drawScene = this.drawScene.bind(this);
         this.cacheTranslucentPiece = this.cacheTranslucentPiece.bind(this);
 
@@ -37,11 +39,14 @@ export default class Scene {
         this.onChangeDrawNormalsCheckbox = this.onChangeDrawNormalsCheckbox.bind(this);
         this.onChangeDrawWirefrmCheckbox = this.onChangeDrawWirefrmCheckbox.bind(this);
 
+        this.requestedLoad = false;
         this.onSceneLoaded = null;
     }
 
-    loadScene(name) {
-        if (GL) {
+    loadScene() {
+        if (GL && !this.requestedLoad) {
+            this.requestedLoad = true;
+
             const request = new XMLHttpRequest();
             request.overrideMimeType("application/json");
             request.onreadystatechange = () => {
@@ -64,7 +69,7 @@ export default class Scene {
 
     initTextures(textures) {
         const onLoad = (tex, png) => {
-            return () => {
+            return () => { // higher order function
                 GL.bindTexture(GL.TEXTURE_2D, this.mapOfTextures.get(tex.name));
                 if (tex.hasAlpha) {
                     GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, png);
@@ -75,10 +80,10 @@ export default class Scene {
             };
         };
 
-        for (let text of textures) {
-            const glText = GL.createTexture();
-            GL.bindTexture(GL.TEXTURE_2D, glText);
-            this.mapOfTextures.set(text.name, glText);
+        for (let tex of textures) {
+            const glTex = GL.createTexture();
+            GL.bindTexture(GL.TEXTURE_2D, glTex);
+            this.mapOfTextures.set(tex.name, glTex);
 
             GL.texImage2D(
                 GL.TEXTURE_2D, 
@@ -93,8 +98,8 @@ export default class Scene {
             );
 
             const png  = new Image(); 
-            png.onload = onLoad(text, png);
-            png.src    = `/textures/${text.name}.png`;
+            png.onload = onLoad(tex, png);
+            png.src    = `/textures/${tex.name}.png`;
         }
     }
 
@@ -158,54 +163,62 @@ export default class Scene {
     }
 
     drawScene() {
-        GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT);
-        if (this.mirrorObj) {
-            GL.disable(GL.BLEND); // disable alpha blending
+        if (this === this.getScene()) {
+            GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT);
+            if (this.mirrorObj) {
+                GL.disable(GL.BLEND); // disable alpha blending
 
-            GL.enable(GL.STENCIL_TEST);    // enable stencil buffer
-            GL.stencilFunc(GL.ALWAYS,1,1); // stencil test always passes
-            GL.stencilOp(GL.KEEP,          // if stencil test fail do nothing
-                              GL.INCR,          // if stencil test pass depth test fail write 1 to stencil
-                              GL.INCR);         // if stencil test pass depth test pass write 1 to stencil
-            GL.depthMask(false);                      // disable depth buffer writes
-            GL.colorMask(false, false, false, false); // disable color buffer writes
-            
-            this.mirrorObj.drawPieces(1);      // draw mirror into stencil
+                GL.enable(GL.STENCIL_TEST);    // enable stencil buffer
+                GL.stencilFunc(GL.ALWAYS,1,1); // stencil test always passes
+                GL.stencilOp(GL.KEEP,          // if stencil test fail do nothing
+                                GL.INCR,          // if stencil test pass depth test fail write 1 to stencil
+                                GL.INCR);         // if stencil test pass depth test pass write 1 to stencil
+                GL.depthMask(false);                      // disable depth buffer writes
+                GL.colorMask(false, false, false, false); // disable color buffer writes
+                
+                this.mirrorObj.drawPieces(1);      // draw mirror into stencil
 
-            GL.cullFace(GL.FRONT);         // cull CW triangles
-            GL.stencilFunc(GL.EQUAL,1,1);  // stencil test pass if stencil == 1
-            GL.stencilOp(GL.KEEP,          // if stencil test fail do nothing
-                              GL.KEEP,          // if stencil test pass depth test fail do nothing
-                              GL.KEEP);         // if stencil test pass depth test pass do nothing
-            GL.depthMask(true);                   // enable depth buffer writes
-            GL.colorMask(true, true, true, true); // enable color buffer writes
+                GL.cullFace(GL.FRONT);         // cull CW triangles
+                GL.stencilFunc(GL.EQUAL,1,1);  // stencil test pass if stencil == 1
+                GL.stencilOp(GL.KEEP,          // if stencil test fail do nothing
+                                GL.KEEP,          // if stencil test pass depth test fail do nothing
+                                GL.KEEP);         // if stencil test pass depth test pass do nothing
+                GL.depthMask(true);                   // enable depth buffer writes
+                GL.colorMask(true, true, true, true); // enable color buffer writes
 
-            // generate reflection matrix using mirror model matrix and scaling by -1 in z-axis 
-            let m = new Matrix4x4(this.activeCamera.modelMatrix); 
-            m = m.mul(this.mirrorObj.modelMatrix.inverse()); // world space to mirror space
-            m = m.postCatSxyz(1, 1, -1);                     // to mirror reflection space
-            m = m.mul(this.mirrorObj.modelMatrix);           // to world space xform
+                // generate reflection matrix using mirror model matrix and scaling by -1 in z-axis 
+                let m = new Matrix4x4(this.activeCamera.modelMatrix); 
+                m = m.mul(this.mirrorObj.modelMatrix.inverse()); // world space to mirror space
+                m = m.postCatSxyz(1, 1, -1);                     // to mirror reflection space
+                m = m.mul(this.mirrorObj.modelMatrix);           // to world space xform
 
-            const savedCamera = this.activeCamera; // restore this after rendering reflection
-            this.activeCamera = this.mirrorCam;    // make mirror camera rendering camera
-            this.activeCamera.modelMatrix = m;     // apply mirror xform to mirror camera
+                // copy active camera settings to mirror camera
+                this.mirrorCam.fieldOfView = this.activeCamera.fieldOfView;
+                this.mirrorCam.aspectRatio = this.activeCamera.aspectRatio;
+                this.mirrorCam.clipDistanceN = this.activeCamera.clipDistanceN;
+                this.mirrorCam.clipDistanceF = this.activeCamera.clipDistanceF;
 
-            this.drawNode(this.rootNode, DRAW.MIRROR); // draw reflection of model pieces into color buffer
-            this.activeCamera = savedCamera;           // restore default camera
+                const savedCamera = this.activeCamera; // restore this after rendering reflection
+                this.activeCamera = this.mirrorCam;    // make mirror camera rendering camera
+                this.activeCamera.modelMatrix = m;     // apply mirror xform to mirror camera
 
-            GL.clear(GL.DEPTH_BUFFER_BIT);  // clear depth buffer
-            GL.disable(GL.STENCIL_TEST);    // disable stencil buffer
-            GL.cullFace(GL.BACK);           // cull CCW triangles
-            GL.enable(GL.BLEND);            // enable alpha blending
+                this.drawNode(this.rootNode, DRAW.MIRROR); // draw reflection of model pieces into color buffer
+                this.activeCamera = savedCamera;           // restore default camera
 
-            // draw mirror into color buffer
-            this.drawWirefrm ? this.mirrorObj.drawEdges() : this.mirrorObj.drawPieces(1);
+                GL.clear(GL.DEPTH_BUFFER_BIT);  // clear depth buffer
+                GL.disable(GL.STENCIL_TEST);    // disable stencil buffer
+                GL.cullFace(GL.BACK);           // cull CCW triangles
+                GL.enable(GL.BLEND);            // enable alpha blending
+
+                // draw mirror into color buffer
+                this.drawWirefrm ? this.mirrorObj.drawEdges() : this.mirrorObj.drawPieces(1);
+            }
+
+            this.drawNode(this.rootNode, DRAW.PIECES); // draw all models in scene graph
+            this.drawTranslucentPieces();
+
+            requestAnimationFrame(this.drawScene);
         }
-
-        this.drawNode(this.rootNode, DRAW.PIECES); // draw all models in scene graph
-        this.drawTranslucentPieces();
-
-        requestAnimationFrame(this.drawScene);
     }
     
     drawNode(node, mode) {

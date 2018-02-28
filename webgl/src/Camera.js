@@ -8,6 +8,7 @@ export default class Camera extends RefFrame {
         this._aspectRatio = node.aspectRatio;
         this._clipDistanceN = node.clipDistanceN;
         this._clipDistanceF = node.clipDistanceF;
+        this._fieldOfViewDegrees = node.fieldOfView / Math.PI * 180.0;
         this._dirty = true;
     }
     
@@ -18,9 +19,14 @@ export default class Camera extends RefFrame {
         super.validateAscending();
     }
 
-    set fieldOfView(val) {
-        this._fieldOfView = val;
+    set fieldOfView(degrees) {
+        this._fieldOfViewDegrees = degrees;
+        this._fieldOfView = Math.PI / 180.0 * degrees;
         this._dirty = true;
+    }
+
+    get fieldOfView() {
+        return this._fieldOfViewDegrees;
     }
 
     set aspectRatio(val) {
@@ -28,14 +34,26 @@ export default class Camera extends RefFrame {
         this._dirty = true;
     }
 
+    get aspectRatio() {
+        return this._aspectRatio;
+    }
+
     set clipDistanceN(val) {
         this._clipDistanceN = val;
         this._dirty = true;
     }
 
+    get clipDistanceN() {
+        return this._clipDistanceN;
+    }
+
     set clipDistanceF(val) {
         this._clipDistanceF = val;
         this._dirty = true;
+    }
+
+    get clipDistanceF() {
+        return this._clipDistanceF;
     }
 
     get viewProjMatrix() {
