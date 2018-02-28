@@ -36,7 +36,7 @@ export function CheckboxUI(props) {
     )
 }
 
-class CamerasUI extends Component {
+class CameraUI extends Component {
     constructor(props) {
         super(props);
         this.scene = props.scene;
@@ -96,6 +96,7 @@ class CamerasUI extends Component {
                         id={fieldOfViewId}
                         min='30'
                         max='120'
+                        step='10'
                         value={this.state.fieldOfView} 
                         onChange={this.onChangeFieldOfView}
                         />
@@ -108,6 +109,7 @@ class CamerasUI extends Component {
                         id={aspectRatioId} 
                         min='0.5' 
                         max='5'
+                        step='0.5'
                         value={this.state.aspectRatio}
                         onChange={this.onChangeAspectRatio} 
                         />
@@ -157,7 +159,7 @@ export class SceneUI extends Component {
         if (this.state.isLoaded) {
             return (
                 <div>
-                    <CamerasUI scene={this.scene}/>
+                    <CameraUI scene={this.scene}/>
                     <RenderingUI scene={this.scene}/>
                 </div>
             )

@@ -47,8 +47,8 @@ export default class App extends Component {
 
                 <section>
                     <canvas id='canvas' 
-                            width='1280' 
-                            height='720'>
+                            width='1152' 
+                            height='648'>
                         Please use a browser that supports WebGL
                     </canvas> 
                 </section>
@@ -59,7 +59,7 @@ export default class App extends Component {
 
                 <footer> 
                     <p>MIT License</p>
-                    <p>Copyright (c) 2018 Kam Y Yip</p>
+                    <p>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
                 </footer>
             </div>
         );
