@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 
-export default class CanvasPanelRender extends Component {
+export default class PanelRender extends Component {
     constructor(props) {
         super(props);
 
@@ -45,13 +45,13 @@ export default class CanvasPanelRender extends Component {
         const id1 = 'normalsCheckbox';
 
         return <div>
-            <span id='canvas-panel-wirefrm' className='canvas-panel'>
-                <input id={id0} type='checkbox' checked={scene.drawWirefrm} onChange={this.onChangeWirefrm} className='canvas-panel-render-checkbox' />
-                <label htmlFor={id0} className='canvas-panel-render-checkbox-label'>Primitive Edges Only</label>
+            <span id='wirefrm-choice' className='canvas-panel'>
+                <input id={id0} type='checkbox' checked={scene.drawWirefrm} onChange={this.onChangeWirefrm} className='checkbox' />
+                <label htmlFor={id0} className='checkbox-label'>Primitive Edges Only</label>
             </span>
-            <span id='canvas-panel-normals' className='canvas-panel'>
-                <input id={id1} type='checkbox' checked={scene.drawNormals} onChange={this.onChangeNormals} className='canvas-panel-render-checkbox' />
-                <label htmlFor={id1} className='canvas-panel-render-checkbox-label'>Vertex Normals</label>
+            <span id='normals-choice' className='canvas-panel'>
+                <input id={id1} type='checkbox' checked={scene.drawNormals} onChange={this.onChangeNormals} className='checkbox' />
+                <label htmlFor={id1} className='checkbox-label'>Vertex Normals</label>
             </span>
         </div>
     }

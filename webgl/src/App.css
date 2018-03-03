@@ -30,11 +30,11 @@ p {
 /* ----------------------------------------------------------------------------
  * Canvas Panel Scene 
  */
-.canvas-panel#canvas-panel-scene {
+#scene-choice {
   position: absolute; top: 24px; left: 24px;
   border-width: 1px 4px 4px 4px;
 }
-.canvas-panel-scene-button {
+.scene-choice-button {
   color: cadetblue;
   background-color: black;
   border-style: none;
@@ -42,58 +42,80 @@ p {
   font-size: 14px;
   cursor: pointer;
 }
-.canvas-panel-scene-button:hover {
+.scene-choice-button:hover {
   color: white;
 }
-.canvas-panel-scene-button:focus {
+.scene-choice-button:focus {
   outline: none;
 }
 
 /* ----------------------------------------------------------------------------
  * Canvas Panel Camera 
  */
-.canvas-panel#canvas-panel-camera {
+#camera-choice {
   position: absolute; top: 56px; left: 24px;
-  border-width: 1px 4px 6px 8px;
+  border-width: 1px 8px 6px 8px;
 }
-.canvas-panel-camera-radio-button {
+.camera-choice-button {
   margin: 0px 4px 0px 0px;
   vertical-align: middle;
 }
-.canvas-panel-camera-radio-button-label {
+.camera-choice-button-label {
   color: cadetblue;
   font-size: 12px;
   cursor: pointer;
   margin-right: 12px;
 }
-.canvas-panel-camera-radio-button-label:hover {
+.camera-choice-button-label:hover {
+  color: white;
+}
+
+.camera-setup-fieldset {
+  border: solid 1px cadetblue;
+  border-style: solid none none none;
+  margin: 0px;
+  padding: 0px;
+  width: auto;
+}
+.camera-setup-legend {
+  color: cadetblue;
+  font-size: 12px;
+  padding: 0px 2px 0px 0px;
+}
+.camera-setup-slider {
+  margin: 0px;
+  padding: 0px 0px 0px 2px;
+  width: 108px;
+}
+
+.camera-setup-value {
   color: white;
 }
 
 /* ----------------------------------------------------------------------------
  * Canvas Panel Render 
  */
-.canvas-panel#canvas-panel-wirefrm {
+#wirefrm-choice {
   position: absolute; top: 706px; left: 24px;
   border-width: 1px 1px 6px 8px;
 }
 
-.canvas-panel#canvas-panel-normals {
+#normals-choice {
   position: absolute; top: 706px; left: 174px;
   border-width: 1px 1px 6px 8px;
 }
 
-.canvas-panel-render-checkbox {
+.checkbox {
   margin: 0px 2px 0px 0px;
   vertical-align: middle;
 }
-.canvas-panel-render-checkbox-label {
+.checkbox-label {
   color: cadetblue;
   font-size: 12px;
   cursor: pointer;
   margin-right: 12px;
 }
-.canvas-panel-render-checkbox-label:hover {
+.checkbox-label:hover {
   color: white;
 }
 

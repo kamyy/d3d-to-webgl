@@ -8,9 +8,9 @@ import ShaderP3N3 from './ShaderP3N3';
 import ShaderP3N3T2 from './ShaderP3N3T2';
 import ShaderP3N3B3T2 from './ShaderP3N3B3T2';
 
-import CanvasPanelScene from './CanvasPanelScene';
-import CanvasPanelCamera from './CanvasPanelCamera';
-import CanvasPanelRender from './CanvasPanelRender';
+import PanelScene from './PanelScene';
+import PanelCamera from './PanelCamera';
+import PanelRender from './PanelRender';
 
 export let GL = null;
 
@@ -57,18 +57,18 @@ export default class App extends Component {
             <div className="app">
                 <canvas id='canvas' width='1280' height='720'> Please use a browser that supports WebGL </canvas> 
 
-                <CanvasPanelScene 
+                <PanelScene 
                     listOfScenes={this.listOfScenes} 
                     getCurrentScene={this.getCurrentScene} 
                     onClick={this.onClickSceneButton} 
                     />
 
-                <CanvasPanelCamera
+                <PanelCamera
                     getCurrentScene={this.getCurrentScene} 
                     onRef={this.refCanvasPanelCamera} 
                     />
 
-                <CanvasPanelRender
+                <PanelRender
                     getCurrentScene={this.getCurrentScene} 
                     onRef={this.refCanvasPanelRender} 
                     />
