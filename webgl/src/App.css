@@ -1,6 +1,10 @@
-.App {
-  text-align: left;
-  margin: 8px;
+.app {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  position: relative;
+  padding: 16px;
+  width: 1284px;
+  margin: auto; 
 }
 
 label, legend, button {
@@ -12,47 +16,107 @@ label, legend, button {
   user-select: none;
 }
 
-.scene-change-panel {
-  background-color: black;
-  border-radius: 8px;
-  opacity: 0.7;
-  width: 200px;
-  padding: 4px 8px 4px 8px;
-  position: absolute;
-  top: 12px;
-  left: 12px;
+p {
+  margin: 4px;
 }
 
-.scene-change-button {
+.canvas-panel {
+  border: solid 4px black; border-radius: 8px;
+  background-color: black;
+  opacity: 0.7;
+  width: auto;
+}
+
+/* ----------------------------------------------------------------------------
+ * Canvas Panel Scene 
+ */
+.canvas-panel#canvas-panel-scene {
+  position: absolute; top: 24px; left: 24px;
+  border-width: 1px 4px 4px 4px;
+}
+.canvas-panel-scene-button {
   color: cadetblue;
   background-color: black;
   border-style: none;
-  font-size: 16px;
+  text-align: center;
+  font-size: 14px;
+  cursor: pointer;
 }
-
-.scene-change-button:hover {
+.canvas-panel-scene-button:hover {
   color: white;
 }
-
-.scene-change-button:focus {
+.canvas-panel-scene-button:focus {
   outline: none;
 }
 
-#canvas {
-  border: solid thin darkblue;
+/* ----------------------------------------------------------------------------
+ * Canvas Panel Camera 
+ */
+.canvas-panel#canvas-panel-camera {
+  position: absolute; top: 56px; left: 24px;
+  border-width: 1px 4px 6px 8px;
 }
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
+.canvas-panel-camera-radio-button {
+  margin: 0px 4px 0px 0px;
+  vertical-align: middle;
+}
+.canvas-panel-camera-radio-button-label {
+  color: cadetblue;
+  font-size: 12px;
+  cursor: pointer;
+  margin-right: 12px;
+}
+.canvas-panel-camera-radio-button-label:hover {
   color: white;
 }
 
-.App-title {
-  font-size: 1.5em;
+/* ----------------------------------------------------------------------------
+ * Canvas Panel Render 
+ */
+.canvas-panel#canvas-panel-wirefrm {
+  position: absolute; top: 706px; left: 24px;
+  border-width: 1px 1px 6px 8px;
 }
 
-.App-intro {
-  font-size: large;
+.canvas-panel#canvas-panel-normals {
+  position: absolute; top: 706px; left: 174px;
+  border-width: 1px 1px 6px 8px;
+}
+
+.canvas-panel-render-checkbox {
+  margin: 0px 2px 0px 0px;
+  vertical-align: middle;
+}
+.canvas-panel-render-checkbox-label {
+  color: cadetblue;
+  font-size: 12px;
+  cursor: pointer;
+  margin-right: 12px;
+}
+.canvas-panel-render-checkbox-label:hover {
+  color: white;
+}
+
+/* ----------------------------------------------------------------------------
+ * canvas 
+ */
+#canvas {
+  border: outset 2px lightgray
+}
+
+/* 
+  aside 
+*/
+#aside {
+  position: absolute;
+  margin: 0px 8px;
+  border-style: none;
+  padding: 8px;
+  width: 300px;
+  top: 8px;
+  left: 1160px;
+}
+
+#copyright {
+  text-align: center;
 }

@@ -10,11 +10,11 @@ const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
 const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
 
 export default class Shader {
-    constructor(vertShaderURL, fragShaderURL, getScene) {
+    constructor(vertShaderURL, fragShaderURL, getCurrentScene) {
         this.vs = null;
         this.fs = null;
         this.program = null;
-        this.getScene = getScene;
+        this.getCurrentScene = getCurrentScene;
         this.edgeBuffer = GL.createBuffer();
 
         const initProgram = () => {
@@ -89,7 +89,7 @@ export default class Shader {
     }
 
     drawTriangleEdges(model, modelPiece) {
-        const camPosition = this.getScene().activeCamera.mapPos(g_origin, model); // map camera position into model space
+        const camPosition = this.getCurrentScene().activeCamera.mapPos(g_origin, model); // map camera position into model space
         const edgeIndices = []; // each pair of indices represents a triangle edge
 
         const idxs = modelPiece.idxs; // array of indices, every three indices represents a triangle
@@ -133,8 +133,8 @@ export default class Shader {
     }
 
     setUniformVariablesInVertShader(model) {
-        const omniDirLS = this.getScene().omniDirLS;
-        const activeCam = this.getScene().activeCamera;
+        const omniDirLS = this.getCurrentScene().omniDirLS;
+        const activeCam = this.getCurrentScene().activeCamera;
 
         const loc0 = GL.getUniformLocation(this.program, 'u_attnCoeffs');
         if (loc0 && omniDirLS instanceof OmniDirLS) {
@@ -168,8 +168,8 @@ export default class Shader {
     }
 
     setUniformVariablesInFragShader(model, material) {
-        const omniDirLS = this.getScene().omniDirLS;
-        const ambientLS = this.getScene().ambientLS;
+        const omniDirLS = this.getCurrentScene().omniDirLS;
+        const ambientLS = this.getCurrentScene().ambientLS;
 
         const loc0 = GL.getUniformLocation(this.program, 'u_int');
         if (loc0 && omniDirLS instanceof OmniDirLS) {

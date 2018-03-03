@@ -1,42 +1,20 @@
+import './App.css';
 import React, { Component } from 'react';
 
-export function SelectUI(props) {
-    const {
-        id,
-        options, 
-        onChange,
-        defaultIndex
-    } = props;
+/*
+export function Select(props) {
+    const { id, options, onChange, defaultIndex } = props;
 
-    return (
-        <select id={id} 
-                defaultValue={defaultIndex}
-                onChange={event => onChange(parseInt(event.target.value, 10))}> 
-            { 
-                options.map( (opt, idx) => {
-                    return <option key={opt} value={idx}> {opt} </option> 
-                })
-            } 
-        </select> 
-    )
+    return <select  id={id} 
+                    defaultValue={defaultIndex}
+                    onChange={event => onChange(parseInt(event.target.value, 10))}> { 
+
+        options.map( (opt, idx) => <option key={opt} value={idx}> {opt} </option> )
+
+    } </select> 
 }
 
-export function CheckboxUI(props) {
-    const {
-        id,
-        onChange
-    } = props;
-
-    return (
-        <input id={id}
-               key={id}
-               type='checkbox'
-               onChange={event => onChange(event.target.checked) }>
-        </input>
-    )
-}
-
-class CameraUI extends Component {
+class CameraPanel extends Component {
     constructor(props) {
         super(props);
         this.scene = props.scene;
@@ -75,20 +53,12 @@ class CameraUI extends Component {
     }
 
     render() {
-        const cameraSelectOptions = ['One', 'Two', 'Three', 'Four', 'Five'].slice(0, this.scene.cameras.length);
-        const cameraSelectId = `${this.scene.name}-CameraSelect`;
         const fieldOfViewId = `${this.scene.name}-FieldOfView`;
         const aspectRatioId = `${this.scene.name}-AspectRatio`;
 
         return (
-            <fieldset> 
+            <fieldset className='accordion-fieldset'> 
                 <legend>Camera</legend>
-
-                <label htmlFor={cameraSelectId}>View</label>
-                <SelectUI   id={cameraSelectId} 
-                            options={cameraSelectOptions} 
-                            onChange={this.onChangeCameraSelect} />
-
                 <div> 
                     <label htmlFor={fieldOfViewId}>Field of View</label>
                     <input
@@ -117,25 +87,6 @@ class CameraUI extends Component {
     }
 }
 
-function RenderingUI(props) {
-    const {
-        scene
-    } = props;
-
-    const renderEdgesId = `${scene.name}-DrawWirefrmCheckbox`;
-    const drawNormalsId = `${scene.name}-DrawNormalsCheckbox`;
-        
-    return (
-        <fieldset> 
-            <legend>Rendering</legend>
-            <CheckboxUI id={renderEdgesId} onChange={scene.onChangeDrawWirefrmCheckbox} />
-            <label htmlFor={renderEdgesId}>Wireframe</label>
-            <CheckboxUI id={drawNormalsId} onChange={scene.onChangeDrawNormalsCheckbox} />
-            <label htmlFor={drawNormalsId}>Normals</label>
-        </fieldset>
-    )
-}
-
 export class SceneUI extends Component {
     constructor (props) {
         super(props);
@@ -157,11 +108,12 @@ export class SceneUI extends Component {
         if (this.state.isLoaded) {
             return (
                 <div>
-                    <CameraUI scene={this.scene}/>
-                    <RenderingUI scene={this.scene}/>
+                    <CameraPanel scene={this.scene}/>
                 </div>
             )
         }
         return null;
     }
 }
+
+*/

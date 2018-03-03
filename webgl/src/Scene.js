@@ -13,7 +13,7 @@ const DRAW = Object.freeze({
 });
 
 export default class Scene {
-    constructor(name, getScene) {
+    constructor(name, getCurrentScene) {
         this.name = name;
         this.cameras = [];
         this.rootNode = null;
@@ -30,20 +30,20 @@ export default class Scene {
         this.mapOfMaterials = new Map();
         this.translucentPieces = [];
 
-        this.getScene = getScene;
+        this.getCurrentScene = getCurrentScene;
 
         this.drawScene = this.drawScene.bind(this);
         this.cacheTranslucentPiece = this.cacheTranslucentPiece.bind(this);
 
-        this.onChangeCameraSelect = this.onChangeCameraSelect.bind(this);
-        this.onChangeDrawNormalsCheckbox = this.onChangeDrawNormalsCheckbox.bind(this);
-        this.onChangeDrawWirefrmCheckbox = this.onChangeDrawWirefrmCheckbox.bind(this);
+        this.onChangeCamera = this.onChangeCamera.bind(this);
+        this.onChangeWirefrm = this.onChangeWirefrm.bind(this);
+        this.onChangeNormals = this.onChangeNormals.bind(this);
 
         this.requestedLoad = false;
         this.onSceneLoaded = null;
     }
 
-    loadScene() {
+    loadScene(onSceneLoadFinished) {
         if (GL && !this.requestedLoad) {
             this.requestedLoad = true;
 
@@ -57,9 +57,7 @@ export default class Scene {
                     this.initMaterials(scene.materials);
                     this.initSceneGraph(scene.sceneRoot);
 
-                    if (this.onSceneLoaded) {
-                        this.onSceneLoaded();
-                    }
+                    onSceneLoadFinished(this);
                 }
             };
             request.open('GET', `/json/${this.name}.json`, true);
@@ -163,7 +161,7 @@ export default class Scene {
     }
 
     drawScene() {
-        if (this === this.getScene()) {
+        if (this === this.getCurrentScene()) {
             GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT);
             if (this.mirrorObj) {
                 GL.disable(GL.BLEND); // disable alpha blending
@@ -274,15 +272,15 @@ export default class Scene {
         this.cameraIdx = idx;
     }
 
-    onChangeCameraSelect(idx) {
-        this.activeCamIdx = idx;
+    onChangeCamera(activeCamIdx) {
+        this.activeCamIdx = activeCamIdx;
     }
 
-    onChangeDrawNormalsCheckbox(checked) {
-        this.drawNormals = checked;
-    }
-
-    onChangeDrawWirefrmCheckbox(checked) {
+    onChangeWirefrm(checked) {
         this.drawWirefrm = checked;
+    }
+
+    onChangeNormals(checked) {
+        this.drawNormals = checked;
     }
 }

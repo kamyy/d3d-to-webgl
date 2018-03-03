@@ -8,7 +8,9 @@ import ShaderP3N3 from './ShaderP3N3';
 import ShaderP3N3T2 from './ShaderP3N3T2';
 import ShaderP3N3B3T2 from './ShaderP3N3B3T2';
 
-import { SceneUI } from './Components';
+import CanvasPanelScene from './CanvasPanelScene';
+import CanvasPanelCamera from './CanvasPanelCamera';
+import CanvasPanelRender from './CanvasPanelRender';
 
 export let GL = null;
 
@@ -22,58 +24,60 @@ export default class App extends Component {
         this.lx = 0;
         this.ly = 0;
 
-        this.getScene = this.getScene.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
-        this.onClickSceneTabButton = this.onClickSceneTabButton.bind(this);
+        this.getCurrentScene = this.getCurrentScene.bind(this);
+        this.onClickSceneButton = this.onClickSceneButton.bind(this);
+        this.refCanvasPanelCamera = this.refCanvasPanelCamera.bind(this);
+        this.refCanvasPanelRender = this.refCanvasPanelRender.bind(this);
 
         this.listOfScenes = [ 
-            new Scene('hardwood', this.getScene), 
-            new Scene('biplane', this.getScene), 
-            new Scene('goku', this.getScene)
+            new Scene('hardwood', this.getCurrentScene), 
+            new Scene('biplane', this.getCurrentScene), 
+            new Scene('goku', this.getCurrentScene)
         ]
         this.currentScene = this.listOfScenes[0];
 
         this.state = {
-            currentSceneName: this.currentScene.name
-        };
+            currentScene: this.currentScene
+        }
+    }
+
+    refCanvasPanelCamera(canvasPanelCamera) {
+        this.canvasPanelCamera = canvasPanelCamera;
+    }
+
+    refCanvasPanelRender(canvasPanelRender) {
+        this.canvasPanelRender = canvasPanelRender;
     }
 
     render() {
         return (
-            <div className="App">
-                <nav className='scene-change-panel'> {
-                    this.listOfScenes.map(scene => {
-                        if (scene === this.currentScene) 
-                            return (
-                                <button className='scene-change-button' key={scene.name} 
-                                        onClick={this.onClickSceneTabButton} style={{color: 'cyan'}}> 
-                                    {scene.name} 
-                                </button>
-                            )
-                        else
-                            return (
-                                <button className='scene-change-button' key={scene.name} 
-                                        onClick={this.onClickSceneTabButton}> 
-                                    {scene.name} 
-                                </button>
-                            )
-                    })
-                } </nav>
+            <div className="app">
+                <canvas id='canvas' width='1280' height='720'> Please use a browser that supports WebGL </canvas> 
 
-                <canvas id='canvas' width='1152' height='648'>
-                    Please use a browser that supports WebGL
-                </canvas> 
+                <CanvasPanelScene 
+                    listOfScenes={this.listOfScenes} 
+                    getCurrentScene={this.getCurrentScene} 
+                    onClick={this.onClickSceneButton} 
+                    />
 
-                <aside> {
-                    this.listOfScenes.map(scene => <SceneUI scene={scene} key={scene.name} />)
-                } </aside>
+                <CanvasPanelCamera
+                    getCurrentScene={this.getCurrentScene} 
+                    onRef={this.refCanvasPanelCamera} 
+                    />
 
-                <footer> 
+                <CanvasPanelRender
+                    getCurrentScene={this.getCurrentScene} 
+                    onRef={this.refCanvasPanelRender} 
+                    />
+                <hr/>
+                
+                <div id='copyright'> 
                     <p>MIT License</p>
                     <p>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
-                </footer>
+                </div>
             </div>
         );
     }
@@ -102,18 +106,18 @@ export default class App extends Component {
             GL.clearStencil(0); // stencil buffer clear value 
 
             GL.mapOfShaders = Object.freeze(new Map([
-                ['P3C3', new ShaderP3C3(this.getScene)],
-                ['P3N3', new ShaderP3N3(this.getScene)],
-                ['P3N3T2', new ShaderP3N3T2(this.getScene)],
-                ['P3N3B3T2', new ShaderP3N3B3T2(this.getScene)]
+                ['P3C3', new ShaderP3C3(this.getCurrentScene)],
+                ['P3N3', new ShaderP3N3(this.getCurrentScene)],
+                ['P3N3T2', new ShaderP3N3T2(this.getCurrentScene)],
+                ['P3N3B3T2', new ShaderP3N3B3T2(this.getCurrentScene)]
             ]));
 
-            this.currentScene.loadScene();
+            this.currentScene.loadScene(this.canvasPanelCamera.onSceneLoadFinished);
             this.currentScene.drawScene();
         }
     }
 
-    getScene() {
+    getCurrentScene() {
         return this.currentScene;
     }
 
@@ -163,15 +167,16 @@ export default class App extends Component {
         }
     }
 
-    onClickSceneTabButton(event) {
+    onClickSceneButton(event) {
         const i = this.listOfScenes.findIndex(scene => scene.name === event.target.textContent);
         if (i > -1) {
             this.currentScene = this.listOfScenes[i];
-            this.currentScene.loadScene();
+            this.currentScene.loadScene(this.canvasPanelCamera.onSceneLoadFinished);
             this.currentScene.drawScene();
-            this.setState({
-                currentSceneName: this.currentScene.name
-            });
+
+            this.setState({ currentScene: this.currentScene });
+            this.canvasPanelCamera.onCanvasSceneChange();
+            this.canvasPanelRender.onCanvasSceneChange();
         }
     }
 }
