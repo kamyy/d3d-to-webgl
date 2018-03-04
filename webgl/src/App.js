@@ -20,7 +20,8 @@ export default class App extends Component {
 
         this.TXYZ_SCALAR = 0.01;
         this.RXYZ_SCALAR = 0.25;
-        this.buttonDown = false;
+        this.lButtonDown = false;
+        this.rButtonDown = false;
         this.lx = 0;
         this.ly = 0;
 
@@ -91,6 +92,7 @@ export default class App extends Component {
         });
 
         if (GL) {
+            this.canvas.oncontextmenu = event => event.preventDefault();
             this.canvas.onmousedown = this.onMouseDown;
             window.onmousemove = this.onMouseMove;
             window.onmouseup = this.onMouseUp;
@@ -126,8 +128,10 @@ export default class App extends Component {
     }
 
     onMouseUp(event) {
-        if (event.button === 0) {
-            this.buttonDown = false;
+        switch (event.button) {
+        case 0: this.lButtonDown = false; break;
+        case 2: this.rButtonDown = false; break;
+        default: break;
         }
     }
 
@@ -136,34 +140,41 @@ export default class App extends Component {
         const x = event.clientX;
         const y = event.clientY;
 
-        if (event.button === 0 && x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
-            this.buttonDown = true; 
+        if (x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
+            switch (event.button) {
+            case 0: this.lButtonDown = true; break;
+            case 2: this.rButtonDown = true; break;
+            default: break;
+            }
             this.lx = x; 
             this.ly = y;
-        }
+        } 
     }
 
     onMouseMove(event) {
-        const x = event.clientX;
-        const y = event.clientY;
-
-        if (this.currentScene.activeCamera && this.buttonDown && (x !== this.lx || y !== this.ly)) {
+        if (this.currentScene.activeCamera) {
+            const x = event.clientX;
+            const y = event.clientY;
             const camera = this.currentScene.activeCamera;
             const target = this.currentScene.activeCamera.parent;
 
-            if (event.altKey) {
-                target.rotateZ(this.degreesToRadians(this.lx - x) * this.RXYZ_SCALAR); // yaw camera target around it's own z-axis
-                camera.rotateX(this.degreesToRadians(this.ly - y) * this.RXYZ_SCALAR, target); // pitch around camera target's x-axis
-            } else if (event.shiftKey) {
+            if ((this.lButtonDown && this.rButtonDown) || (this.lButtonDown && event.shiftKey)) { // dolly
                 camera.translate(new Vector1x4(0, (x - this.lx) * this.TXYZ_SCALAR, 0));
-            } else {
+                this.lx = x;
+                this.ly = y;
+            } else if ((this.lButtonDown && event.ctrlKey) || this.rButtonDown) { // move
                 const dx = (this.lx - x) * this.TXYZ_SCALAR;
                 const dz = (y - this.ly) * this.TXYZ_SCALAR;
                 const dv = camera.mapPos(new Vector1x4(dx, 0, dz, 0), target);
                 target.translate(dv) // move target along own axes
+                this.lx = x;
+                this.ly = y;
+            } else if (this.lButtonDown) { // rotate
+                target.rotateZ(this.degreesToRadians(this.lx - x) * this.RXYZ_SCALAR); // yaw camera target around it's own z-axis
+                camera.rotateX(this.degreesToRadians(this.ly - y) * this.RXYZ_SCALAR, target); // pitch around camera target's x-axis
+                this.lx = x;
+                this.ly = y;
             }
-            this.lx = x;
-            this.ly = y;
         }
     }
 

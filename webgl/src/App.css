@@ -7,7 +7,7 @@
   margin: auto; 
 }
 
-label, legend, button {
+canvas, label, legend, button {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -23,6 +23,7 @@ p {
 .canvas-panel {
   border: solid 4px black; border-radius: 8px;
   background-color: black;
+  font-weight: bold;
   opacity: 0.7;
   width: auto;
 }
@@ -39,7 +40,7 @@ p {
   background-color: black;
   border-style: none;
   text-align: center;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
 }
 .scene-choice-button:hover {
@@ -52,7 +53,7 @@ p {
 /* ----------------------------------------------------------------------------
  * Canvas Panel Camera 
  */
-#camera-choice {
+#camera-setup {
   position: absolute; top: 56px; left: 24px;
   border-width: 1px 8px 6px 8px;
 }
@@ -71,7 +72,7 @@ p {
 }
 
 .camera-setup-fieldset {
-  border: solid 1px cadetblue;
+  border: solid 1px yellowgreen;
   border-style: solid none none none;
   margin: 0px;
   padding: 0px;
@@ -80,6 +81,7 @@ p {
 .camera-setup-legend {
   color: cadetblue;
   font-size: 12px;
+  font-style: italic;
   padding: 0px 2px 0px 0px;
 }
 .camera-setup-slider {
@@ -87,9 +89,12 @@ p {
   padding: 0px 0px 0px 2px;
   width: 108px;
 }
-
-.camera-setup-value {
+.camera-setup-slider:focus {
   color: white;
+}
+.camera-setup-value {
+  color: yellow;
+  font-style: normal;
 }
 
 /* ----------------------------------------------------------------------------
@@ -101,7 +106,7 @@ p {
 }
 
 #normals-choice {
-  position: absolute; top: 706px; left: 174px;
+  position: absolute; top: 706px; left: 182px;
   border-width: 1px 1px 6px 8px;
 }
 

@@ -73,9 +73,8 @@ export default class PanelCamera extends Component {
         const currentScene = this.props.getCurrentScene();
 
         if (currentScene && currentScene.cameras.length !== 0) {
-
-            return <div id='camera-choice' className='canvas-panel'> 
-                {
+            return <div id='camera-setup' className='canvas-panel'> 
+                <div style={{marginBottom: '8px'}}> {
                     currentScene.cameras.map((cam, idx) => {
                         const id = `Camera ${idx + 1}`;
                         return <div key={id}> 
@@ -90,9 +89,7 @@ export default class PanelCamera extends Component {
                             <label htmlFor={id} className='camera-choice-button-label'>{id}</label>
                         </div>
                     })
-                }
-
-                <br/>
+                } </div>
 
                 <fieldset className='camera-setup-fieldset'> 
                     <legend className='camera-setup-legend'>
@@ -121,7 +118,6 @@ export default class PanelCamera extends Component {
                         onChange={this.onChangeAspectRatio} 
                         />
                 </fieldset>
-
             </div>
         }
 
