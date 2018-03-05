@@ -21,8 +21,8 @@ export default class PanelLights extends Component {
 
         this.onSceneChange = this.onSceneChange.bind(this);
         this.onSceneLoaded = this.onSceneLoaded.bind(this);
-        this.onInputLowerHemisphereColor = this.onInputLowerHemisphereColor.bind(this);
-        this.onInputUpperHemisphereColor = this.onInputUpperHemisphereColor.bind(this);
+        this.onChangeLowerHemisphereColor = this.onChangeLowerHemisphereColor.bind(this);
+        this.onChangeUpperHemisphereColor = this.onChangeUpperHemisphereColor.bind(this);
         this.props.onRef(this);
     }
 
@@ -65,14 +65,14 @@ export default class PanelLights extends Component {
         return [r, g, b];
     }
 
-    onInputLowerHemisphereColor(event) {
+    onChangeLowerHemisphereColor(event) {
         const lowerHemisphereColor = this.toRgbArray(event.target.value);
         const ambientLS = this.props.getCurrentScene().ambientLS;
         ambientLS.lowerHemisphereColor = lowerHemisphereColor;
         this.setState({lowerHemisphereColor});
     }
 
-    onInputUpperHemisphereColor(event) {
+    onChangeUpperHemisphereColor(event) {
         const upperHemisphereColor = this.toRgbArray(event.target.value);
         const ambientLS = this.props.getCurrentScene().ambientLS;
         ambientLS.upperHemisphereColor = upperHemisphereColor;
@@ -91,7 +91,7 @@ export default class PanelLights extends Component {
                         type='color' 
                         className='lights-setup-button' 
                         value={this.toHexString(currentScene.ambientLS.lowerHemisphereColor)}
-                        onInput={this.onInputLowerHemisphereColor}
+                        onChange={this.onChangeLowerHemisphereColor}
                         />
                 </fieldset>
 
@@ -101,7 +101,7 @@ export default class PanelLights extends Component {
                         type='color' 
                         className='lights-setup-button' 
                         value={this.toHexString(currentScene.ambientLS.upperHemisphereColor)}
-                        onInput={this.onInputUpperHemisphereColor}
+                        onChange={this.onChangeUpperHemisphereColor}
                         />
                 </fieldset>
             </div>
