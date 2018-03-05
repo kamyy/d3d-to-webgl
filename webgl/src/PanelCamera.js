@@ -7,35 +7,33 @@ export default class PanelCamera extends Component {
 
         const currentScene = props.getCurrentScene();
         const activeCamIdx = currentScene.activeCamIdx;
-        const finishedLoad = 0;
         const fieldOfView  = 0;
         const aspectRatio  = 0;
 
-        this.state = { currentScene, activeCamIdx, finishedLoad, fieldOfView, aspectRatio };
-        this.onCanvasSceneChange = this.onCanvasSceneChange.bind(this);
-        this.onSceneLoadFinished = this.onSceneLoadFinished.bind(this);
+        this.state = { activeCamIdx, fieldOfView, aspectRatio };
+        this.onSceneChange = this.onSceneChange.bind(this);
+        this.onSceneLoaded = this.onSceneLoaded.bind(this);
         this.onChangeFieldOfView = this.onChangeFieldOfView.bind(this);
         this.onChangeAspectRatio = this.onChangeAspectRatio.bind(this);
         this.onChangeCamera = this.onChangeCamera.bind(this);
         this.props.onRef(this);
     }
 
-    onCanvasSceneChange() {
+    onSceneChange() {
         const currentScene = this.props.getCurrentScene();
         const activeCamIdx = currentScene.activeCamIdx;
         const fieldOfView  = currentScene.activeCamera ? currentScene.activeCamera.fieldOfView : 0;
         const aspectRatio  = currentScene.activeCamera ? currentScene.activeCamera.aspectRatio : 0;
-        this.setState({ currentScene, activeCamIdx, fieldOfView, aspectRatio });
+        this.setState({ activeCamIdx, fieldOfView, aspectRatio });
     }
 
-    onSceneLoadFinished(loadedScene) {
+    onSceneLoaded(loadedScene) {
         const currentScene = this.props.getCurrentScene();
         if (currentScene === loadedScene) {
             const activeCamIdx = currentScene.activeCamIdx;
-            const finishedLoad = this.state.finishedLoad + 1;
             const fieldOfView  = currentScene.activeCamera.fieldOfView;
             const aspectRatio  = currentScene.activeCamera.aspectRatio;
-            this.setState({ activeCamIdx, finishedLoad, fieldOfView, aspectRatio });
+            this.setState({ activeCamIdx, fieldOfView, aspectRatio });
         }
     }
 
@@ -83,7 +81,7 @@ export default class PanelCamera extends Component {
                                 type='radio'
                                 className='camera-choice-button' 
                                 value={idx}
-                                checked={this.state.activeCamIdx === idx} 
+                                checked={currentScene.activeCamIdx === idx} 
                                 onChange={this.onChangeCamera}
                                 />
                             <label htmlFor={id} className='camera-choice-button-label'>{id}</label>
@@ -93,28 +91,28 @@ export default class PanelCamera extends Component {
 
                 <fieldset className='camera-setup-fieldset'> 
                     <legend className='camera-setup-legend'>
-                        Field of View <span className='camera-setup-value'>{this.state.fieldOfView.toFixed(0)} </span>
+                        Field of View <span className='camera-setup-value'>{currentScene.activeCamera.fieldOfView.toFixed(0)} </span>
                     </legend>
                     <input
                         className='camera-setup-slider'
                         type='range'
                         min='15'
                         max='165'
-                        value={this.state.fieldOfView} 
+                        value={currentScene.activeCamera.fieldOfView.toFixed(0)} 
                         onChange={this.onChangeFieldOfView}
                         />
                 </fieldset>
 
                 <fieldset className='camera-setup-fieldset'> 
                     <legend className='camera-setup-legend'>
-                        Aspect Ratio <span className='camera-setup-value'>{this.state.aspectRatio.toFixed(2)} </span>
+                        Aspect Ratio <span className='camera-setup-value'>{currentScene.activeCamera.aspectRatio.toFixed(2)} </span>
                     </legend>
                     <input  
                         className='camera-setup-slider'
                         type='range' 
                         min='50' 
                         max='500'
-                        value={this.state.aspectRatio * 100}
+                        value={currentScene.activeCamera.aspectRatio * 100}
                         onChange={this.onChangeAspectRatio} 
                         />
                 </fieldset>

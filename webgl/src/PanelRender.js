@@ -9,13 +9,13 @@ export default class PanelRender extends Component {
             drawWirefrm: props.getCurrentScene().drawWirefrm,
             drawNormals: props.getCurrentScene().drawNormals,
         };
-        this.onCanvasSceneChange = this.onCanvasSceneChange.bind(this);
+        this.onSceneChange = this.onSceneChange.bind(this);
         this.onChangeWirefrm = this.onChangeWirefrm.bind(this);
         this.onChangeNormals = this.onChangeNormals.bind(this);
         this.props.onRef(this);
     }
 
-    onCanvasSceneChange() {
+    onSceneChange() {
         const scene = this.props.getCurrentScene();
         this.setState({ 
             drawWirefrm: scene.drawWirefrm,

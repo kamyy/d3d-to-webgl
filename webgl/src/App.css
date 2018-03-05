@@ -1,5 +1,5 @@
 .app {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: sans-serif;
   background-color: #f5f5f5;
   position: relative;
   padding: 16px;
@@ -18,10 +18,11 @@ canvas, label, legend, button {
 
 p {
   margin: 4px;
+  font-size: 14px;
 }
 
 .canvas-panel {
-  border: solid 4px black; border-radius: 8px;
+  border: solid 0px black; border-radius: 8px;
   background-color: black;
   font-weight: bold;
   opacity: 0.7;
@@ -33,7 +34,7 @@ p {
  */
 #scene-choice {
   position: absolute; top: 24px; left: 24px;
-  border-width: 1px 4px 4px 4px;
+  padding: 4px 4px 4px 4px;
 }
 .scene-choice-button {
   color: cadetblue;
@@ -54,8 +55,8 @@ p {
  * Canvas Panel Camera 
  */
 #camera-setup {
-  position: absolute; top: 56px; left: 24px;
-  border-width: 1px 8px 6px 8px;
+  position: absolute; top: 60px; left: 24px;
+  border-width: 4px 8px 4px 8px;
 }
 .camera-choice-button {
   margin: 0px 4px 0px 0px;
@@ -65,12 +66,10 @@ p {
   color: cadetblue;
   font-size: 12px;
   cursor: pointer;
-  margin-right: 12px;
 }
 .camera-choice-button-label:hover {
   color: white;
 }
-
 .camera-setup-fieldset {
   border: solid 1px yellowgreen;
   border-style: solid none none none;
@@ -87,10 +86,8 @@ p {
 .camera-setup-slider {
   margin: 0px;
   padding: 0px 0px 0px 2px;
-  width: 108px;
-}
-.camera-setup-slider:focus {
-  color: white;
+  width: 112px;
+  cursor: pointer;
 }
 .camera-setup-value {
   color: yellow;
@@ -102,14 +99,12 @@ p {
  */
 #wirefrm-choice {
   position: absolute; top: 706px; left: 24px;
-  border-width: 1px 1px 6px 8px;
+  padding: 4px 2px 6px 10px;
 }
-
 #normals-choice {
-  position: absolute; top: 706px; left: 182px;
-  border-width: 1px 1px 6px 8px;
+  position: absolute; top: 706px; left: 194px;
+  padding: 4px 2px 6px 10px;
 }
-
 .checkbox {
   margin: 0px 2px 0px 0px;
   vertical-align: middle;
@@ -125,23 +120,40 @@ p {
 }
 
 /* ----------------------------------------------------------------------------
+ * Canvas Panel Lighting
+ */
+#lights {
+  position: absolute; top: 24px; left: 1100px;
+  padding: 1px 8px 6px 8px;
+}
+.lights-setup-fieldset {
+  border: solid 1px yellowgreen;
+  border-style: solid none none none;
+  margin: 4px 0px 4px 0px;
+  padding: 0px;
+}
+.lights-setup-legend {
+  color: cadetblue;
+  font-size: 12px;
+  font-style: italic;
+  padding: 0px 2px 0px 0px;
+}
+.lights-setup-button {
+  margin: 0px;
+  padding: 0px 0px 0px 4px;
+  height: 16px;
+  border: solid 2px;
+  width: 132px;
+  margin: 0px 8px 0px 0px;
+  padding: 0px 2px 0px 2px;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------------------
  * canvas 
  */
 #canvas {
   border: outset 2px lightgray
-}
-
-/* 
-  aside 
-*/
-#aside {
-  position: absolute;
-  margin: 0px 8px;
-  border-style: none;
-  padding: 8px;
-  width: 300px;
-  top: 8px;
-  left: 1160px;
 }
 
 #copyright {

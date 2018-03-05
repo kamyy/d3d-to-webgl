@@ -11,6 +11,7 @@ import ShaderP3N3B3T2 from './ShaderP3N3B3T2';
 import PanelScene from './PanelScene';
 import PanelCamera from './PanelCamera';
 import PanelRender from './PanelRender';
+import PanelLights from './PanelLights';
 
 export let GL = null;
 
@@ -28,10 +29,13 @@ export default class App extends Component {
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.onSceneLoaded = this.onSceneLoaded.bind(this);
         this.getCurrentScene = this.getCurrentScene.bind(this);
         this.onClickSceneButton = this.onClickSceneButton.bind(this);
-        this.refCanvasPanelCamera = this.refCanvasPanelCamera.bind(this);
-        this.refCanvasPanelRender = this.refCanvasPanelRender.bind(this);
+
+        this.refPanelCamera = this.refPanelCamera.bind(this);
+        this.refPanelRender = this.refPanelRender.bind(this);
+        this.refPanelLights = this.refPanelLights.bind(this);
 
         this.listOfScenes = [ 
             new Scene('hardwood', this.getCurrentScene), 
@@ -45,12 +49,16 @@ export default class App extends Component {
         }
     }
 
-    refCanvasPanelCamera(canvasPanelCamera) {
-        this.canvasPanelCamera = canvasPanelCamera;
+    refPanelCamera(panelCamera) {
+        this.panelCamera = panelCamera;
     }
 
-    refCanvasPanelRender(canvasPanelRender) {
-        this.canvasPanelRender = canvasPanelRender;
+    refPanelRender(panelRender) {
+        this.panelRender = panelRender;
+    }
+
+    refPanelLights(panelLights) {
+        this.panelLights = panelLights;
     }
 
     render() {
@@ -66,15 +74,21 @@ export default class App extends Component {
 
                 <PanelCamera
                     getCurrentScene={this.getCurrentScene} 
-                    onRef={this.refCanvasPanelCamera} 
+                    onRef={this.refPanelCamera} 
                     />
 
                 <PanelRender
                     getCurrentScene={this.getCurrentScene} 
-                    onRef={this.refCanvasPanelRender} 
+                    onRef={this.refPanelRender} 
                     />
-                <hr/>
+
+                <PanelLights
+                    getCurrentScene={this.getCurrentScene} 
+                    onRef={this.refPanelLights} 
+                    />
                 
+                <hr/>
+
                 <div id='copyright'> 
                     <p>MIT License</p>
                     <p>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
@@ -114,7 +128,7 @@ export default class App extends Component {
                 ['P3N3B3T2', new ShaderP3N3B3T2(this.getCurrentScene)]
             ]));
 
-            this.currentScene.loadScene(this.canvasPanelCamera.onSceneLoadFinished);
+            this.currentScene.loadScene(this.onSceneLoaded);
             this.currentScene.drawScene();
         }
     }
@@ -178,16 +192,22 @@ export default class App extends Component {
         }
     }
 
+    onSceneLoaded(loadedScene) {
+        this.panelCamera.onSceneLoaded(loadedScene);
+        this.panelLights.onSceneLoaded(loadedScene);
+    }
+
     onClickSceneButton(event) {
         const i = this.listOfScenes.findIndex(scene => scene.name === event.target.textContent);
         if (i > -1) {
             this.currentScene = this.listOfScenes[i];
-            this.currentScene.loadScene(this.canvasPanelCamera.onSceneLoadFinished);
+            this.currentScene.loadScene(this.onSceneLoaded);
             this.currentScene.drawScene();
 
             this.setState({ currentScene: this.currentScene });
-            this.canvasPanelCamera.onCanvasSceneChange();
-            this.canvasPanelRender.onCanvasSceneChange();
+            this.panelCamera.onSceneChange();
+            this.panelRender.onSceneChange();
+            this.panelLights.onSceneChange();
         }
     }
 }
