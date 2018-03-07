@@ -22,9 +22,12 @@ p {
 }
 
 .canvas-panel {
-  border: solid 0px black; border-radius: 8px;
   background-color: black;
+  border-radius: 8px;
+  border-color: black;
   font-weight: bold;
+  margin: 4px;
+  padding: 4px 8px 4px 8px;
   opacity: 0.7;
   width: auto;
 }
@@ -32,10 +35,6 @@ p {
 /* ----------------------------------------------------------------------------
  * Canvas Panel Scene 
  */
-#scene-choice {
-  position: absolute; top: 24px; left: 24px;
-  padding: 4px 4px 4px 4px;
-}
 .scene-choice-button {
   color: cadetblue;
   background-color: black;
@@ -55,8 +54,7 @@ p {
  * Canvas Panel Camera 
  */
 #camera-setup {
-  position: absolute; top: 60px; left: 24px;
-  border-width: 4px 8px 4px 8px;
+  width: 60%;
 }
 .camera-choice-button {
   margin: 0px 4px 0px 0px;
@@ -73,9 +71,8 @@ p {
 .camera-setup-fieldset {
   border: solid 1px yellowgreen;
   border-style: solid none none none;
-  margin: 0px;
   padding: 0px;
-  width: auto;
+  margin: 0px;
 }
 .camera-setup-legend {
   color: cadetblue;
@@ -83,37 +80,26 @@ p {
   font-style: italic;
   padding: 0px 2px 0px 0px;
 }
-.camera-setup-slider {
+.camera-setup-range {
   margin: 0px;
   padding: 0px 0px 0px 2px;
-  width: 112px;
   cursor: pointer;
 }
 .camera-setup-value {
   color: yellow;
-  font-style: normal;
 }
 
 /* ----------------------------------------------------------------------------
  * Canvas Panel Render 
  */
-#wirefrm-choice {
-  position: absolute; top: 706px; left: 24px;
-  padding: 4px 2px 6px 10px;
-}
-#normals-choice {
-  position: absolute; top: 706px; left: 194px;
-  padding: 4px 2px 6px 10px;
-}
 .checkbox {
-  margin: 0px 2px 0px 0px;
   vertical-align: middle;
+  margin: 0px;
 }
 .checkbox-label {
   color: cadetblue;
   font-size: 12px;
   cursor: pointer;
-  margin-right: 12px;
 }
 .checkbox-label:hover {
   color: white;
@@ -123,30 +109,35 @@ p {
  * Canvas Panel Lighting
  */
 #lights {
-  position: absolute; top: 24px; left: 1100px;
-  padding: 1px 8px 6px 8px;
+  position: absolute; top: 20px; left: 1128px;
+}
+.lights-setup-select {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
 }
 .lights-setup-fieldset {
-  border: solid 1px yellowgreen;
+  border: solid 1px;
   border-style: solid none none none;
-  margin: 4px 0px 4px 0px;
   padding: 0px;
+  margin: 0px;
 }
 .lights-setup-legend {
-  color: cadetblue;
   font-size: 12px;
   font-style: italic;
   padding: 0px 2px 0px 0px;
 }
-.lights-setup-button {
+.lights-setup-range {
   margin: 0px;
-  padding: 0px 0px 0px 4px;
-  height: 16px;
-  border: solid 2px;
-  width: 132px;
-  margin: 0px 8px 0px 0px;
-  padding: 0px 2px 0px 2px;
+  padding: 0px 0px 0px 2px;
   cursor: pointer;
+  width: 99%;
+}
+.lights-setup-value {
+  color: yellow;
+  font-style: normal;
 }
 
 /* ----------------------------------------------------------------------------

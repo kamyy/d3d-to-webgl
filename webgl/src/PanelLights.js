@@ -5,78 +5,74 @@ export default class PanelLights extends Component {
     constructor(props) {
         super(props);
 
-        const currentScene = props.getCurrentScene();
-        let lowerHemisphereColor = '#000000';
-        let upperHemisphereColor = '#000000';
-
-        if (currentScene) {
-            lowerHemisphereColor = this.toHexString(currentScene.ambientLS.lowerHemisphereColor);
-            upperHemisphereColor = this.toHexString(currentScene.ambientLS.upperHemisphereColor);
-        }
-
-        this.state = { 
-            lowerHemisphereColor, 
-            upperHemisphereColor, 
-        };
-
+        this.state = { option: props.getCurrentScene().panelLS, r: 0, g: 0, b: 0 };
         this.onSceneChange = this.onSceneChange.bind(this);
         this.onSceneLoaded = this.onSceneLoaded.bind(this);
-        this.onChangeLowerHemisphereColor = this.onChangeLowerHemisphereColor.bind(this);
-        this.onChangeUpperHemisphereColor = this.onChangeUpperHemisphereColor.bind(this);
+        this.onChangeLight = this.onChangeLight.bind(this);
+        this.onChangeRange = this.onChangeRange.bind(this);
         this.props.onRef(this);
-    }
-
-    toHexString(color) {
-        let r = Math.floor((color[0] * 255.0 + 0.5)).toString(16);
-        let g = Math.floor((color[1] * 255.0 + 0.5)).toString(16);
-        let b = Math.floor((color[2] * 255.0 + 0.5)).toString(16);
-        if (r.length < 2) { r = '0' + r; }
-        if (g.length < 2) { g = '0' + g; }
-        if (b.length < 2) { b = '0' + b; }
-        return `#${r}${g}${b}`;
     }
 
     onSceneChange() {
         const currentScene = this.props.getCurrentScene();
-        const lowerHemisphereColor = this.toHexString(currentScene.ambientLS.lowerHemisphereColor);
-        const upperHemisphereColor = this.toHexString(currentScene.ambientLS.upperHemisphereColor);
-        this.setState({ 
-            lowerHemisphereColor,
-            upperHemisphereColor,
-        });
+        let r = 0, g = 0, b = 0, option = currentScene.panelLS;
+        switch (option) {
+        case 'Lower Ambient Light': if (currentScene.ambientLS) { [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; } break;
+        case 'Upper Ambient Light': if (currentScene.ambientLS) { [r, g, b] = currentScene.ambientLS.upperHemisphereColor; } break;
+        case 'Omni Light':          if (currentScene.omniDirLS) { [r, g, b] = currentScene.omniDirLS.color; } break;
+        default: break;
+        }
+        this.setState({ option, r, g, b });
     }
 
     onSceneLoaded(loadedScene) {
         const currentScene = this.props.getCurrentScene();
         if (currentScene === loadedScene) {
-            const lowerHemisphereColor = this.toHexString(currentScene.ambientLS.lowerHemisphereColor);
-            const upperHemisphereColor = this.toHexString(currentScene.ambientLS.upperHemisphereColor);
-            this.setState({ 
-                lowerHemisphereColor,
-                upperHemisphereColor,
-            });
+            let r, g, b, option = currentScene.panelLS;
+            switch (option) {
+            case 'Lower Ambient Light': [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; break;
+            case 'Upper Ambient Light': [r, g, b] = currentScene.ambientLS.upperHemisphereColor; break;
+            case 'Omni Light':          [r, g, b] = currentScene.omniDirLS.color; break;
+            default: break;
+            }
+            this.setState({ option, r, g, b });
         }
     }
 
-    toRgbArray(hexString) {
-        let r = parseInt(hexString.slice(1, 3), 16) / 255.0;
-        let g = parseInt(hexString.slice(3, 5), 16) / 255.0;
-        let b = parseInt(hexString.slice(5, 7), 16) / 255.0;
-        return [r, g, b];
+    onChangeLight(event) {
+        const currentScene = this.props.getCurrentScene();
+
+        let r, g, b, option = event.target.value;
+        switch (option) {
+        case 'Lower Ambient Light': [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; break;
+        case 'Upper Ambient Light': [r, g, b] = currentScene.ambientLS.upperHemisphereColor; break;
+        case 'Omni Light':          [r, g, b] = currentScene.omniDirLS.color; break;
+        default: break;
+        }
+        this.setState({ option, r, g, b });
+        currentScene.panelLS = option;
     }
 
-    onChangeLowerHemisphereColor(event) {
-        const lowerHemisphereColor = this.toRgbArray(event.target.value);
-        const ambientLS = this.props.getCurrentScene().ambientLS;
-        ambientLS.lowerHemisphereColor = lowerHemisphereColor;
-        this.setState({lowerHemisphereColor});
-    }
+    onChangeRange(event) {
+        const currentScene = this.props.getCurrentScene();
+        let v = parseInt(event.target.value, 10) / 255.0;
+        let i = 0;
 
-    onChangeUpperHemisphereColor(event) {
-        const upperHemisphereColor = this.toRgbArray(event.target.value);
-        const ambientLS = this.props.getCurrentScene().ambientLS;
-        ambientLS.upperHemisphereColor = upperHemisphereColor;
-        this.setState({upperHemisphereColor});
+        switch (event.target.id) {
+        case 'r': i = 0; break;
+        case 'g': i = 1; break;
+        case 'b': i = 2; break;
+        default: break;
+        } 
+
+        switch (this.state.option) {
+        case 'Lower Ambient Light': currentScene.ambientLS.lowerHemisphereColor[i] = v; break;
+        case 'Upper Ambient Light': currentScene.ambientLS.upperHemisphereColor[i] = v; break;
+        case 'Omni Light':          currentScene.omniDirLS.color[i] = v; break;
+        default: break;
+        }
+
+        this.setState({ [event.target.id]: v });
     }
 
     render() {
@@ -85,24 +81,50 @@ export default class PanelLights extends Component {
         if (currentScene && currentScene.ambientLS && currentScene.omniDirLS) {
 
             return <div id='lights' className='canvas-panel'> 
-                <fieldset className='lights-setup-fieldset'> 
-                    <legend className='lights-setup-legend'>Ambient Lower Sphere</legend>
-                    <input 
-                        type='color' 
-                        className='lights-setup-button' 
-                        value={this.toHexString(currentScene.ambientLS.lowerHemisphereColor)}
-                        onChange={this.onChangeLowerHemisphereColor}
-                        />
+                <select className='lights-setup-select' value={this.state.option} onChange={this.onChangeLight}>
+                    <option>Lower Ambient Light</option>
+                    <option>Upper Ambient Light</option>
+                    <option>Omni Light</option>
+                </select>
+
+                <fieldset style={{color: 'red', borderColor:'red'}} className='lights-setup-fieldset'> 
+                    <legend style={{color: 'red'}} className='lights-setup-legend'>
+                        R <span>{(this.state.r * 255.0).toFixed(0)}</span>
+                    </legend>
+                    <input  id='r' className='lights-setup-range' 
+                            value={this.state.r * 255.0} 
+                            type='range' 
+                            min='0' 
+                            max='255' 
+                            onChange={this.onChangeRange} 
+                            />
                 </fieldset>
 
-                <fieldset className='lights-setup-fieldset'> 
-                    <legend className='lights-setup-legend'>Ambient Upper Sphere</legend>
-                    <input 
-                        type='color' 
-                        className='lights-setup-button' 
-                        value={this.toHexString(currentScene.ambientLS.upperHemisphereColor)}
-                        onChange={this.onChangeUpperHemisphereColor}
-                        />
+                <fieldset style={{color: 'green', borderColor:'green'}} className='lights-setup-fieldset'> 
+                    <legend style={{color: 'green'}} className='lights-setup-legend'>
+                        G <span>{(this.state.g * 255.0).toFixed(0)}</span>
+                    </legend>
+                    <input  id='g' 
+                            className='lights-setup-range' 
+                            value={this.state.g * 255.0} 
+                            type='range' 
+                            min='0' max='255' 
+                            onChange={this.onChangeRange} 
+                            />
+                </fieldset>
+
+                <fieldset style={{color: 'blue', borderColor:'blue'}} className='lights-setup-fieldset'> 
+                    <legend style={{color: 'blue'}} className='lights-setup-legend'>
+                        B <span>{(this.state.b * 255.0).toFixed(0)}</span>
+                    </legend>
+                    <input  id='b' 
+                            className='lights-setup-range' 
+                            value={this.state.b * 255.0} 
+                            type='range' 
+                            min='0' 
+                            max='255' 
+                            onChange={this.onChangeRange} 
+                            />
                 </fieldset>
             </div>
         }

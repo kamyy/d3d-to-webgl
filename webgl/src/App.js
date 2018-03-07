@@ -66,21 +66,24 @@ export default class App extends Component {
             <div className="app">
                 <canvas id='canvas' width='1280' height='720'> Please use a browser that supports WebGL </canvas> 
 
-                <PanelScene 
-                    listOfScenes={this.listOfScenes} 
-                    getCurrentScene={this.getCurrentScene} 
-                    onClick={this.onClickSceneButton} 
-                    />
+                <div style={{ position: 'absolute', top: '20px', left: '20px'}}>
+                    <PanelScene 
+                        getCurrentScene={this.getCurrentScene} 
+                        listOfScenes={this.listOfScenes} 
+                        onClick={this.onClickSceneButton} 
+                        />
+                    <PanelCamera
+                        getCurrentScene={this.getCurrentScene} 
+                        onRef={this.refPanelCamera} 
+                        />
+                </div>
 
-                <PanelCamera
-                    getCurrentScene={this.getCurrentScene} 
-                    onRef={this.refPanelCamera} 
-                    />
-
-                <PanelRender
-                    getCurrentScene={this.getCurrentScene} 
-                    onRef={this.refPanelRender} 
-                    />
+                <div style={{ position: 'absolute', top: '712px', left: '20px'}}>
+                    <PanelRender
+                        getCurrentScene={this.getCurrentScene} 
+                        onRef={this.refPanelRender} 
+                        />
+                </div>
 
                 <PanelLights
                     getCurrentScene={this.getCurrentScene} 

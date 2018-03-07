@@ -94,7 +94,7 @@ export default class PanelCamera extends Component {
                         Field of View <span className='camera-setup-value'>{currentScene.activeCamera.fieldOfView.toFixed(0)} </span>
                     </legend>
                     <input
-                        className='camera-setup-slider'
+                        className='camera-setup-range'
                         type='range'
                         min='15'
                         max='165'
@@ -108,7 +108,7 @@ export default class PanelCamera extends Component {
                         Aspect Ratio <span className='camera-setup-value'>{currentScene.activeCamera.aspectRatio.toFixed(2)} </span>
                     </legend>
                     <input  
-                        className='camera-setup-slider'
+                        className='camera-setup-range'
                         type='range' 
                         min='50' 
                         max='500'

@@ -22,6 +22,7 @@ export default class Scene {
         this.mirrorObj = null;
         this.ambientLS = new AmbientLS([0.15, 0.15, 0.15], [0.15, 0.15, 0.15]);
         this.omniDirLS = null;
+        this.panelLS = 'Omni Light';
 
         this.drawWirefrm = false;
         this.drawNormals = false;
