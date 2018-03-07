@@ -94,7 +94,7 @@ p {
  */
 .checkbox {
   vertical-align: middle;
-  margin: 0px;
+  margin: 2px 2px 2px 0px;
 }
 .checkbox-label {
   color: cadetblue;
