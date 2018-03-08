@@ -72,22 +72,27 @@ export default class PanelCamera extends Component {
 
         if (currentScene && currentScene.cameras.length !== 0) {
             return <div id='camera-setup' className='canvas-panel'> 
-                <div style={{marginBottom: '8px'}}> {
-                    currentScene.cameras.map((cam, idx) => {
-                        const id = `Camera ${idx + 1}`;
-                        return <div key={id}> 
-                            <input 
-                                id={id}
-                                type='radio'
-                                className='camera-choice-button' 
-                                value={idx}
-                                checked={currentScene.activeCamIdx === idx} 
-                                onChange={this.onChangeCamera}
-                                />
-                            <label htmlFor={id} className='camera-choice-button-label'>{id}</label>
-                        </div>
-                    })
-                } </div>
+                {  
+                    (currentScene.cameras.length > 1) ?
+                        <div style={{marginBottom: '8px'}}> {
+                            currentScene.cameras.map((cam, idx) => {
+                                const id = `Camera ${idx + 1}`;
+                                return <div key={id}> 
+                                    <input 
+                                        id={id}
+                                        type='radio'
+                                        className='camera-choice-button' 
+                                        value={idx}
+                                        checked={currentScene.activeCamIdx === idx} 
+                                        onChange={this.onChangeCamera}
+                                        />
+                                    <label htmlFor={id} className='camera-choice-button-label'>{id}</label>
+                                </div>
+                            })
+                        } </div>
+                        :
+                        <div style={{marginBottom: '4px'}}/>
+                }
 
                 <fieldset className='camera-setup-fieldset'> 
                     <legend className='camera-setup-legend'>
