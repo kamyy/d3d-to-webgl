@@ -17,9 +17,9 @@ export default class PanelLights extends Component {
         const currentScene = this.props.getCurrentScene();
         let r = 0, g = 0, b = 0, option = currentScene.panelLS;
         switch (option) {
-        case 'Lower Ambient Light': if (currentScene.ambientLS) { [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; } break;
-        case 'Upper Ambient Light': if (currentScene.ambientLS) { [r, g, b] = currentScene.ambientLS.upperHemisphereColor; } break;
-        case 'Omni Light':          if (currentScene.omniDirLS) { [r, g, b] = currentScene.omniDirLS.color; } break;
+        case 'Lower Ambient':   if (currentScene.ambientLS) { [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; } break;
+        case 'Upper Ambient':   if (currentScene.ambientLS) { [r, g, b] = currentScene.ambientLS.upperHemisphereColor; } break;
+        case 'Omni Directional':if (currentScene.omniDirLS) { [r, g, b] = currentScene.omniDirLS.color; } break;
         default: break;
         }
         this.setState({ option, r, g, b });
@@ -30,9 +30,9 @@ export default class PanelLights extends Component {
         if (currentScene === loadedScene) {
             let r, g, b, option = currentScene.panelLS;
             switch (option) {
-            case 'Lower Ambient Light': [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; break;
-            case 'Upper Ambient Light': [r, g, b] = currentScene.ambientLS.upperHemisphereColor; break;
-            case 'Omni Light':          [r, g, b] = currentScene.omniDirLS.color; break;
+            case 'Lower Ambient': [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; break;
+            case 'Upper Ambient': [r, g, b] = currentScene.ambientLS.upperHemisphereColor; break;
+            case 'Omni Directional':          [r, g, b] = currentScene.omniDirLS.color; break;
             default: break;
             }
             this.setState({ option, r, g, b });
@@ -44,9 +44,9 @@ export default class PanelLights extends Component {
 
         let r, g, b, option = event.target.value;
         switch (option) {
-        case 'Lower Ambient Light': [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; break;
-        case 'Upper Ambient Light': [r, g, b] = currentScene.ambientLS.upperHemisphereColor; break;
-        case 'Omni Light':          [r, g, b] = currentScene.omniDirLS.color; break;
+        case 'Lower Ambient': [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; break;
+        case 'Upper Ambient': [r, g, b] = currentScene.ambientLS.upperHemisphereColor; break;
+        case 'Omni Directional':          [r, g, b] = currentScene.omniDirLS.color; break;
         default: break;
         }
         this.setState({ option, r, g, b });
@@ -66,9 +66,9 @@ export default class PanelLights extends Component {
         } 
 
         switch (this.state.option) {
-        case 'Lower Ambient Light': currentScene.ambientLS.lowerHemisphereColor[i] = v; break;
-        case 'Upper Ambient Light': currentScene.ambientLS.upperHemisphereColor[i] = v; break;
-        case 'Omni Light':          currentScene.omniDirLS.color[i] = v; break;
+        case 'Lower Ambient': currentScene.ambientLS.lowerHemisphereColor[i] = v; break;
+        case 'Upper Ambient': currentScene.ambientLS.upperHemisphereColor[i] = v; break;
+        case 'Omni Directional':          currentScene.omniDirLS.color[i] = v; break;
         default: break;
         }
 
@@ -80,18 +80,21 @@ export default class PanelLights extends Component {
 
         if (currentScene && currentScene.ambientLS && currentScene.omniDirLS) {
 
-            return <div id='lights' className='canvas-panel'> 
-                <select className='lights-setup-select' value={this.state.option} onChange={this.onChangeLight}>
-                    <option>Lower Ambient Light</option>
-                    <option>Upper Ambient Light</option>
-                    <option>Omni Light</option>
-                </select>
+            return <div id='LightPanel' className='CanvasPanel'> 
+                <fieldset className='Fieldset'> 
+                    <legend className='Legend'>Light Source</legend>
+                    <select className='LightSelect' value={this.state.option} onChange={this.onChangeLight}>
+                        <option>Lower Ambient</option>
+                        <option>Upper Ambient</option>
+                        <option>Omni Directional</option>
+                    </select>
+                </fieldset>
 
-                <fieldset style={{color: 'red', borderColor:'red'}} className='lights-setup-fieldset'> 
-                    <legend style={{color: 'red'}} className='lights-setup-legend'>
+                <fieldset style={{borderColor:'red'}} className='Fieldset'> 
+                    <legend style={{color: 'red'}} className='Legend'>
                         R <span>{(this.state.r * 255.0).toFixed(0)}</span>
                     </legend>
-                    <input  id='r' className='lights-setup-range' 
+                    <input  id='r' className='Range' 
                             value={this.state.r * 255.0} 
                             type='range' 
                             min='0' 
@@ -100,12 +103,12 @@ export default class PanelLights extends Component {
                             />
                 </fieldset>
 
-                <fieldset style={{color: 'green', borderColor:'green'}} className='lights-setup-fieldset'> 
-                    <legend style={{color: 'green'}} className='lights-setup-legend'>
+                <fieldset style={{borderColor:'green'}} className='Fieldset'> 
+                    <legend style={{color: 'green'}} className='Legend'>
                         G <span>{(this.state.g * 255.0).toFixed(0)}</span>
                     </legend>
                     <input  id='g' 
-                            className='lights-setup-range' 
+                            className='Range' 
                             value={this.state.g * 255.0} 
                             type='range' 
                             min='0' max='255' 
@@ -113,12 +116,12 @@ export default class PanelLights extends Component {
                             />
                 </fieldset>
 
-                <fieldset style={{color: 'blue', borderColor:'blue'}} className='lights-setup-fieldset'> 
-                    <legend style={{color: 'blue'}} className='lights-setup-legend'>
+                <fieldset style={{borderColor:'blue'}} className='Fieldset'> 
+                    <legend style={{color: 'blue'}} className='Legend'>
                         B <span>{(this.state.b * 255.0).toFixed(0)}</span>
                     </legend>
                     <input  id='b' 
-                            className='lights-setup-range' 
+                            className='Range' 
                             value={this.state.b * 255.0} 
                             type='range' 
                             min='0' 

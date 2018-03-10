@@ -12,6 +12,7 @@ import PanelScene from './PanelScene';
 import PanelCamera from './PanelCamera';
 import PanelRender from './PanelRender';
 import PanelLights from './PanelLights';
+import PanelMaterials from './PanelMaterials';
 
 export let GL = null;
 
@@ -36,6 +37,7 @@ export default class App extends Component {
         this.refPanelCamera = this.refPanelCamera.bind(this);
         this.refPanelRender = this.refPanelRender.bind(this);
         this.refPanelLights = this.refPanelLights.bind(this);
+        this.refPanelMaterials = this.refPanelMaterials.bind(this);
 
         this.listOfScenes = [ 
             new Scene('hardwood', this.getCurrentScene), 
@@ -61,12 +63,16 @@ export default class App extends Component {
         this.panelLights = panelLights;
     }
 
+    refPanelMaterials(panelMaterials) {
+        this.panelMaterials = panelMaterials;
+    }
+
     render() {
         return (
-            <div className="app">
-                <canvas id='canvas' width='1280' height='720'> Please use a browser that supports WebGL </canvas> 
+            <div className='App'>
+                <canvas id='Canvas' width='1280' height='720'>Please use a browser that supports WebGL</canvas> 
 
-                <div style={{ position: 'absolute', top: '20px', left: '20px'}}>
+                <div id='LHS'>
                     <PanelScene 
                         getCurrentScene={this.getCurrentScene} 
                         listOfScenes={this.listOfScenes} 
@@ -78,30 +84,37 @@ export default class App extends Component {
                         />
                 </div>
 
-                <div style={{ position: 'absolute', top: '712px', left: '20px'}}>
+                <div id='Bottom'>
                     <PanelRender
                         getCurrentScene={this.getCurrentScene} 
                         onRef={this.refPanelRender} 
                         />
                 </div>
 
-                <PanelLights
-                    getCurrentScene={this.getCurrentScene} 
-                    onRef={this.refPanelLights} 
-                    />
+                <div id='RHS'>
+                    <PanelLights
+                        getCurrentScene={this.getCurrentScene} 
+                        onRef={this.refPanelLights} 
+                        />
+                        
+                    <PanelMaterials
+                        getCurrentScene={this.getCurrentScene} 
+                        onRef={this.refPanelMaterials} 
+                        />
+                </div>
                 
                 <hr/>
 
-                <div id='copyright'> 
-                    <p>MIT License</p>
-                    <p>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
-                </div>
+                <p className='ProjectInfo'><a href='https://github.com/kamyy/d3d-to-webgl'>repo @ https://github.com/kamyy/d3d-to-webgl</a></p>
+                <br/>
+                <p className='ProjectInfo'>MIT License</p>
+                <p className='ProjectInfo'>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
             </div>
         );
     }
 
     componentDidMount() {
-        this.canvas = document.getElementById('canvas');
+        this.canvas = document.getElementById('Canvas');
         GL = this.canvas.getContext("webgl", {
             depth: true,
             alpha: false,
@@ -198,6 +211,7 @@ export default class App extends Component {
     onSceneLoaded(loadedScene) {
         this.panelCamera.onSceneLoaded(loadedScene);
         this.panelLights.onSceneLoaded(loadedScene);
+        this.panelMaterials.onSceneLoaded(loadedScene);
     }
 
     onClickSceneButton(event) {
@@ -211,6 +225,7 @@ export default class App extends Component {
             this.panelCamera.onSceneChange();
             this.panelRender.onSceneChange();
             this.panelLights.onSceneChange();
+            this.panelMaterials.onSceneChange();
         }
     }
 }

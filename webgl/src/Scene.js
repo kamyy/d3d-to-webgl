@@ -22,13 +22,14 @@ export default class Scene {
         this.mirrorObj = null;
         this.ambientLS = new AmbientLS([0.15, 0.15, 0.15], [0.15, 0.15, 0.15]);
         this.omniDirLS = null;
-        this.panelLS = 'Omni Light';
+        this.panelLS = 'Omni Directional';
 
         this.drawWirefrm = false;
         this.drawNormals = false;
 
         this.mapOfTextures = new Map();
         this.mapOfMaterials = new Map();
+        this.filteredMaterials = [];
         this.translucentPieces = [];
 
         this.getCurrentScene = getCurrentScene;

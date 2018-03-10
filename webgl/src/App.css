@@ -1,4 +1,4 @@
-.app {
+.App {
   font-family: sans-serif;
   background-color: #f5f5f5;
   position: relative;
@@ -7,7 +7,7 @@
   margin: auto; 
 }
 
-canvas, label, legend, button {
+canvas, label, legend, button, div {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -16,26 +16,83 @@ canvas, label, legend, button {
   user-select: none;
 }
 
-p {
-  margin: 4px;
-  font-size: 14px;
+div#LHS {
+  position: absolute; 
+  top: 20px; 
+  left: 20px; 
+  width: 240px;
 }
 
-.canvas-panel {
+div#RHS{
+  position: absolute; 
+  top: 20px; 
+  left: 1124px; 
+  width: 172px;
+}
+
+div#Bottom {
+  position: absolute;
+  top: 712px; 
+  left: 20px;
+}
+
+/* Shared styels -------------------------------------------------------------- */
+.CanvasPanel {
   background-color: black;
   border-radius: 8px;
   border-color: black;
   font-weight: bold;
-  margin: 4px;
-  padding: 4px 8px 4px 8px;
+  font-size: 12px;
   opacity: 0.7;
+  padding: 4px 8px;
+  margin: 4px;
   width: auto;
 }
 
-/* ----------------------------------------------------------------------------
- * Canvas Panel Scene 
- */
-.scene-choice-button {
+.Fieldset {
+  border: solid 1px yellowgreen;
+  border-style: solid none none none;
+  padding: 0px;
+  margin: 0px;
+}
+
+.Legend {
+  color: cadetblue;
+  font-style: italic;
+  padding: 0px 2px 0px 0px;
+}
+
+.LegendValue {
+  color: yellow;
+}
+
+.Range {
+  margin: 0px;
+  padding: 0px 0px 0px 2px;
+  cursor: pointer;
+  width: 97%;
+}
+
+.Checkbox {
+  vertical-align: middle;
+  margin: 2px 2px 2px 0px;
+}
+
+.CheckboxLabel {
+  color: cadetblue;
+  cursor: pointer;
+}
+
+.CheckboxLabel:hover {
+  color: white;
+}
+
+/* Scene panel ---------------------------------------------------------------- */
+#ScenePanel {
+  float: left;
+}
+
+.SceneButton {
   color: cadetblue;
   background-color: black;
   border-style: none;
@@ -43,110 +100,76 @@ p {
   font-size: 16px;
   cursor: pointer;
 }
-.scene-choice-button:hover {
+
+.SceneButton:hover {
   color: white;
 }
-.scene-choice-button:focus {
+
+.SceneButton:focus {
   outline: none;
 }
 
-/* ----------------------------------------------------------------------------
- * Canvas Panel Camera 
- */
-#camera-setup {
-  width: 60%;
+/* Camera panel -------------------------------------------------------------- */
+#CameraPanel {
+  float: left;
+  width: 55%;
 }
-.camera-choice-button {
+
+.CameraButton {
   margin: 0px 4px 0px 0px;
   vertical-align: middle;
 }
-.camera-choice-button-label {
+
+.CameraButtonLabel {
   color: cadetblue;
-  font-size: 12px;
   cursor: pointer;
-}
-.camera-choice-button-label:hover {
-  color: white;
-}
-.camera-setup-fieldset {
-  border: solid 1px yellowgreen;
-  border-style: solid none none none;
-  padding: 0px;
-  margin: 0px;
-}
-.camera-setup-legend {
-  color: cadetblue;
-  font-size: 12px;
-  font-style: italic;
-  padding: 0px 2px 0px 0px;
-}
-.camera-setup-range {
-  margin: 0px;
-  padding: 0px 0px 0px 2px;
-  cursor: pointer;
-}
-.camera-setup-value {
-  color: yellow;
 }
 
-/* ----------------------------------------------------------------------------
- * Canvas Panel Render 
- */
-.checkbox {
-  vertical-align: middle;
-  margin: 2px 2px 2px 0px;
-}
-.checkbox-label {
-  color: cadetblue;
-  font-size: 12px;
-  cursor: pointer;
-}
-.checkbox-label:hover {
+.CameraButtonLabel:hover {
   color: white;
 }
 
-/* ----------------------------------------------------------------------------
- * Canvas Panel Lighting
- */
-#lights {
-  position: absolute; top: 20px; left: 1128px;
+/* Light panel ---------------------------------------------------------------- */
+#LightPanel {
+  float: right;
+  width: 72%;
 }
-.lights-setup-select {
-  font-size: 12px;
-  font-weight: bold;
+
+.LightSelect {
   margin-top: 4px;
   margin-bottom: 4px;
   cursor: pointer;
-}
-.lights-setup-fieldset {
-  border: solid 1px;
-  border-style: solid none none none;
-  padding: 0px;
-  margin: 0px;
-}
-.lights-setup-legend {
-  font-size: 12px;
-  font-style: italic;
-  padding: 0px 2px 0px 0px;
-}
-.lights-setup-range {
-  margin: 0px;
-  padding: 0px 0px 0px 2px;
-  cursor: pointer;
-  width: 99%;
-}
-.lights-setup-value {
-  color: yellow;
-  font-style: normal;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
 }
 
-/* ----------------------------------------------------------------------------
- * canvas 
- */
-#canvas {
+/* Material panel ------------------------------------------------------------- */
+#MaterialPanel {
+  float: right;
+}
+
+.MaterialInput {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  width: 96%;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+.MaterialItem {
+  color: yellow;
+}
+
+/* Canvas --------------------------------------------------------------------- */
+canvas#Canvas {
   border: outset 2px lightgray
 }
 
-#copyright {
+/* Copyright ------------------------------------------------------------------ */
+.ProjectInfo {
+  margin: 4px;
+  font-size: 14px;
   text-align: center;
 }

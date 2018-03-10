@@ -71,7 +71,7 @@ export default class PanelCamera extends Component {
         const currentScene = this.props.getCurrentScene();
 
         if (currentScene && currentScene.cameras.length !== 0) {
-            return <div id='camera-setup' className='canvas-panel'> 
+            return <div id='CameraPanel' className='CanvasPanel'> 
                 {  
                     (currentScene.cameras.length > 1) ?
                         <div style={{marginBottom: '8px'}}> {
@@ -81,12 +81,14 @@ export default class PanelCamera extends Component {
                                     <input 
                                         id={id}
                                         type='radio'
-                                        className='camera-choice-button' 
+                                        className='CameraButton' 
                                         value={idx}
                                         checked={currentScene.activeCamIdx === idx} 
-                                        onChange={this.onChangeCamera}
-                                        />
-                                    <label htmlFor={id} className='camera-choice-button-label'>{id}</label>
+                                        onChange={this.onChangeCamera} />
+                                    <label 
+                                        htmlFor={id} 
+                                        className='CameraButtonLabel'>
+                                        {id} </label>
                                 </div>
                             })
                         } </div>
@@ -94,32 +96,30 @@ export default class PanelCamera extends Component {
                         <div style={{marginBottom: '4px'}}/>
                 }
 
-                <fieldset className='camera-setup-fieldset'> 
-                    <legend className='camera-setup-legend'>
-                        Field of View <span className='camera-setup-value'>{currentScene.activeCamera.fieldOfView.toFixed(0)} </span>
+                <fieldset className='Fieldset'> 
+                    <legend className='Legend'>
+                        Field of View <span className='LegendValue'>{currentScene.activeCamera.fieldOfView.toFixed(0)} </span>
                     </legend>
                     <input
-                        className='camera-setup-range'
+                        className='Range'
                         type='range'
                         min='15'
                         max='165'
                         value={currentScene.activeCamera.fieldOfView.toFixed(0)} 
-                        onChange={this.onChangeFieldOfView}
-                        />
+                        onChange={this.onChangeFieldOfView} />
                 </fieldset>
 
-                <fieldset className='camera-setup-fieldset'> 
-                    <legend className='camera-setup-legend'>
-                        Aspect Ratio <span className='camera-setup-value'>{currentScene.activeCamera.aspectRatio.toFixed(2)} </span>
+                <fieldset className='Fieldset'> 
+                    <legend className='Legend'>
+                        Aspect Ratio <span className='LegendValue'>{currentScene.activeCamera.aspectRatio.toFixed(2)} </span>
                     </legend>
                     <input  
-                        className='camera-setup-range'
+                        className='Range'
                         type='range' 
                         min='50' 
                         max='500'
                         value={currentScene.activeCamera.aspectRatio * 100}
-                        onChange={this.onChangeAspectRatio} 
-                        />
+                        onChange={this.onChangeAspectRatio} />
                 </fieldset>
             </div>
         }

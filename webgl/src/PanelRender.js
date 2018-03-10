@@ -45,13 +45,13 @@ export default class PanelRender extends Component {
         const id1 = 'normalsCheckbox';
 
         return <div>
-            <span id='wirefrm-choice' className='canvas-panel'>
-                <input id={id0} type='checkbox' checked={scene.drawWirefrm} onChange={this.onChangeWirefrm} className='checkbox' />
-                <label htmlFor={id0} className='checkbox-label'>Primitive Edges Only</label>
+            <span id='wirefrm-choice' className='CanvasPanel'>
+                <input id={id0} type='checkbox' checked={scene.drawWirefrm} onChange={this.onChangeWirefrm} className='Checkbox' />
+                <label htmlFor={id0} className='CheckboxLabel'>Primitive Edges Only</label>
             </span>
-            <span id='normals-choice' className='canvas-panel'>
-                <input id={id1} type='checkbox' checked={scene.drawNormals} onChange={this.onChangeNormals} className='checkbox' />
-                <label htmlFor={id1} className='checkbox-label'>Vertex Normals</label>
+            <span id='normals-choice' className='CanvasPanel'>
+                <input id={id1} type='checkbox' checked={scene.drawNormals} onChange={this.onChangeNormals} className='Checkbox' />
+                <label htmlFor={id1} className='CheckboxLabel'>Vertex Normals</label>
             </span>
         </div>
     }
