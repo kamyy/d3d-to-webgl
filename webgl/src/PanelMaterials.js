@@ -4,71 +4,90 @@ export default class PanelMaterials extends Component {
     constructor(props) {
         super(props);
 
-        const currentScene = props.getCurrentScene();
-        const materials = Array.from(currentScene.mapOfMaterials.values());
-        const filterTxt = '';
-
-        this.state = { materials, filterTxt };
         this.onSceneChange = this.onSceneChange.bind(this);
         this.onSceneLoaded = this.onSceneLoaded.bind(this);
+        this.onClickClear = this.onClickClear.bind(this);
+        this.onClickList = this.onClickList.bind(this);
         this.onChange = this.onChange.bind(this);
         this.props.onRef(this);
 
-        currentScene.filteredMaterials = [];
-    }
-
-    filterMaterials(text) {
-        const currentScene = this.props.getCurrentScene();
-        const materialList = Array.from(currentScene.mapOfMaterials.values());
-        text = text.toLowerCase();
-
-        return materialList.filter(m => m.name.toLowerCase().includes(text));
+        const currentScene = props.getCurrentScene();
+        this.state = { 
+            materials: currentScene.filteredMaterials,
+            filterTxt: '' 
+        };
     }
 
     onSceneChange() {
         const currentScene = this.props.getCurrentScene();
-        const materials = Array.from(currentScene.mapOfMaterials.values());
-        const filterTxt = '';
+        currentScene.filterMaterials('');
         this.setState({ 
-            materials, 
-            filterTxt 
+            materials: currentScene.filteredMaterials,
+            filterTxt: ''
         });
-        currentScene.filteredMaterials = materials;
     }
 
     onSceneLoaded(loadedScene) {
         const currentScene = this.props.getCurrentScene();
         if (currentScene === loadedScene) {
-            const materials = Array.from(currentScene.mapOfMaterials.values());
-            const filterTxt = '';
+            currentScene.filterMaterials('');
             this.setState({ 
-                materials, 
-                filterTxt 
+                materials: currentScene.filteredMaterials,
+                filterTxt: ''
             });
-            currentScene.filteredMaterials = materials;
         }
-
     }
 
     onChange(event) {
         const currentScene = this.props.getCurrentScene();
-        const filterTxt = event.target.value;
-        this.setState({filterTxt});
+        currentScene.filterMaterials(event.target.value);
+        this.setState({
+            filterTxt: event.target.value
+        });
+    }
+    
+    onClickClear(event) {
+        const currentScene = this.props.getCurrentScene();
+        currentScene.filterMaterials('');
+        this.setState({
+            filterTxt: ''
+        });
+    }
 
-        currentScene.filteredMaterials = this.filterMaterials(filterTxt);
+    onClickList(event) {
+        const currentScene = this.props.getCurrentScene();
+        currentScene.filterMaterials(event.target.id);
+        this.setState({ 
+            filterTxt: event.target.id
+        });
     }
 
     render() {
-        const { filterTxt } = this.state;
+        const currentScene = this.props.getCurrentScene();
 
-        return <div id='MaterialPanel' className='CanvasPanel'>
-            <fieldset className='Fieldset'> <legend className='Legend'>Filter By Material</legend>
-                <input id='filterTxt' className='MaterialInput' type='text' spellCheck={false} onChange={this.onChange}/>
-            </fieldset>
-            <fieldset className='Fieldset'><legend className='Legend'>Materials</legend> {
-                this.filterMaterials(filterTxt).map(m => <div key={m.name} className='MaterialItem'>{m.name}</div>
-                )
-            } </fieldset>
-        </div>
+        if (currentScene.rootNode) {
+            return <div id='MaterialPanel' className='CanvasPanel'>
+                <fieldset className='Fieldset'><legend className='Legend'>Filter By Material</legend>
+                    <input  id='FilterTxt' 
+                            type='text' 
+                            value={this.state.filterTxt} 
+                            spellCheck={false} 
+                            onChange={this.onChange}
+                            className='MaterialInput' 
+                            />
+                    <button id='ClearButton' onClick={this.onClickClear}>
+                        <img id='ClearImage' alt='clear' src='./cross.png' width='12' height='12'/>
+                    </button>
+                </fieldset>
+
+                <fieldset className='Fieldset'><legend className='Legend'>Materials</legend> {
+                    [...currentScene.filteredMaterials].map(m => 
+                        <div id={m.name} key={m.name} className='MaterialItem' onClick={this.onClickList}>{m.name}</div>
+                    )
+                } </fieldset>
+            </div>
+        }
+
+        return null;
     }
 }

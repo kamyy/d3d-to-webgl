@@ -142,6 +142,7 @@ div#Bottom {
   font-family: inherit;
   font-weight: inherit;
   font-size: inherit;
+  outline-color: yellow;
 }
 
 /* Material panel ------------------------------------------------------------- */
@@ -152,14 +153,37 @@ div#Bottom {
 .MaterialInput {
   margin-top: 4px;
   margin-bottom: 4px;
-  width: 96%;
+  width: 112px;
   font-family: inherit;
   font-weight: inherit;
   font-size: inherit;
+  padding-right: 24px;
+}
+
+button#ClearButton {
+  margin: 0px 0px 0px -22px;
+  padding: 0px 0px 0px 4px;
+  border: none;
+  border-left: solid 1px grey;
+  vertical-align: middle;
+  background-color: white;
+  outline-color: yellow;
+}
+
+button#ClearButton:hover {
+  cursor: pointer;
+}
+
+.MaterialInput:focus {
+  border: solid 2px yellow;
 }
 
 .MaterialItem {
   color: yellow;
+}
+
+.MaterialItem:hover {
+  color: white;
 }
 
 /* Canvas --------------------------------------------------------------------- */

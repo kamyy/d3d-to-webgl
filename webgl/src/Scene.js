@@ -29,7 +29,7 @@ export default class Scene {
 
         this.mapOfTextures = new Map();
         this.mapOfMaterials = new Map();
-        this.filteredMaterials = [];
+        this.filteredMaterials = new Set();
         this.translucentPieces = [];
 
         this.getCurrentScene = getCurrentScene;
@@ -43,6 +43,13 @@ export default class Scene {
 
         this.requestedLoad = false;
         this.onSceneLoaded = null;
+    }
+
+    filterMaterials(filter) {
+        filter = filter.toLowerCase();
+        this.filteredMaterials = new Set(Array.from(this.mapOfMaterials.values()).filter(
+            m => m.name.toLowerCase().includes(filter)
+        ));
     }
 
     loadScene(onSceneLoadFinished) {
@@ -140,7 +147,7 @@ export default class Scene {
 
         case 'Model':
             refFrame = new Model(parent, node, 
-                this.mapOfMaterials
+                this
             );
             if (refFrame.isTheFloor) {
                 this.mirrorObj = refFrame; 

@@ -2,16 +2,17 @@ import RefFrame from './RefFrame';
 import { GL } from './App';
 
 export default class Model extends RefFrame {
-    constructor(parent, node, mapOfMaterials) {
+    constructor(parent, node, scene) {
         super(parent, node);
 
         this.shaderP3C3 = GL.mapOfShaders.get('P3C3');
         this.isTheFloor = false;
+        this.scene = scene;
 
         if (node.hasOwnProperty('pieces')) {
             this.modelPieces = node.pieces;
             for (let piece of this.modelPieces) {
-                piece.material = mapOfMaterials.get(piece.material);
+                piece.material = scene.mapOfMaterials.get(piece.material);
                 if (piece.material.name === 'floor') {
                     this.isTheFloor = true;
                 }
@@ -38,23 +39,29 @@ export default class Model extends RefFrame {
 
     drawNormals() {
         for (let piece of this.modelPieces) {
-            this.shaderP3C3.drawNormals(this, piece);
+            if (this.scene.filteredMaterials.has(piece.material)) {
+                this.shaderP3C3.drawNormals(this, piece);
+            }
         }
     }
 
     drawPieces(forReflection, cacheTranslucentPiece) {
         for (let piece of this.modelPieces) {
-            if (!forReflection && piece.material.isTranslucent) {
-                cacheTranslucentPiece({model:this, piece:piece});
-            } else {
-                piece.material.shader.drawTriangles(this, piece);
+            if (this.scene.filteredMaterials.has(piece.material)) {
+                if (!forReflection && piece.material.isTranslucent) {
+                    cacheTranslucentPiece({model:this, piece:piece});
+                } else {
+                    piece.material.shader.drawTriangles(this, piece);
+                }
             }
         }
     }
 
     drawEdges() {
         for (let piece of this.modelPieces) {
-            piece.material.shader.drawTriangleEdges(this, piece);
+            if (this.scene.filteredMaterials.has(piece.material)) {
+                piece.material.shader.drawTriangleEdges(this, piece);
+            }
         }
     }
 }
