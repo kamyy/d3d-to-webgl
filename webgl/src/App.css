@@ -153,14 +153,18 @@ div#Bottom {
 .MaterialInput {
   margin-top: 4px;
   margin-bottom: 4px;
-  width: 112px;
+  width: 124px;
   font-family: inherit;
   font-weight: inherit;
   font-size: inherit;
   padding-right: 24px;
 }
 
-button#ClearButton {
+.MaterialInput:focus {
+  border: solid 2px yellow;
+}
+
+button#Clear{
   margin: 0px 0px 0px -22px;
   padding: 0px 0px 0px 4px;
   border: none;
@@ -170,12 +174,8 @@ button#ClearButton {
   outline-color: yellow;
 }
 
-button#ClearButton:hover {
+button#Clear:hover {
   cursor: pointer;
-}
-
-.MaterialInput:focus {
-  border: solid 2px yellow;
 }
 
 .MaterialItem {
@@ -191,9 +191,9 @@ canvas#Canvas {
   border: outset 2px lightgray
 }
 
-/* Copyright ------------------------------------------------------------------ */
+/* Project info --------------------------------------------------------------- */
 .ProjectInfo {
-  margin: 4px;
+  margin: 6px;
   font-size: 14px;
   text-align: center;
 }

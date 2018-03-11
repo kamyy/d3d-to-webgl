@@ -75,8 +75,8 @@ export default class PanelMaterials extends Component {
                             onChange={this.onChange}
                             className='MaterialInput' 
                             />
-                    <button id='ClearButton' onClick={this.onClickClear}>
-                        <img id='ClearImage' alt='clear' src='./cross.png' width='12' height='12'/>
+                    <button id='Clear' onClick={this.onClickClear}>
+                        <img alt='Clear' src='./cross.png' width='12' height='12'/>
                     </button>
                 </fieldset>
 

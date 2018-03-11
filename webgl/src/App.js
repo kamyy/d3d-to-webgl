@@ -105,9 +105,8 @@ export default class App extends Component {
                 
                 <hr/>
 
-                <p className='ProjectInfo'><a href='https://github.com/kamyy/d3d-to-webgl'>repo @ https://github.com/kamyy/d3d-to-webgl</a></p>
-                <br/>
                 <p className='ProjectInfo'>MIT License</p>
+                <p className='ProjectInfo'><a href='https://github.com/kamyy/d3d-to-webgl'>d3d-to-webgl @ GitHub</a></p>
                 <p className='ProjectInfo'>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
             </div>
         );
