@@ -9,20 +9,11 @@ export default class Camera extends RefFrame {
         this._clipDistanceN = node.clipDistanceN;
         this._clipDistanceF = node.clipDistanceF;
         this._fieldOfViewDegrees = node.fieldOfView / Math.PI * 180.0;
-        this._dirty = true;
-    }
-    
-    validateAscending() {
-        if (!this.validSubtree) {
-            this._dirty = true;
-        }
-        super.validateAscending();
     }
 
     set fieldOfView(degrees) {
         this._fieldOfViewDegrees = degrees;
         this._fieldOfView = Math.PI / 180.0 * degrees;
-        this._dirty = true;
     }
 
     get fieldOfView() {
@@ -31,7 +22,6 @@ export default class Camera extends RefFrame {
 
     set aspectRatio(val) {
         this._aspectRatio = val;
-        this._dirty = true;
     }
 
     get aspectRatio() {
@@ -40,7 +30,6 @@ export default class Camera extends RefFrame {
 
     set clipDistanceN(val) {
         this._clipDistanceN = val;
-        this._dirty = true;
     }
 
     get clipDistanceN() {
@@ -49,7 +38,6 @@ export default class Camera extends RefFrame {
 
     set clipDistanceF(val) {
         this._clipDistanceF = val;
-        this._dirty = true;
     }
 
     get clipDistanceF() {
@@ -57,22 +45,17 @@ export default class Camera extends RefFrame {
     }
 
     get viewProjMatrix() {
-        if (this._dirty) {
-            this._dirty = false;
+        const y = 1.0 / Math.tan(this._fieldOfView * 0.5);
+        const x = y / this._aspectRatio;
+        const z = ( this._clipDistanceF                      ) / (this._clipDistanceF - this._clipDistanceN);
+        const w = (-this._clipDistanceN * this._clipDistanceF) / (this._clipDistanceF - this._clipDistanceN);
 
-            const y = 1.0 / Math.tan(this._fieldOfView * 0.5);
-            const x = y / this._aspectRatio;
-            const z = ( this._clipDistanceF                      ) / (this._clipDistanceF - this._clipDistanceN);
-            const w = (-this._clipDistanceN * this._clipDistanceF) / (this._clipDistanceF - this._clipDistanceN);
+        const projMatrix = new Matrix4x4([ x, 0, 0, 0,
+                                            0, 0, z, 1,
+                                            0, y, 0, 0,
+                                            0, 0, w, 0 ]);
 
-            const projMatrix = new Matrix4x4([ x, 0, 0, 0,
-                                               0, 0, z, 1,
-                                               0, y, 0, 0,
-                                               0, 0, w, 0 ]);
-
-            this._viewProjMatrix = this.modelMatrix.inverse().mul(projMatrix);
-        }
-        return this._viewProjMatrix;
+        return this.modelMatrix.inverse().mul(projMatrix);
     }
 }
 
