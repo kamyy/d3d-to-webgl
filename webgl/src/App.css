@@ -164,18 +164,21 @@ div#Bottom {
   border: solid 2px yellow;
 }
 
-button#Clear{
+span#Clear{
   margin: 0px 0px 0px -22px;
-  padding: 0px 0px 0px 4px;
+  padding: 0px 4px 0px 5px;
   border: none;
   border-left: solid 1px grey;
-  vertical-align: middle;
-  background-color: white;
-  outline-color: yellow;
+  vertical-align: -1px;
+  color: grey;
+  font-size: 14px;
+  font-weight: bolder;
 }
 
-button#Clear:hover {
+span#Clear:hover,
+span#Clear:focus {
   cursor: pointer;
+  color: black;
 }
 
 .MaterialItem {

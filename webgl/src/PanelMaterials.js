@@ -75,9 +75,7 @@ export default class PanelMaterials extends Component {
                             onChange={this.onChange}
                             className='MaterialInput' 
                             />
-                    <button id='Clear' onClick={this.onClickClear}>
-                        <img alt='Clear' src='./cross.png' width='12' height='12'/>
-                    </button>
+                    <span id='Clear' onClick={this.onClickClear}>&times;</span>
                 </fieldset>
 
                 <fieldset className='Fieldset'><legend className='Legend'>Materials</legend> {
