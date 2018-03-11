@@ -674,7 +674,7 @@ namespace d3d11demo {
             { "textures", Texture::getMap() }
         };
         ofstream of(filename);
-        of << setw(4) << obj;
+        of << obj;
     }
 
     void D3D11DemoCWinApp::freeScene() {
