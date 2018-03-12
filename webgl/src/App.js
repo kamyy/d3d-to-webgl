@@ -114,7 +114,7 @@ export default class App extends Component {
 
     componentDidMount() {
         this.canvas = document.getElementById('Canvas');
-        GL = this.canvas.getContext("webgl", {
+        GL = this.canvas.getContext("experimental-webgl", {
             depth: true,
             alpha: false,
             stencil: true
