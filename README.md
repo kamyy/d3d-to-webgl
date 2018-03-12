@@ -9,7 +9,9 @@ Ultimately, the port to WebGL was successful and I learnt a lot of cool stuff ab
 
 ## Getting Up and Running
 
-You'll need to install **node.js** and **npm**, if you don't have these already. I'm running versions 8.9.4 and 5.6.0 respectively. After cloning the repo, in a command shell, **cd** into the webgl folder and type **npm install** [enter] to resolve all package dependencies. Then type **npm start** [enter] to boot up a local web server that will serve the content. The WebGL SPA can then be viewed in a browser at **localhost:3000**. The content has been tested on several browsers including Internet Explorer 11, Microsoft Edge, Firefox Quantum, Safari and Google Chrome.
+The easiest way to view the web page in action is to visit [http://www.kamyy.com](http://www.kamyy.com).
+
+Otherwise, you'll need to install **node.js** and **npm**, if you don't have these already. I'm running versions 8.9.4 and 5.6.0 respectively. After cloning the repo, in a command shell, **cd** into the webgl folder and type **npm install** [enter] to resolve all package dependencies. Then type **npm start** [enter] to boot up a local web server that will serve the content. The WebGL SPA can then be viewed in a browser at **localhost:3000**. The content has been tested on several browsers including Internet Explorer 11, Microsoft Edge, Firefox Quantum, Safari and Google Chrome.
 
 ![hardwood screenshot](./screenshots/hardwood.png)
 
