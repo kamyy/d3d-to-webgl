@@ -47,7 +47,8 @@ export default class App extends Component {
         this.currentScene = this.listOfScenes[0];
 
         this.state = {
-            currentScene: this.currentScene
+            currentScene: this.currentScene,
+            rootNode: null
         }
     }
 
@@ -71,6 +72,9 @@ export default class App extends Component {
         return (
             <div className='App'>
                 <canvas id='Canvas' width='1280' height='720'>Please use a browser that supports WebGL</canvas> 
+                { 
+                    (this.state.rootNode) ? null : <div className='Spinner'/> 
+                }
 
                 <div id='LHS'>
                     <PanelScene 
@@ -102,7 +106,7 @@ export default class App extends Component {
                         onRef={this.refPanelMaterials} 
                         />
                 </div>
-                
+
                 <hr/>
 
                 <p className='ProjectInfo'>MIT License</p>
@@ -211,6 +215,9 @@ export default class App extends Component {
         this.panelCamera.onSceneLoaded(loadedScene);
         this.panelLights.onSceneLoaded(loadedScene);
         this.panelMaterials.onSceneLoaded(loadedScene);
+        if (this.currentScene === loadedScene) {
+            this.setState({rootNode: loadedScene.rootNode});
+        }
     }
 
     onClickSceneButton(event) {
@@ -220,7 +227,7 @@ export default class App extends Component {
             this.currentScene.loadScene(this.onSceneLoaded);
             this.currentScene.drawScene();
 
-            this.setState({ currentScene: this.currentScene });
+            this.setState({ currentScene: this.currentScene, rootNode: this.currentScene.rootNode });
             this.panelCamera.onSceneChange();
             this.panelRender.onSceneChange();
             this.panelLights.onSceneChange();
