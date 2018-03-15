@@ -90,6 +90,7 @@ div#Bottom {
 /* Scene panel ---------------------------------------------------------------- */
 #ScenePanel {
   float: left;
+  width: auto;
 }
 
 .SceneButton {
@@ -132,12 +133,13 @@ div#Bottom {
 /* Light panel ---------------------------------------------------------------- */
 #LightPanel {
   float: right;
-  width: 72%;
+  width: 90%;
 }
 
 .LightSelect {
   margin-top: 4px;
   margin-bottom: 4px;
+  width: 100%;
   cursor: pointer;
   font-family: inherit;
   font-weight: inherit;
@@ -153,7 +155,7 @@ div#Bottom {
 .MaterialInput {
   margin-top: 4px;
   margin-bottom: 4px;
-  width: 124px;
+  width: 150px;
   font-family: inherit;
   font-weight: inherit;
   font-size: inherit;
