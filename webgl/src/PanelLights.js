@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import './App.css'
 
 export default class PanelLights extends Component {
     constructor(props) {
@@ -68,7 +69,7 @@ export default class PanelLights extends Component {
         switch (this.state.option) {
         case 'Lower Ambient': currentScene.ambientLS.lowerHemisphereColor[i] = v; break;
         case 'Upper Ambient': currentScene.ambientLS.upperHemisphereColor[i] = v; break;
-        case 'Omni Directional':          currentScene.omniDirLS.color[i] = v; break;
+        case 'Omni Directional': currentScene.omniDirLS.color[i] = v; break;
         default: break;
         }
 
@@ -134,4 +135,9 @@ export default class PanelLights extends Component {
 
         return null;
     }
+}
+
+PanelLights.propTypes = {
+    getCurrentScene: PropTypes.func.isRequired,
+    onRef: PropTypes.func.isRequired
 }

@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import './App.css'
 
 export default class PanelCamera extends Component {
     constructor(props) {
@@ -71,27 +72,27 @@ export default class PanelCamera extends Component {
         const currentScene = this.props.getCurrentScene();
 
         if (currentScene && currentScene.cameras.length !== 0) {
+            const cameraChoice = (cam, idx) => {
+                const id = `Camera ${idx + 1}`;
+                return <div key={id}> 
+                    <input 
+                        id={id}
+                        type='radio'
+                        className='CameraButton' 
+                        value={idx}
+                        checked={currentScene.activeCamIdx === idx} 
+                        onChange={this.onChangeCamera} />
+                    <label 
+                        htmlFor={id} 
+                        className='CameraButtonLabel'>
+                        {id} </label>
+                </div>
+            }
+
             return <div id='CameraPanel' className='CanvasPanel'> 
                 {  
                     (currentScene.cameras.length > 1) ?
-                        <div style={{marginBottom: '8px'}}> {
-                            currentScene.cameras.map((cam, idx) => {
-                                const id = `Camera ${idx + 1}`;
-                                return <div key={id}> 
-                                    <input 
-                                        id={id}
-                                        type='radio'
-                                        className='CameraButton' 
-                                        value={idx}
-                                        checked={currentScene.activeCamIdx === idx} 
-                                        onChange={this.onChangeCamera} />
-                                    <label 
-                                        htmlFor={id} 
-                                        className='CameraButtonLabel'>
-                                        {id} </label>
-                                </div>
-                            })
-                        } </div>
+                        <div style={{marginBottom: '8px'}}>{ currentScene.cameras.map(cameraChoice) }</div>
                         :
                         <div style={{marginBottom: '4px'}}/>
                 }
@@ -126,4 +127,9 @@ export default class PanelCamera extends Component {
 
         return null;
     }
+}
+
+PanelCamera.propTypes = {
+    getCurrentScene: PropTypes.func.isRequired,
+    onRef: PropTypes.func.isRequired
 }

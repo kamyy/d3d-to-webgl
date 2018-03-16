@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import './App.css'
 
 export default class PanelRender extends Component {
     constructor(props) {
@@ -55,4 +56,9 @@ export default class PanelRender extends Component {
             </span>
         </div>
     }
+}
+
+PanelRender.propTypes = {
+    getCurrentScene: PropTypes.func.isRequired,
+    onRef: PropTypes.func.isRequired
 }

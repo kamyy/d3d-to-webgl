@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 export default class PanelMaterials extends Component {
     constructor(props) {
@@ -88,4 +89,9 @@ export default class PanelMaterials extends Component {
 
         return null;
     }
+}
+
+PanelMaterials.propTypes = {
+    getCurrentScene: PropTypes.func.isRequired,
+    onRef: PropTypes.func.isRequired
 }

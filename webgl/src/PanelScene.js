@@ -1,5 +1,6 @@
-import './App.css';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
+import './App.css'
 
 export default function PanelScene(props) {
     const { listOfScenes, getCurrentScene, onClick } = props;
@@ -13,4 +14,10 @@ export default function PanelScene(props) {
             }
         })
     } </div>
+}
+
+PanelScene.propTypes = {
+    listOfScenes: PropTypes.array.isRequired,
+    getCurrentScene: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired
 }
