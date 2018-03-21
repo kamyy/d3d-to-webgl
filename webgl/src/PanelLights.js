@@ -33,7 +33,7 @@ export default class PanelLights extends Component {
             switch (option) {
             case 'Lower Ambient': [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; break;
             case 'Upper Ambient': [r, g, b] = currentScene.ambientLS.upperHemisphereColor; break;
-            case 'Omni Directional':          [r, g, b] = currentScene.omniDirLS.color; break;
+            case 'Omni Directional': [r, g, b] = currentScene.omniDirLS.color; break;
             default: break;
             }
             this.setState({ option, r, g, b });
@@ -47,7 +47,7 @@ export default class PanelLights extends Component {
         switch (option) {
         case 'Lower Ambient': [r, g, b] = currentScene.ambientLS.lowerHemisphereColor; break;
         case 'Upper Ambient': [r, g, b] = currentScene.ambientLS.upperHemisphereColor; break;
-        case 'Omni Directional':          [r, g, b] = currentScene.omniDirLS.color; break;
+        case 'Omni Directional': [r, g, b] = currentScene.omniDirLS.color; break;
         default: break;
         }
         this.setState({ option, r, g, b });

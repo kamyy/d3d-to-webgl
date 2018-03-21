@@ -72,7 +72,8 @@ export default class PanelCamera extends Component {
         const currentScene = this.props.getCurrentScene();
 
         if (currentScene && currentScene.cameras.length !== 0) {
-            const cameraChoice = (cam, idx) => {
+
+            const cameraChoice = (cam, idx) => { // stateless functional component
                 const id = `Camera ${idx + 1}`;
                 return <div key={id}> 
                     <input 

@@ -51,11 +51,10 @@ export default class Camera extends RefFrame {
         const w = (-this._clipDistanceN * this._clipDistanceF) / (this._clipDistanceF - this._clipDistanceN);
 
         const projMatrix = new Matrix4x4([ x, 0, 0, 0,
-                                            0, 0, z, 1,
-                                            0, y, 0, 0,
-                                            0, 0, w, 0 ]);
+                                           0, 0, z, 1,
+                                           0, y, 0, 0,
+                                           0, 0, w, 0 ]);
 
         return this.modelMatrix.inverse().mul(projMatrix);
     }
 }
-

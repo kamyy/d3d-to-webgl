@@ -34,11 +34,6 @@ export default class App extends Component {
         this.getCurrentScene = this.getCurrentScene.bind(this);
         this.onClickSceneButton = this.onClickSceneButton.bind(this);
 
-        this.refPanelCamera = this.refPanelCamera.bind(this);
-        this.refPanelRender = this.refPanelRender.bind(this);
-        this.refPanelLights = this.refPanelLights.bind(this);
-        this.refPanelMaterials = this.refPanelMaterials.bind(this);
-
         this.listOfScenes = [ 
             new Scene('hardwood', this.getCurrentScene), 
             new Scene('biplane', this.getCurrentScene), 
@@ -50,22 +45,6 @@ export default class App extends Component {
             currentScene: this.currentScene,
             rootNode: null
         }
-    }
-
-    refPanelCamera(panelCamera) {
-        this.panelCamera = panelCamera;
-    }
-
-    refPanelRender(panelRender) {
-        this.panelRender = panelRender;
-    }
-
-    refPanelLights(panelLights) {
-        this.panelLights = panelLights;
-    }
-
-    refPanelMaterials(panelMaterials) {
-        this.panelMaterials = panelMaterials;
     }
 
     render() {
@@ -84,26 +63,25 @@ export default class App extends Component {
                         />
                     <PanelCamera
                         getCurrentScene={this.getCurrentScene} 
-                        onRef={this.refPanelCamera} 
+                        onRef={panelCamera => this.panelCamera = panelCamera} 
                         />
                 </div>
 
                 <div id='Bottom'>
                     <PanelRender
                         getCurrentScene={this.getCurrentScene} 
-                        onRef={this.refPanelRender} 
+                        onRef={panelRender => this.panelRender = panelRender} 
                         />
                 </div>
 
                 <div id='RHS'>
                     <PanelLights
                         getCurrentScene={this.getCurrentScene} 
-                        onRef={this.refPanelLights} 
+                        onRef={panelLights => this.panelLights = panelLights} 
                         />
-                        
                     <PanelMaterials
                         getCurrentScene={this.getCurrentScene} 
-                        onRef={this.refPanelMaterials} 
+                        onRef={panelMaterials => this.panelMaterials = panelMaterials} 
                         />
                 </div>
 
@@ -125,7 +103,7 @@ export default class App extends Component {
         });
 
         if (GL) {
-            this.canvas.oncontextmenu = event => event.preventDefault();
+            this.canvas.oncontextmenu = event => event.preventDefault(); // disable right click context menu
             this.canvas.onmousedown = this.onMouseDown;
             window.onmousemove = this.onMouseMove;
             window.onmouseup = this.onMouseUp;

@@ -13,41 +13,15 @@ const DRAW = Object.freeze({
 });
 
 export default class Scene {
-    constructor(name, getCurrentScene) {
+    constructor(id, name) {
+        this.id   = id;
         this.name = name;
-        this.cameras = [];
-        this.rootNode = null;
-        this.cameraIdx = 0;
-        this.mirrorCam = null;
-        this.mirrorObj = null;
-        this.ambientLS = new AmbientLS([0.15, 0.15, 0.15], [0.15, 0.15, 0.15]);
-        this.omniDirLS = null;
-        this.panelLS = 'Omni Directional';
-
-        this.drawWirefrm = false;
-        this.drawNormals = false;
-
-        this.mapOfTextures = new Map();
-        this.mapOfMaterials = new Map();
-        this.filteredMaterials = new Set();
-        this.translucentPieces = [];
-
-        this.getCurrentScene = getCurrentScene;
-
-        this.drawScene = this.drawScene.bind(this);
-        this.cacheTranslucentPiece = this.cacheTranslucentPiece.bind(this);
-
-        this.onChangeCamera = this.onChangeCamera.bind(this);
-        this.onChangeWirefrm = this.onChangeWirefrm.bind(this);
-        this.onChangeNormals = this.onChangeNormals.bind(this);
-
         this.requestedLoad = false;
-        this.onSceneLoaded = null;
     }
 
     filterMaterials(filter) {
         filter = filter.toLowerCase();
-        this.filteredMaterials = new Set(Array.from(this.mapOfMaterials.values()).filter(
+        this.materials = new Set(Array.from(this.mapOfMaterials.values()).filter(
             m => m.name.toLowerCase().includes(filter)
         ));
     }
@@ -60,12 +34,6 @@ export default class Scene {
             request.overrideMimeType("application/json");
             request.onreadystatechange = () => {
                 if (request.readyState === 4 && request.status === 200) {
-                    const scene = JSON.parse(request.responseText);
-
-                    this.initTextures(scene.textures);
-                    this.initMaterials(scene.materials);
-                    this.initSceneGraph(scene.sceneRoot);
-
                     onSceneLoadFinished(this);
                 }
             };
@@ -74,7 +42,32 @@ export default class Scene {
         }
     }
 
+    init(jsonText) {
+        const json = JSON.parse(jsonText);
+
+        this.cameras = [];
+        this.cameraIdx = 0;
+        this.mirrorCam = null;
+        this.mirrorObj = null;
+        this.materials = new Set();
+        this.currentLS = 'Omni Directional';
+        this.ambientLS = new AmbientLS([0.15, 0.15, 0.15], [0.15, 0.15, 0.15]);
+
+        this.drawWirefrm = false;
+        this.drawNormals = false;
+        this.translucentPieces = [];
+
+        this.drawScene             = this.drawScene.bind(this);
+        this.cacheTranslucentPiece = this.cacheTranslucentPiece.bind(this);
+
+        this.initTextures(json.textures);
+        this.initMaterials(json.materials);
+        this.initSceneGraph(json.sceneRoot);
+    }
+
     initTextures(textures) {
+        this.mapOfTextures = new Map();
+
         const onLoad = (tex, png) => {
             return () => { // higher order function
                 GL.bindTexture(GL.TEXTURE_2D, this.mapOfTextures.get(tex.name));
@@ -111,6 +104,8 @@ export default class Scene {
     }
 
     initMaterials(materials) {
+        this.mapOfMaterials = new Map();
+
         for (let mat of materials) {
             this.mapOfMaterials.set(mat.name, mat);
             mat.textures.forEach((tex, i) => {
