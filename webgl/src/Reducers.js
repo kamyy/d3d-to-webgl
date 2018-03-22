@@ -10,7 +10,11 @@ function updateScene(oldScene, newProps) {
     return Object.assign({}, oldScene, newProps);
 }
 
-function parseJsonScene(oldScene, json) {
+function jsonSceneLoadAsync(oldScene) {
+
+}
+
+function jsonSceneLoadEnded(oldScene, json) {
     const { id, name } = oldScene;
     const s = new Scene(id, name);
     s.init(json);
@@ -19,8 +23,11 @@ function parseJsonScene(oldScene, json) {
 
 function sceneReducer(state, action) {
     switch (action.type) {
-    case actionTypes.PARSE_JSON_SCENE:
-        return parseJsonScene(state, action.responseText);
+    case actionTypes.JSON_SCENE_LOAD_ASYNC:
+        return jsonSceneLoadAsync(state);
+
+    case actionTypes.JSON_SCENE_LOAD_ENDED:
+        return jsonSceneLoadEnded(state, action.responseText);
 
     case actionTypes.CHANGE_CAM_INDEX:
         return updateScene(state, { cameraIdx: action.camIndex });
@@ -49,7 +56,7 @@ function curSceneIdReducer(state, action) {
     return state;
 }
 
-export function appReducer(state = initialState, action) {
+export default function appReducer(state = initialState, action) {
     return {
         sceneArray: sceneArrayReducer(state.sceneArray, action),
         curSceneId: curSceneIdReducer(state.curSceneId, action)

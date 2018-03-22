@@ -37,7 +37,7 @@ export default class Shader {
                 GL.compileShader(this.vs);
 
                 if (!GL.getShaderParameter(this.vs, GL.COMPILE_STATUS)) {
-                    throw new Error('Error compling ' + vertShaderURL + ' !\n' + GL.getShaderInfoLog(this.vs));
+                    throw new Error('Error compiling ' + vertShaderURL + ' !\n' + GL.getShaderInfoLog(this.vs));
                 } 
                 if (this.vs && this.fs && !this.program) {
                     this.program = initProgram();
@@ -55,7 +55,7 @@ export default class Shader {
                 GL.compileShader(this.fs);
 
                 if (!GL.getShaderParameter(this.fs, GL.COMPILE_STATUS)) {
-                    throw new Error('Error compling ' + fragShaderURL + ' !\n' + GL.getShaderInfoLog(this.fs));
+                    throw new Error('Error compiling ' + fragShaderURL + ' !\n' + GL.getShaderInfoLog(this.fs));
                 } 
                 if (this.vs && this.fs && !this.program) {
                     this.program = initProgram();

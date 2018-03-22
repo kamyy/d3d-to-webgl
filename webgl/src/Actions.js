@@ -1,5 +1,6 @@
 export const actionTypes = Object.freeze({
-    PARSE_JSON_SCENE: 'PARSE_JSON_SCENE',
+    JSON_SCENE_LOAD_ASYNC: 'JSON_SCENE_LOAD_ASYNC',
+    JSON_SCENE_LOAD_ENDED: 'JSON_SCENE_LOAD_ENDED',
     CHANGE_CUR_SCENE: 'CHANGE_CUR_SCENE',
     CHANGE_CAM_INDEX: 'CHANGE_CAM_INDEX',
     TOGGLE_WIREFRM: 'TOGGLE_WIREFRM',
@@ -9,9 +10,13 @@ export const actionTypes = Object.freeze({
     CHANGE_B: 'CHANGE_B',
 });
 
-export const actionCreators = Object.freeze({
-    parseJsonScene(id, json) {
-        return { type: actionTypes.PARSE_JSON_SCENE, id, json };
+const actionCreators = Object.freeze({
+    JsonSceneLoadAsync(id) {
+        return { type: actionTypes.JSON_SCENE_LOAD_ASYNC, id };
+    },
+
+    JsonSceneLoadEnded(id, json) {
+        return { type: actionTypes.JSON_SCENE_LOAD_ENDED, id, json };
     },
 
     changeCurScene(id) {
@@ -42,3 +47,5 @@ export const actionCreators = Object.freeze({
         return { type: actionTypes.CHANGE_B, id, LS, b };
     },
 });
+
+export default actionCreators;

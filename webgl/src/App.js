@@ -1,4 +1,5 @@
 import './App.css';
+import { createStore } from 'redux';
 import React, { Component } from 'react';
 
 import Scene from './Scene';
@@ -14,7 +15,11 @@ import PanelRender from './PanelRender';
 import PanelLights from './PanelLights';
 import PanelMaterials from './PanelMaterials';
 
-export let GL = null;
+import actionCreators from '/Actions';
+import appReducer from './Reducers';
+
+export let GL    = null;
+export let store = null;
 
 export default class App extends Component {
     constructor(props) {
@@ -33,13 +38,6 @@ export default class App extends Component {
         this.onSceneLoaded = this.onSceneLoaded.bind(this);
         this.getCurrentScene = this.getCurrentScene.bind(this);
         this.onClickSceneButton = this.onClickSceneButton.bind(this);
-
-        this.listOfScenes = [ 
-            new Scene('hardwood', this.getCurrentScene), 
-            new Scene('biplane', this.getCurrentScene), 
-            new Scene('goku', this.getCurrentScene)
-        ]
-        this.currentScene = this.listOfScenes[0];
 
         this.state = {
             currentScene: this.currentScene,
@@ -125,8 +123,11 @@ export default class App extends Component {
                 ['P3N3B3T2', new ShaderP3N3B3T2(this.getCurrentScene)]
             ]));
 
-            this.currentScene.loadScene(this.onSceneLoaded);
-            this.currentScene.drawScene();
+            store = createStore(appReducer);
+            
+            store.dispatch(actionCreators.jsonSceneLoadAsync(0));
+
+            //this.currentScene.drawScene();
         }
     }
 
