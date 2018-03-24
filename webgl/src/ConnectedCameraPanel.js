@@ -1,0 +1,97 @@
+import React from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux';
+
+import './App.css'
+import { actionCreators } from './Actions';
+
+function CameraPanel(props) {
+    const { 
+        sceneState, 
+        curSceneId, 
+        onChangeCamera, 
+        onChangeFieldOfView, 
+        onChangeAspectRatio,
+    } = props;
+
+    if (sceneState) {
+        const cameraChoice = (cam, idx) => { 
+            const id = `Camera ${idx + 1}`;
+            return <div key={id}> 
+                <input 
+                    id={id}
+                    type='radio'
+                    className='CameraButton' 
+                    checked={sceneState.cameraIdx === idx} 
+                    onChange={onChangeCamera(curSceneId, idx)} />
+                <label 
+                    htmlFor={id} 
+                    className='CameraButtonLabel'>
+                    {id} </label>
+            </div>
+        }
+
+        const cameraState = sceneState.cameras[sceneState.cameraIdx];
+
+        return <div id='CameraPanel' className='CanvasPanel'> 
+            {  
+                (sceneState.cameras.length > 1) ?
+                    <div style={{marginBottom: '8px'}}>{sceneState.cameras.map(cameraChoice)}</div>
+                    :
+                    <div style={{marginBottom: '4px'}}/>
+            }
+
+            <fieldset className='Fieldset'> 
+                <legend className='Legend'>
+                    Field of View <span className='LegendValue'>{cameraState.fieldOfView.toFixed(0)} </span>
+                </legend>
+                <input
+                    className='Range'
+                    type='range'
+                    min='15'
+                    max='165'
+                    value={cameraState.fieldOfView.toFixed(0)} 
+                    onChange={onChangeFieldOfView} />
+            </fieldset>
+
+            <fieldset className='Fieldset'> 
+                <legend className='Legend'>
+                    Aspect Ratio <span className='LegendValue'>{cameraState.aspectRatio.toFixed(2)} </span>
+                </legend>
+                <input  
+                    className='Range'
+                    type='range' 
+                    min='50' 
+                    max='500'
+                    value={cameraState.aspectRatio * 100}
+                    onChange={onChangeAspectRatio} />
+            </fieldset>
+        </div>
+    }
+    return null;
+}
+
+CameraPanel.propTypes = {
+    sceneState: PropTypes.object.isRequired,
+    curSceneId: PropTypes.number.isRequired,
+    onChangeCamera: PropTypes.func.isRequired,
+    onChangeFieldOfView: PropTypes.func.isRequired,
+    onChangeAspectRatio: PropTypes.func.isRequired,
+}
+
+const ConnectedCameraPanel = connect(
+    function({ sceneArray, curSceneId }) { 
+        return { 
+            sceneState: sceneArray[curSceneId], curSceneId 
+        };
+    },
+    function(dispatch) { 
+        return { 
+            onChangeCamera: (id, cameraIdx) => dispatch(actionCreators.changeCamera(id, cameraIdx)),
+            onChangeFieldOfView: (id, fieldOfView) => dispatch(actionCreators.changeFieldOfView(id, fieldOfView)),
+            onChangeAspectRatio: (id, aspectRatio) => dispatch(actionCreators.changeAspectRatio(id, aspectRatio)),
+        };
+    }
+)(CameraPanel);
+
+export default ConnectedCameraPanel;

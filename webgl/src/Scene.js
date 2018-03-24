@@ -5,7 +5,8 @@ import AmbientLS from './AmbientLS';
 import OmniDirLS from './OmniDirLS';
 import Matrix4x4 from './Matrix4x4';
 
-import { GL } from './App'
+import { GL, reduxStore } from './App';
+import actionCreators from './Actions';
 
 const DRAW = Object.freeze({
     MIRROR: Symbol("mirror"),
@@ -16,7 +17,12 @@ export default class Scene {
     constructor(id, name) {
         this.id   = id;
         this.name = name;
-        this.requestedLoad = false;
+        this.cameras = [];
+        this.translucentPieces = [];
+        this.sceneLoadRequired = true;
+
+        this.drawScene             = this.drawScene.bind(this);
+        this.cacheTranslucentPiece = this.cacheTranslucentPiece.bind(this);
     }
 
     filterMaterials(filter) {
@@ -27,42 +33,25 @@ export default class Scene {
     }
 
     loadScene(onSceneLoadFinished) {
-        if (GL && !this.requestedLoad) {
-            this.requestedLoad = true;
+        if (GL && this.sceneLoadRequired) {
+            this.sceneLoadRequired = false;
 
             const request = new XMLHttpRequest();
             request.overrideMimeType("application/json");
             request.onreadystatechange = () => {
                 if (request.readyState === 4 && request.status === 200) {
-                    onSceneLoadFinished(this);
+                    const json = JSON.parse(request.responseText);
+
+                    this.initTextures(json.textures);
+                    this.initMaterials(json.materials);
+                    this.initSceneGraph(json.sceneRoot);
+
+                    reduxStore.dispatch(actionCreators.onSceneLoad(this));
                 }
             };
             request.open('GET', `/json/${this.name}.json`, true);
             request.send();                    
         }
-    }
-
-    init(jsonText) {
-        const json = JSON.parse(jsonText);
-
-        this.cameras = [];
-        this.cameraIdx = 0;
-        this.mirrorCam = null;
-        this.mirrorObj = null;
-        this.materials = new Set();
-        this.currentLS = 'Omni Directional';
-        this.ambientLS = new AmbientLS([0.15, 0.15, 0.15], [0.15, 0.15, 0.15]);
-
-        this.drawWirefrm = false;
-        this.drawNormals = false;
-        this.translucentPieces = [];
-
-        this.drawScene             = this.drawScene.bind(this);
-        this.cacheTranslucentPiece = this.cacheTranslucentPiece.bind(this);
-
-        this.initTextures(json.textures);
-        this.initMaterials(json.materials);
-        this.initSceneGraph(json.sceneRoot);
     }
 
     initTextures(textures) {
@@ -165,16 +154,27 @@ export default class Scene {
     }
 
     drawScene() {
-        if (this === this.getCurrentScene()) {
+        const { 
+            sceneArray, 
+            curSceneId 
+        } = reduxStore.getState();
+
+        const sceneState = sceneArray[this.id];
+
+        if (sceneState && curSceneId === this.id) {
             GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT);
+
+            this.activeCamera.fieldOfView = sceneState.cameras[this.activeCamIdx].fieldOfView;
+            this.activeCamera.aspectRatio = sceneState.cameras[this.activeCamIdx].aspectRatio;
+
             if (this.mirrorObj) {
                 GL.disable(GL.BLEND); // disable alpha blending
 
                 GL.enable(GL.STENCIL_TEST);    // enable stencil buffer
                 GL.stencilFunc(GL.ALWAYS,1,1); // stencil test always passes
                 GL.stencilOp(GL.KEEP,          // if stencil test fail do nothing
-                                GL.INCR,          // if stencil test pass depth test fail write 1 to stencil
-                                GL.INCR);         // if stencil test pass depth test pass write 1 to stencil
+                             GL.INCR,          // if stencil test pass depth test fail write 1 to stencil
+                             GL.INCR);         // if stencil test pass depth test pass write 1 to stencil
                 GL.depthMask(false);                      // disable depth buffer writes
                 GL.colorMask(false, false, false, false); // disable color buffer writes
                 
@@ -183,8 +183,8 @@ export default class Scene {
                 GL.cullFace(GL.FRONT);         // cull CW triangles
                 GL.stencilFunc(GL.EQUAL,1,1);  // stencil test pass if stencil == 1
                 GL.stencilOp(GL.KEEP,          // if stencil test fail do nothing
-                                GL.KEEP,          // if stencil test pass depth test fail do nothing
-                                GL.KEEP);         // if stencil test pass depth test pass do nothing
+                             GL.KEEP,          // if stencil test pass depth test fail do nothing
+                             GL.KEEP);         // if stencil test pass depth test pass do nothing
                 GL.depthMask(true);                   // enable depth buffer writes
                 GL.colorMask(true, true, true, true); // enable color buffer writes
 
@@ -213,27 +213,28 @@ export default class Scene {
                 GL.enable(GL.BLEND);            // enable alpha blending
 
                 // draw mirror into color buffer
-                this.drawWirefrm ? this.mirrorObj.drawEdges() : this.mirrorObj.drawPieces(1);
+                sceneState.drawWirefrm ? this.mirrorObj.drawEdges() : this.mirrorObj.drawPieces(1);
             }
 
-            this.drawNode(this.rootNode, DRAW.PIECES); // draw all models in scene graph
+            this.drawNode(this.rootNode, DRAW.PIECES, sceneState); // draw all models in scene graph
             this.drawTranslucentPieces();
 
             requestAnimationFrame(this.drawScene);
         }
     }
     
-    drawNode(node, mode) {
+    drawNode(node, mode, sceneState) {
         if (node) {
             if (node instanceof Model && node !== this.mirrorObj) {
+
                 switch (mode) {
                 case DRAW.MIRROR:
-                    this.drawWirefrm ? node.drawEdges() : node.drawPieces(1, this.cacheTranslucentPiece);
+                    sceneState.drawWirefrm ? node.drawEdges() : node.drawPieces(1, this.cacheTranslucentPiece);
                     break;
 
                 case DRAW.PIECES:
-                    this.drawWirefrm ? node.drawEdges() : node.drawPieces(0, this.cacheTranslucentPiece);
-                    if (this.drawNormals) {
+                    sceneState.drawWirefrm ? node.drawEdges() : node.drawPieces(0, this.cacheTranslucentPiece);
+                    if (sceneState.drawNormals) {
                         node.drawNormals();
                     }
                     break;
@@ -244,7 +245,7 @@ export default class Scene {
             }
 
             for (let child of node.children()) {
-                this.drawNode(child, mode); // recurse
+                this.drawNode(child, mode, sceneState); // recurse
             }
         }
     }
@@ -261,30 +262,14 @@ export default class Scene {
     }
 
     get activeCamera() { 
-        return this.cameras[this.cameraIdx];
+        return this.cameras[this.activeCamIdx];
     }
 
     set activeCamera(cam) {
-        this.cameras[this.cameraIdx] = cam;
+        this.cameras[this.activeCamIdx] = cam;
     }
 
     get activeCamIdx() { 
-        return this.cameraIdx;
-    }
-
-    set activeCamIdx(idx) { 
-        this.cameraIdx = idx;
-    }
-
-    onChangeCamera(activeCamIdx) {
-        this.activeCamIdx = activeCamIdx;
-    }
-
-    onChangeWirefrm(checked) {
-        this.drawWirefrm = checked;
-    }
-
-    onChangeNormals(checked) {
-        this.drawNormals = checked;
+        return reduxStore.getState().sceneArray[this.id].cameraIdx;
     }
 }

@@ -1,42 +1,70 @@
 import Scene from './Scene';
 import { actionTypes } from './Actions';
 
-const initialState = {
-    sceneArray: [ new Scene(0, 'hardwood'), new Scene(1, 'biplane'), new Scene(2, 'goku') ],
-    curSceneId: 0
-};
+// sceneArray: [ new Scene(0, 'hardwood'), new Scene(1, 'biplane'), new Scene(2, 'goku') ],
 
-function updateScene(oldScene, newProps) {
-    return Object.assign({}, oldScene, newProps);
+function onSceneLoad(scene) {
+    const { id, cameras, cameraIdx, currentLS, omniDirLS, ambientLS, drawWirefrm, drawNormals } = scene;
+
+    return {
+        id: id,
+        cameras: cameras.map(cam => ( { fieldOfView: cam.fieldOfView, aspectRatio: cam.aspectRatio } )),
+        cameraIdx: cameraIdx,
+        currentLS: currentLS,
+        omniDirLS: [...omniDirLS.color],
+        lowerAmbientLS: [...ambientLS.lowerHemisphereColor],
+        upperAmbientLS: [...ambientLS.upperHemisphereColor],
+        drawWirefrm: drawWirefrm,
+        drawNormals: drawNormals,
+    }
 }
 
-function jsonSceneLoadAsync(oldScene) {
-
+function changeFieldOfView(state, fieldOfView) {
+    return state.cameras.map((c, i) => (state.cameraIdx === i) ? { fieldOfView: fieldOfView, aspectRatio: c.aspectRatio } : c);
 }
 
-function jsonSceneLoadEnded(oldScene, json) {
-    const { id, name } = oldScene;
-    const s = new Scene(id, name);
-    s.init(json);
-    return s;
+function changeAspectRatio(state, aspectRatio) {
+    return state.cameras.map((c, i) => (state.cameraIdx === i) ? { fieldOfView: c.fieldOfView, aspectRatio: aspectRatio } : c);
+}
+
+function changeColor(state, value, idx) {
+    switch (state.currentLS) {
+    case 'Omni Directional':
+        return { omniDirLS: state.omniDirLS.map((v, i) => (idx === i) ? value : v) };
+    case 'Lower Ambient':
+        return { lowerAmbientLS: state.lowerAmbientLS.map((v, i) => (idx === i) ? value : v) };
+    case 'Upper Ambient':
+        return { upperAmbientLS: state.upperAmbientLS.map((v, i) => (idx === i) ? value : v) };
+    default:
+        return state;
+    }
 }
 
 function sceneReducer(state, action) {
     switch (action.type) {
-    case actionTypes.JSON_SCENE_LOAD_ASYNC:
-        return jsonSceneLoadAsync(state);
+    case actionTypes.onSceneLoad:
+        return onSceneLoad(action.scene);
 
-    case actionTypes.JSON_SCENE_LOAD_ENDED:
-        return jsonSceneLoadEnded(state, action.responseText);
+    case actionTypes.changeCamera:
+        return Object.assign({}, state, { cameraIdx: action.cameraIdx });
+    case actionTypes.changeFieldOfView:
+        return Object.assign({}, state, { cameras: changeFieldOfView(state, action.fieldOfView) });
+    case actionTypes.changeAspectRatio:
+        return Object.assign({}, state, { cameras: changeAspectRatio(state, action.aspectRatio) });
 
-    case actionTypes.CHANGE_CAM_INDEX:
-        return updateScene(state, { cameraIdx: action.camIndex });
+    case actionTypes.changeLightSource:
+        return Object.assign({}, state, { currentLS: action.lightSource });
+    case actionTypes.changeR:
+        return Object.assign({}, state, changeColor(state, action.value, 0));
+    case actionTypes.changeG:
+        return Object.assign({}, state, changeColor(state, action.value, 1));
+    case actionTypes.changeB:
+        return Object.assign({}, state, changeColor(state, action.value, 2));
 
-    case actionTypes.TOGGLE_WIREFRM:
-        return updateScene(state, { drawWireFrm: !state.drawWireFrm });
-
-    case actionTypes.TOGGLE_NORMALS:
-        return updateScene(state, { drawNormals: !state.drawNormals });
+    case actionTypes.toggleWirefrm:
+        return Object.assign({}, state, { drawWireFrm: !state.drawWireFrm });
+    case actionTypes.toggleNormals:
+        return Object.assign({}, state, { drawNormals: !state.drawNormals });
     
     default:
         return state;
@@ -44,17 +72,20 @@ function sceneReducer(state, action) {
 }
 
 function sceneArrayReducer(state, action) {
-    return state.map((item) => { 
-        return (item.id === action.id) ? sceneReducer(item, action) : item; 
-    });
+    return state.map((scene, id) => (id === action.id) ? sceneReducer(scene, action) : scene);
 }
 
 function curSceneIdReducer(state, action) {
-    if (action.type === actionTypes.CHANGE_CUR_SCENE) {
+    if (action.type === actionTypes.changeScene) {
         return action.id;
     }
     return state;
 }
+
+const initialState = {
+    sceneArray: [ null, null, null ],
+    curSceneId: 0,
+};
 
 export default function appReducer(state = initialState, action) {
     return {

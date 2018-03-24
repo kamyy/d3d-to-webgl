@@ -1,51 +1,59 @@
 export const actionTypes = Object.freeze({
-    JSON_SCENE_LOAD_ASYNC: 'JSON_SCENE_LOAD_ASYNC',
-    JSON_SCENE_LOAD_ENDED: 'JSON_SCENE_LOAD_ENDED',
-    CHANGE_CUR_SCENE: 'CHANGE_CUR_SCENE',
-    CHANGE_CAM_INDEX: 'CHANGE_CAM_INDEX',
-    TOGGLE_WIREFRM: 'TOGGLE_WIREFRM',
-    TOGGLE_NORMALS: 'TOGGLE_NORMALS',
-    CHANGE_R: 'CHANGE_R',
-    CHANGE_G: 'CHANGE_G',
-    CHANGE_B: 'CHANGE_B',
+    onSceneLoad: 'onSceneLoad',
+    changeScene: 'changeScene',
+    changeCamera: 'changeCamera',
+    changeFieldOfView: 'changeFieldOfView',
+    changeAspectRatio: 'changeAspectRatio',
+    changeLightSource: 'changeLightSource',
+    changeR: 'changeR',
+    changeG: 'changeG',
+    changeB: 'changeB',
+    toggleWirefrm: 'toggleWirefrm',
+    toggleNormals: 'toggleNormals',
 });
 
-const actionCreators = Object.freeze({
-    JsonSceneLoadAsync(id) {
-        return { type: actionTypes.JSON_SCENE_LOAD_ASYNC, id };
+export const actionCreators = Object.freeze({
+    onSceneLoad(scene) {
+        return { type: actionTypes.onSceneLoad, scene };
     },
 
-    JsonSceneLoadEnded(id, json) {
-        return { type: actionTypes.JSON_SCENE_LOAD_ENDED, id, json };
+    changeScene(id) {
+        return { type: actionTypes.changeScene, id };
     },
 
-    changeCurScene(id) {
-        return { type: actionTypes.CHANGE_CUR_SCENE, id };
+    changeCamera(id, cameraIdx) {
+        return { type: actionTypes.changeCamera, id, cameraIdx };
     },
 
-    changeCamIndex(id, camIndex) {
-        return { type: actionTypes.CHANGE_CAM_INDEX, id, camIndex };
+    changeFieldOfView(id, fieldOfView) {
+        return { type: actionTypes.changeFieldOfView, id, fieldOfView };
+    },
+
+    changeAspectRatio(id, aspectRatio) {
+        return { type: actionTypes.changeAspectRatio, id, aspectRatio };
+    },
+
+    changeLightSource(id, lightSource) {
+        return { type: actionTypes.changeLightSource, id, lightSource };
+    },
+
+    changeR(id, value) {
+        return { type: actionTypes.changeR, id, value };
+    },
+
+    changeG(id, value) {
+        return { type: actionTypes.changeG, id, value };
+    },
+
+    changeB(id, value) {
+        return { type: actionTypes.changeB, id, value };
     },
 
     toggleWirefrm(id) {
-        return { type: actionTypes.TOGGLE_WIREFRM, id };
+        return { type: actionTypes.toggleWirefrm, id };
     },
 
     toggleNormals(id) {
-        return { type: actionTypes.TOGGLE_NORMALS, id };
-    },
-
-    changeR(id, LS, r) {
-        return { type: actionTypes.CHANGE_R, id, LS, r };
-    },
-
-    changeG(id, LS, g) {
-        return { type: actionTypes.CHANGE_G, id, LS, g };
-    },
-
-    changeB(id, LS, b) {
-        return { type: actionTypes.CHANGE_B, id, LS, b };
+        return { type: actionTypes.toggleNormals, id };
     },
 });
-
-export default actionCreators;

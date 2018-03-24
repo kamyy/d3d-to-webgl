@@ -9,8 +9,9 @@ import ShaderP3N3 from './ShaderP3N3';
 import ShaderP3N3T2 from './ShaderP3N3T2';
 import ShaderP3N3B3T2 from './ShaderP3N3B3T2';
 
-import PanelScene from './PanelScene';
-import PanelCamera from './PanelCamera';
+import ConnectedScenePanel from './ConnectedScenePanel';
+import ConnectedCameraPanel from './ConnectedCameraPanel';
+
 import PanelRender from './PanelRender';
 import PanelLights from './PanelLights';
 import PanelMaterials from './PanelMaterials';
@@ -18,8 +19,13 @@ import PanelMaterials from './PanelMaterials';
 import actionCreators from '/Actions';
 import appReducer from './Reducers';
 
-export let GL    = null;
-export let store = null;
+export let GL         = null;
+export let reduxStore = createStore(appReducer);
+export let sceneArray = [ new Scene(0, 'hardwood'), new Scene(1, 'biplane'), new Scene(2, 'goku') ];
+
+Object.defineProperty(sceneArray, 'curScene', {
+    get: function() { return this[reduxStore.getState().curSceneId]; }
+});
 
 export default class App extends Component {
     constructor(props) {
@@ -35,14 +41,6 @@ export default class App extends Component {
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
-        this.onSceneLoaded = this.onSceneLoaded.bind(this);
-        this.getCurrentScene = this.getCurrentScene.bind(this);
-        this.onClickSceneButton = this.onClickSceneButton.bind(this);
-
-        this.state = {
-            currentScene: this.currentScene,
-            rootNode: null
-        }
     }
 
     render() {
@@ -54,15 +52,8 @@ export default class App extends Component {
                 }
 
                 <div id='LHS'>
-                    <PanelScene 
-                        getCurrentScene={this.getCurrentScene} 
-                        listOfScenes={this.listOfScenes} 
-                        onClick={this.onClickSceneButton} 
-                        />
-                    <PanelCamera
-                        getCurrentScene={this.getCurrentScene} 
-                        onRef={panelCamera => this.panelCamera = panelCamera} 
-                        />
+                    <ConnectedScenePanel/>
+                    <ConnectedCameraPanel/>
                 </div>
 
                 <div id='Bottom'>
@@ -123,16 +114,8 @@ export default class App extends Component {
                 ['P3N3B3T2', new ShaderP3N3B3T2(this.getCurrentScene)]
             ]));
 
-            store = createStore(appReducer);
-            
-            store.dispatch(actionCreators.jsonSceneLoadAsync(0));
-
-            //this.currentScene.drawScene();
+            reduxStore.dispatch(actionCreators.changeCurScene(0));
         }
-    }
-
-    getCurrentScene() {
-        return this.currentScene;
     }
 
     degreesToRadians(degrees) {
@@ -164,53 +147,34 @@ export default class App extends Component {
     }
 
     onMouseMove(event) {
-        if (this.currentScene.activeCamera) {
-            const x = event.clientX;
-            const y = event.clientY;
-            const camera = this.currentScene.activeCamera;
-            const target = this.currentScene.activeCamera.parent;
+        if (this.lButtonDown || 
+            this.rButtonDown) {
 
-            if ((this.lButtonDown && this.rButtonDown) || (this.lButtonDown && event.shiftKey)) { // dolly
-                camera.translate(new Vector1x4(0, (x - this.lx) * this.TXYZ_SCALAR, 0));
-                this.lx = x;
-                this.ly = y;
-            } else if ((this.lButtonDown && event.ctrlKey) || this.rButtonDown) { // move
-                const dx = (this.lx - x) * this.TXYZ_SCALAR;
-                const dz = (y - this.ly) * this.TXYZ_SCALAR;
-                const dv = camera.mapPos(new Vector1x4(dx, 0, dz, 0), target);
-                target.translate(dv) // move target along own axes
-                this.lx = x;
-                this.ly = y;
-            } else if (this.lButtonDown) { // rotate
-                target.rotateZ(this.degreesToRadians(this.lx - x) * this.RXYZ_SCALAR); // yaw camera target around it's own z-axis
-                camera.rotateX(this.degreesToRadians(this.ly - y) * this.RXYZ_SCALAR, target); // pitch around camera target's x-axis
-                this.lx = x;
-                this.ly = y;
+            const scene = sceneArray.curScene;
+            if (scene.activeCamera) {
+                const x = event.clientX;
+                const y = event.clientY;
+                const camera = scene.activeCamera;
+                const target = scene.activeCamera.parent;
+
+                if ((this.lButtonDown && this.rButtonDown) || (this.lButtonDown && event.shiftKey)) { // dolly
+                    camera.translate(new Vector1x4(0, (x - this.lx) * this.TXYZ_SCALAR, 0));
+                    this.lx = x;
+                    this.ly = y;
+                } else if ((this.lButtonDown && event.ctrlKey) || this.rButtonDown) { // move
+                    const dx = (this.lx - x) * this.TXYZ_SCALAR;
+                    const dz = (y - this.ly) * this.TXYZ_SCALAR;
+                    const dv = camera.mapPos(new Vector1x4(dx, 0, dz, 0), target);
+                    target.translate(dv) // move target along own axes
+                    this.lx = x;
+                    this.ly = y;
+                } else if (this.lButtonDown) { // rotate
+                    target.rotateZ(this.degreesToRadians(this.lx - x) * this.RXYZ_SCALAR); // yaw camera target around it's own z-axis
+                    camera.rotateX(this.degreesToRadians(this.ly - y) * this.RXYZ_SCALAR, target); // pitch around camera target's x-axis
+                    this.lx = x;
+                    this.ly = y;
+                }
             }
-        }
-    }
-
-    onSceneLoaded(loadedScene) {
-        this.panelCamera.onSceneLoaded(loadedScene);
-        this.panelLights.onSceneLoaded(loadedScene);
-        this.panelMaterials.onSceneLoaded(loadedScene);
-        if (this.currentScene === loadedScene) {
-            this.setState({rootNode: loadedScene.rootNode});
-        }
-    }
-
-    onClickSceneButton(event) {
-        const i = this.listOfScenes.findIndex(scene => scene.name === event.target.textContent);
-        if (i > -1) {
-            this.currentScene = this.listOfScenes[i];
-            this.currentScene.loadScene(this.onSceneLoaded);
-            this.currentScene.drawScene();
-
-            this.setState({ currentScene: this.currentScene, rootNode: this.currentScene.rootNode });
-            this.panelCamera.onSceneChange();
-            this.panelRender.onSceneChange();
-            this.panelLights.onSceneChange();
-            this.panelMaterials.onSceneChange();
         }
     }
 }
