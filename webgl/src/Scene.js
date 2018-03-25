@@ -1,7 +1,6 @@
 import Model from './Model';
 import Camera from './Camera';
 import RefFrame from './RefFrame';
-import AmbientLS from './AmbientLS';
 import OmniDirLS from './OmniDirLS';
 import Matrix4x4 from './Matrix4x4';
 

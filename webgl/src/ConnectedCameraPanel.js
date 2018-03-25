@@ -23,7 +23,7 @@ function CameraPanel(props) {
                     type='radio'
                     className='CameraButton' 
                     checked={sceneState.cameraIdx === idx} 
-                    onChange={onChangeCamera(curSceneId, idx)} />
+                    onChange={() => onChangeCamera(curSceneId, idx)} />
                 <label 
                     htmlFor={id} 
                     className='CameraButtonLabel'>
@@ -51,7 +51,7 @@ function CameraPanel(props) {
                     min='15'
                     max='165'
                     value={cameraState.fieldOfView.toFixed(0)} 
-                    onChange={onChangeFieldOfView} />
+                    onChange={event => onChangeFieldOfView(curSceneId, parseInt(event.target.value, 10))} />
             </fieldset>
 
             <fieldset className='Fieldset'> 
@@ -64,7 +64,7 @@ function CameraPanel(props) {
                     min='50' 
                     max='500'
                     value={cameraState.aspectRatio * 100}
-                    onChange={onChangeAspectRatio} />
+                    onChange={event => onChangeAspectRatio(curSceneId, parseInt(event.target.value, 10) * 0.01)} />
             </fieldset>
         </div>
     }

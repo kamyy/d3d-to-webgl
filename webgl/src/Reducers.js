@@ -1,21 +1,18 @@
-import Scene from './Scene';
 import { actionTypes } from './Actions';
-
-// sceneArray: [ new Scene(0, 'hardwood'), new Scene(1, 'biplane'), new Scene(2, 'goku') ],
 
 function onSceneLoad(scene) {
     const { id, cameras, cameraIdx, currentLS, omniDirLS, ambientLS, drawWirefrm, drawNormals } = scene;
 
     return {
-        id: id,
+        id,
         cameras: cameras.map(cam => ( { fieldOfView: cam.fieldOfView, aspectRatio: cam.aspectRatio } )),
         cameraIdx: cameraIdx,
         currentLS: currentLS,
         omniDirLS: [...omniDirLS.color],
         lowerAmbientLS: [...ambientLS.lowerHemisphereColor],
         upperAmbientLS: [...ambientLS.upperHemisphereColor],
-        drawWirefrm: drawWirefrm,
-        drawNormals: drawNormals,
+        drawWirefrm,
+        drawNormals,
     }
 }
 
@@ -90,6 +87,6 @@ const initialState = {
 export default function appReducer(state = initialState, action) {
     return {
         sceneArray: sceneArrayReducer(state.sceneArray, action),
-        curSceneId: curSceneIdReducer(state.curSceneId, action)
+        curSceneId: curSceneIdReducer(state.curSceneId, action),
     };
 }
