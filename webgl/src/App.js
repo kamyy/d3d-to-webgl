@@ -13,7 +13,7 @@ import ConnectedScenePanel from './ConnectedScenePanel';
 import ConnectedCameraPanel from './ConnectedCameraPanel';
 
 import PanelRender from './PanelRender';
-import PanelLights from './PanelLights';
+import ConnectedLightsPanel from './ConnectedLightsPanel';
 import PanelMaterials from './PanelMaterials';
 
 import actionCreators from '/Actions';
@@ -64,10 +64,7 @@ export default class App extends Component {
                 </div>
 
                 <div id='RHS'>
-                    <PanelLights
-                        getCurrentScene={this.getCurrentScene} 
-                        onRef={panelLights => this.panelLights = panelLights} 
-                        />
+                    <ConnectedLightsPanel/>
                     <PanelMaterials
                         getCurrentScene={this.getCurrentScene} 
                         onRef={panelMaterials => this.panelMaterials = panelMaterials} 
