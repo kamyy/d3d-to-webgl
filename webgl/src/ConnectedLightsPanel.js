@@ -73,7 +73,7 @@ LightsPanel.propTypes = {
     onChangeR: PropTypes.func.isRequired,
     onChangeG: PropTypes.func.isRequired,
     onChangeB: PropTypes.func.isRequired,
-}
+};
 
 const ConnectedLightsPanel = connect(
     function({ sceneArray, curSceneId }) { 

@@ -11,13 +11,12 @@ import ShaderP3N3B3T2 from './ShaderP3N3B3T2';
 
 import ConnectedScenePanel from './ConnectedScenePanel';
 import ConnectedCameraPanel from './ConnectedCameraPanel';
-
-import PanelRender from './PanelRender';
+import ConnectedRenderPanel from './ConnectedRenderPanel';
 import ConnectedLightsPanel from './ConnectedLightsPanel';
-import PanelMaterials from './PanelMaterials';
+import ConnectedMaterialsPanel from './ConnectedMaterialsPanel';
 
-import actionCreators from '/Actions';
 import appReducer from './Reducers';
+import actionCreators from '/Actions';
 
 export let GL         = null;
 export let reduxStore = createStore(appReducer);
@@ -44,40 +43,32 @@ export default class App extends Component {
     }
 
     render() {
-        return (
-            <div className='App'>
-                <canvas id='Canvas' width='1280' height='720'>Please use a browser that supports WebGL</canvas> 
-                { 
-                    (this.state.rootNode) ? null : <div className='Spinner'/> 
-                }
+        return <div className='App'>
+            <canvas id='Canvas' width='1280' height='720'>Please use a browser that supports WebGL</canvas> 
+            { 
+                (sceneArray.curScene().rootNode) ? null : <div className='Spinner'/> 
+            }
 
-                <div id='LHS'>
-                    <ConnectedScenePanel/>
-                    <ConnectedCameraPanel/>
-                </div>
-
-                <div id='Bottom'>
-                    <PanelRender
-                        getCurrentScene={this.getCurrentScene} 
-                        onRef={panelRender => this.panelRender = panelRender} 
-                        />
-                </div>
-
-                <div id='RHS'>
-                    <ConnectedLightsPanel/>
-                    <PanelMaterials
-                        getCurrentScene={this.getCurrentScene} 
-                        onRef={panelMaterials => this.panelMaterials = panelMaterials} 
-                        />
-                </div>
-
-                <hr/>
-
-                <p className='ProjectInfo'>MIT License</p>
-                <p className='ProjectInfo'><a href='https://github.com/kamyy/d3d-to-webgl'>Project @ GitHub</a></p>
-                <p className='ProjectInfo'>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
+            <div id='LHS'>
+                <ConnectedScenePanel/>
+                <ConnectedCameraPanel/>
             </div>
-        );
+
+            <div id='Bottom'>
+                <ConnectedRenderPanel/>
+            </div>
+
+            <div id='RHS'>
+                <ConnectedLightsPanel/>
+                <ConnectedMaterialsPanel/>
+            </div>
+
+            <hr/>
+
+            <p className='ProjectInfo'>MIT License</p>
+            <p className='ProjectInfo'><a href='https://github.com/kamyy/d3d-to-webgl'>Project @ GitHub</a></p>
+            <p className='ProjectInfo'>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
+        </div>
     }
 
     componentDidMount() {
@@ -111,7 +102,8 @@ export default class App extends Component {
                 ['P3N3B3T2', new ShaderP3N3B3T2(this.getCurrentScene)]
             ]));
 
-            reduxStore.dispatch(actionCreators.changeCurScene(0));
+            sceneArray.curScene().loadScene();
+            sceneArray.curScene().drawScene();
         }
     }
 
@@ -147,12 +139,11 @@ export default class App extends Component {
         if (this.lButtonDown || 
             this.rButtonDown) {
 
-            const scene = sceneArray.curScene;
-            if (scene.activeCamera) {
+            const camera = sceneArray.curScene.activeCamera;
+            if (camera) {
                 const x = event.clientX;
                 const y = event.clientY;
-                const camera = scene.activeCamera;
-                const target = scene.activeCamera.parent;
+                const target = camera.parent;
 
                 if ((this.lButtonDown && this.rButtonDown) || (this.lButtonDown && event.shiftKey)) { // dolly
                     camera.translate(new Vector1x4(0, (x - this.lx) * this.TXYZ_SCALAR, 0));
