@@ -1,18 +1,31 @@
 import { actionTypes } from './Actions';
 
 function onSceneLoad(scene) {
-    const { id, cameras, cameraIdx, currentLS, omniDirLS, ambientLS, drawWirefrm, drawNormals } = scene;
+    const { 
+        id, 
+        cameras, 
+        cameraIdx, 
+        currentLS, 
+        omniDirLS, 
+        ambientLS, 
+        drawWirefrm, 
+        drawNormals, 
+        mapOfMaterials, 
+    } = scene;
 
     return {
         id,
-        cameras: cameras.map(cam => ( { fieldOfView: cam.fieldOfView, aspectRatio: cam.aspectRatio } )),
-        cameraIdx: cameraIdx,
-        currentLS: currentLS,
+        cameras: cameras.map(cam => ({ fieldOfView: cam.fieldOfView, aspectRatio: cam.aspectRatio })),
+        cameraIdx,
+        currentLS,
         omniDirLS: [...omniDirLS.color],
         lowerAmbientLS: [...ambientLS.lowerHemisphereColor],
         upperAmbientLS: [...ambientLS.upperHemisphereColor],
         drawWirefrm,
         drawNormals,
+        mapOfMaterials,
+        materialFilter: '',
+        setOfMaterials: new Set(Array.from(mapOfMaterials.values())),
     }
 }
 
@@ -35,6 +48,17 @@ function changeColor(state, value, idx) {
     default:
         return state;
     }
+}
+
+function changeMaterialFilter(state, filter) {
+    const lcFilter = filter.toLowerCase();
+    const filterFn = m => m.name.toLowerCase().includes(lcFilter);
+    const materialArray = Array.from(state.mapOfMaterials.values());
+
+    return {
+        materialFilter: filter,
+        setOfMaterials: new Set(materialArray.filter(filterFn)),
+    };
 }
 
 function sceneReducer(state, action) {
@@ -63,6 +87,8 @@ function sceneReducer(state, action) {
     case actionTypes.toggleNormals:
         return Object.assign({}, state, { drawNormals: !state.drawNormals });
     
+    case actionTypes.changeMaterialFilter:
+        return Object.assign({}, state, changeMaterialFilter(state, action.filter));
     default:
         return state;
     }
