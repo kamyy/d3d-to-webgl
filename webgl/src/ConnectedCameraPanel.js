@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import './App.css'
+import './App.css';
 import { actionCreators } from './Actions';
 
 function CameraPanel(props) {
@@ -72,7 +72,7 @@ function CameraPanel(props) {
 }
 
 CameraPanel.propTypes = {
-    sceneState: PropTypes.object.isRequired,
+    sceneState: PropTypes.object,
     curSceneId: PropTypes.number.isRequired,
     onChangeCamera: PropTypes.func.isRequired,
     onChangeFieldOfView: PropTypes.func.isRequired,

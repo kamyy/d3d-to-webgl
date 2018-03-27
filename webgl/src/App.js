@@ -1,5 +1,6 @@
 import './App.css';
 import { createStore } from 'redux';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 
 import Scene from './Scene';
@@ -16,7 +17,6 @@ import ConnectedLightsPanel from './ConnectedLightsPanel';
 import ConnectedMaterialsPanel from './ConnectedMaterialsPanel';
 
 import appReducer from './Reducers';
-import actionCreators from '/Actions';
 
 export let GL         = null;
 export let reduxStore = createStore(appReducer);
@@ -26,7 +26,7 @@ Object.defineProperty(sceneArray, 'curScene', {
     get: function() { return this[reduxStore.getState().curSceneId]; }
 });
 
-export default class App extends Component {
+class App extends Component {
     constructor(props) {
         super(props);
 
@@ -40,13 +40,15 @@ export default class App extends Component {
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+
+        this.rootNode = null;
     }
 
     render() {
         return <div className='App'>
             <canvas id='Canvas' width='1280' height='720'>Please use a browser that supports WebGL</canvas> 
             { 
-                (sceneArray.curScene().rootNode) ? null : <div className='Spinner'/> 
+                (this.props.sceneState === null) ? <div className='Spinner'/> : null
             }
 
             <div id='LHS'>
@@ -96,14 +98,14 @@ export default class App extends Component {
             GL.clearStencil(0); // stencil buffer clear value 
 
             GL.mapOfShaders = Object.freeze(new Map([
-                ['P3C3', new ShaderP3C3(this.getCurrentScene)],
-                ['P3N3', new ShaderP3N3(this.getCurrentScene)],
-                ['P3N3T2', new ShaderP3N3T2(this.getCurrentScene)],
-                ['P3N3B3T2', new ShaderP3N3B3T2(this.getCurrentScene)]
+                ['P3C3', new ShaderP3C3()],
+                ['P3N3', new ShaderP3N3()],
+                ['P3N3T2', new ShaderP3N3T2()],
+                ['P3N3B3T2', new ShaderP3N3B3T2()]
             ]));
 
-            sceneArray.curScene().loadScene();
-            sceneArray.curScene().drawScene();
+            sceneArray.curScene.loadScene();
+            sceneArray.curScene.drawScene();
         }
     }
 
@@ -166,3 +168,14 @@ export default class App extends Component {
         }
     }
 }
+
+const ConnectedApp = connect(
+    function({ sceneArray, curSceneId }) { 
+        return { 
+            sceneState: sceneArray[curSceneId] 
+        };
+    }
+)(App);
+
+export default ConnectedApp;
+

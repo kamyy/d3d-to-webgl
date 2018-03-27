@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import './App.css'
+import './App.css';
 import { actionCreators } from './Actions';
 
 function LightsPanel(props) {
@@ -40,7 +40,7 @@ function LightsPanel(props) {
                     R <span>{(r * 255.0).toFixed(0)}</span>
                 </legend>
                 <input  className='Range' type='range' min='0' max='255' value={r * 255.0}
-                        onChange={event => onChangeR(curSceneId, parseInt(event.target.value, 10) / 255.0)}
+                        onChange={event => onChangeR(curSceneId, event.target.value / 255.0)}
                         />
             </fieldset>
 
@@ -49,7 +49,7 @@ function LightsPanel(props) {
                     G <span>{(g * 255.0).toFixed(0)}</span>
                 </legend>
                 <input  className='Range' type='range' min='0' max='255' value={g * 255.0}
-                        onChange={event => onChangeG(curSceneId, parseInt(event.target.value, 10) / 255.0)}
+                        onChange={event => onChangeG(curSceneId, event.target.value / 255.0)}
                         />
             </fieldset>
 
@@ -58,7 +58,7 @@ function LightsPanel(props) {
                     B <span>{(b * 255.0).toFixed(0)}</span>
                 </legend>
                 <input  className='Range' type='range' min='0' max='255' value={b * 255.0}
-                        onChange={event => onChangeB(curSceneId, parseInt(event.target.value, 10) / 255.0)}
+                        onChange={event => onChangeB(curSceneId, event.target.value / 255.0)}
                         />
             </fieldset>
         </div>
@@ -67,7 +67,7 @@ function LightsPanel(props) {
 }
 
 LightsPanel.propTypes = {
-    sceneState: PropTypes.object.isRequired,
+    sceneState: PropTypes.object,
     curSceneId: PropTypes.number.isRequired,
     onChangeLightSource: PropTypes.func.isRequired,
     onChangeR: PropTypes.func.isRequired,
@@ -84,9 +84,9 @@ const ConnectedLightsPanel = connect(
     function(dispatch) { 
         return { 
             onChangeLightSource: (id, lightSource) => dispatch(actionCreators.changeLightSource(id, lightSource)),
-            onChangeR: (id, value) => dispatch(actionCreators.changeFieldOfView(id, value)),
-            onChangeG: (id, value) => dispatch(actionCreators.changeAspectRatio(id, value)),
-            onChangeB: (id, value) => dispatch(actionCreators.changeAspectRatio(id, value)),
+            onChangeR: (id, value) => dispatch(actionCreators.changeR(id, value)),
+            onChangeG: (id, value) => dispatch(actionCreators.changeG(id, value)),
+            onChangeB: (id, value) => dispatch(actionCreators.changeB(id, value)),
         };
     }
 )(LightsPanel);

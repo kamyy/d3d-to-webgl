@@ -4,8 +4,8 @@ import RefFrame from './RefFrame';
 import OmniDirLS from './OmniDirLS';
 import Matrix4x4 from './Matrix4x4';
 
-import { GL, reduxStore } from './App';
-import actionCreators from './Actions';
+import { GL, reduxStore, sceneArray } from './App';
+import { actionCreators } from './Actions';
 
 const DRAW = Object.freeze({
     MIRROR: Symbol("mirror"),
@@ -24,14 +24,7 @@ export default class Scene {
         this.cacheTranslucentPiece = this.cacheTranslucentPiece.bind(this);
     }
 
-    filterMaterials(filter) {
-        filter = filter.toLowerCase();
-        this.materials = new Set(Array.from(this.mapOfMaterials.values()).filter(
-            m => m.name.toLowerCase().includes(filter)
-        ));
-    }
-
-    loadScene(onSceneLoadFinished) {
+    loadScene() {
         if (GL && this.sceneLoadRequired) {
             this.sceneLoadRequired = false;
 
@@ -45,7 +38,12 @@ export default class Scene {
                     this.initMaterials(json.materials);
                     this.initSceneGraph(json.sceneRoot);
 
-                    reduxStore.dispatch(actionCreators.onSceneLoad(this));
+                    reduxStore.dispatch(actionCreators.onSceneLoad(this.id, this));
+
+                    const scene = sceneArray.curScene;
+                    if (scene.id === this.id) {
+                        scene.drawScene();
+                    }
                 }
             };
             request.open('GET', `/json/${this.name}.json`, true);
@@ -160,7 +158,7 @@ export default class Scene {
 
         const sceneState = sceneArray[this.id];
 
-        if (sceneState && curSceneId === this.id) {
+        if (sceneState && curSceneId === this.id) { 
             GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT);
 
             this.activeCamera.fieldOfView = sceneState.cameras[this.activeCamIdx].fieldOfView;
@@ -172,8 +170,8 @@ export default class Scene {
                 GL.enable(GL.STENCIL_TEST);    // enable stencil buffer
                 GL.stencilFunc(GL.ALWAYS,1,1); // stencil test always passes
                 GL.stencilOp(GL.KEEP,          // if stencil test fail do nothing
-                             GL.INCR,          // if stencil test pass depth test fail write 1 to stencil
-                             GL.INCR);         // if stencil test pass depth test pass write 1 to stencil
+                            GL.INCR,          // if stencil test pass depth test fail write 1 to stencil
+                            GL.INCR);         // if stencil test pass depth test pass write 1 to stencil
                 GL.depthMask(false);                      // disable depth buffer writes
                 GL.colorMask(false, false, false, false); // disable color buffer writes
                 
@@ -182,8 +180,8 @@ export default class Scene {
                 GL.cullFace(GL.FRONT);         // cull CW triangles
                 GL.stencilFunc(GL.EQUAL,1,1);  // stencil test pass if stencil == 1
                 GL.stencilOp(GL.KEEP,          // if stencil test fail do nothing
-                             GL.KEEP,          // if stencil test pass depth test fail do nothing
-                             GL.KEEP);         // if stencil test pass depth test pass do nothing
+                            GL.KEEP,          // if stencil test pass depth test fail do nothing
+                            GL.KEEP);         // if stencil test pass depth test pass do nothing
                 GL.depthMask(true);                   // enable depth buffer writes
                 GL.colorMask(true, true, true, true); // enable color buffer writes
 
@@ -203,7 +201,7 @@ export default class Scene {
                 this.activeCamera = this.mirrorCam;    // make mirror camera rendering camera
                 this.activeCamera.modelMatrix = m;     // apply mirror xform to mirror camera
 
-                this.drawNode(this.rootNode, DRAW.MIRROR); // draw reflection of model pieces into color buffer
+                this.drawNode(this.rootNode, DRAW.MIRROR, sceneState); // draw reflection of model pieces into color buffer
                 this.activeCamera = savedCamera;           // restore default camera
 
                 GL.clear(GL.DEPTH_BUFFER_BIT);  // clear depth buffer
@@ -225,7 +223,6 @@ export default class Scene {
     drawNode(node, mode, sceneState) {
         if (node) {
             if (node instanceof Model && node !== this.mirrorObj) {
-
                 switch (mode) {
                 case DRAW.MIRROR:
                     sceneState.drawWirefrm ? node.drawEdges() : node.drawPieces(1, this.cacheTranslucentPiece);

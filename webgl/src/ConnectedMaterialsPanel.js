@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import './App.css'
+import './App.css';
 import { actionCreators } from './Actions';
 
 function MaterialsPanel(props) {
@@ -23,12 +23,12 @@ function MaterialsPanel(props) {
                         onChange={event => onChangeMaterialFilter(curSceneId, event.target.value)}
                         className='MaterialInput' 
                         />
-                <span onClick={event => onChangeMaterialFilter(curSceneId, '')}>&times;</span>
+                <span id='Clear' onClick={event => onChangeMaterialFilter(curSceneId, '')}>&times;</span>
             </fieldset>
 
             <fieldset className='Fieldset'><legend className='Legend'>Materials</legend> {
                 [...setOfMaterials].map(m => 
-                    <div key={m.name} className='MaterialItem' onClick={event => onChangeMaterialFilter(curSceneId, event.key)}>{m.name}</div>
+                    <div key={m.name} className='MaterialItem' onClick={event => onChangeMaterialFilter(curSceneId, m.name)}>{m.name}</div>
                 )
             } </fieldset>
         </div>
@@ -38,17 +38,21 @@ function MaterialsPanel(props) {
 }
 
 MaterialsPanel.propTypes = {
-    sceneState: PropTypes.object.isRequired,
+    sceneState: PropTypes.object,
     curSceneId: PropTypes.number.isRequired,
-    materialFilter: PropTypes.string.isRequired,
-    setOfMaterials: PropTypes.set.isRequired,
+    materialFilter: PropTypes.string,
+    setOfMaterials: PropTypes.object,
     onChangeMaterialFilter: PropTypes.func.isRequired,
 };
 
 const ConnectedMaterialsPanel = connect(
-    function({ sceneArray, curSceneId, materialFilter, setOfMaterials }) {
+    function({ sceneArray, curSceneId }) {
+        const sceneState = sceneArray[curSceneId];
         return { 
-            sceneState: sceneArray[curSceneId], curSceneId, materialFilter, setOfMaterials
+            sceneState,
+            curSceneId, 
+            materialFilter: sceneState ? sceneState.materialFilter : null,
+            setOfMaterials: sceneState ? sceneState.setOfMaterials : null,
         };
     },
     function(dispatch) {

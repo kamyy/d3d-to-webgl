@@ -2,8 +2,8 @@ import Shader from './Shader';
 import { GL } from './App';
 
 export default class ShaderP3C3 extends Shader { 
-    constructor(getCurrentScene) {
-        super('/glsl/P3C3.vert', '/glsl/P3C3.frag', getCurrentScene);
+    constructor() {
+        super('/glsl/P3C3.vert', '/glsl/P3C3.frag');
     }
 
     drawNormals(model, modelPiece) {

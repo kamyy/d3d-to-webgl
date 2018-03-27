@@ -1,20 +1,18 @@
 import Model from './Model';
 import Camera from './Camera';
 import Vector1x4 from './Vector1x4';
-import AmbientLS from './AmbientLS';
 import OmniDirLS from './OmniDirLS';
 
-import { GL } from './App';
+import { GL, reduxStore, sceneArray } from './App';
 
 const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
 const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
 
 export default class Shader {
-    constructor(vertShaderURL, fragShaderURL, getCurrentScene) {
+    constructor(vertShaderURL, fragShaderURL) {
         this.vs = null;
         this.fs = null;
         this.program = null;
-        this.getCurrentScene = getCurrentScene;
         this.edgeBuffer = GL.createBuffer();
 
         const initProgram = () => {
@@ -89,7 +87,7 @@ export default class Shader {
     }
 
     drawTriangleEdges(model, modelPiece) {
-        const camPosition = this.getCurrentScene().activeCamera.mapPos(g_origin, model); // map camera position into model space
+        const camPosition = sceneArray.curScene.activeCamera.mapPos(g_origin, model); // map camera position into model space
         const edgeIndices = []; // each pair of indices represents a triangle edge
 
         const idxs = modelPiece.idxs; // array of indices, every three indices represents a triangle
@@ -133,8 +131,9 @@ export default class Shader {
     }
 
     setUniformVariablesInVertShader(model) {
-        const omniDirLS = this.getCurrentScene().omniDirLS;
-        const activeCam = this.getCurrentScene().activeCamera;
+        const scene = sceneArray.curScene;
+        const omniDirLS = scene.omniDirLS;
+        const activeCam = scene.activeCamera;
 
         const loc0 = GL.getUniformLocation(this.program, 'u_attnCoeffs');
         if (loc0 && omniDirLS instanceof OmniDirLS) {
@@ -168,22 +167,30 @@ export default class Shader {
     }
 
     setUniformVariablesInFragShader(model, material) {
-        const omniDirLS = this.getCurrentScene().omniDirLS;
-        const ambientLS = this.getCurrentScene().ambientLS;
+        const {
+            sceneArray,
+            curSceneId,
+        } = reduxStore.getState();
+
+        const {
+            omniDirLS,
+            lowerAmbientLS,
+            upperAmbientLS,
+        } = sceneArray[curSceneId];
 
         const loc0 = GL.getUniformLocation(this.program, 'u_int');
-        if (loc0 && omniDirLS instanceof OmniDirLS) {
-            GL.uniform3f(loc0, omniDirLS.color[0], omniDirLS.color[1], omniDirLS.color[2]);
+        if (loc0) {
+            GL.uniform3f(loc0, omniDirLS[0], omniDirLS[1], omniDirLS[2]);
         }
 
         const loc1 = GL.getUniformLocation(this.program, 'u_gnd');
-        if (loc1 && ambientLS instanceof AmbientLS) {
-            GL.uniform3f(loc1, ambientLS.lowerHemisphereColor[0], ambientLS.lowerHemisphereColor[1], ambientLS.lowerHemisphereColor[2]);
+        if (loc1) {
+            GL.uniform3f(loc1, lowerAmbientLS[0], lowerAmbientLS[1], lowerAmbientLS[2]);
         }
 
         const loc2 = GL.getUniformLocation(this.program, 'u_sky');
-        if (loc2 && ambientLS instanceof AmbientLS) {
-            GL.uniform3f(loc2, ambientLS.upperHemisphereColor[0], ambientLS.upperHemisphereColor[1], ambientLS.upperHemisphereColor[2]);
+        if (loc2) {
+            GL.uniform3f(loc2, upperAmbientLS[0], upperAmbientLS[1], upperAmbientLS[2]);
         }
 
         const loc3 = GL.getUniformLocation(this.program, 'u_ambi');
@@ -192,18 +199,18 @@ export default class Shader {
         }
 
         const loc4 = GL.getUniformLocation(this.program, 'u_diff');
-        if (loc4 && omniDirLS instanceof OmniDirLS) {
-            const r = omniDirLS.color[0] * material.diff[0];
-            const g = omniDirLS.color[1] * material.diff[1];
-            const b = omniDirLS.color[2] * material.diff[2];
+        if (loc4) {
+            const r = omniDirLS[0] * material.diff[0];
+            const g = omniDirLS[1] * material.diff[1];
+            const b = omniDirLS[2] * material.diff[2];
             GL.uniform3f(loc4, r, g, b);
         }
 
         const loc5 = GL.getUniformLocation(this.program, 'u_spec');
-        if (loc5 && omniDirLS instanceof OmniDirLS) {
-            const r = omniDirLS.color[0] * material.spec[0];
-            const g = omniDirLS.color[1] * material.spec[1];
-            const b = omniDirLS.color[2] * material.spec[2];
+        if (loc5) {
+            const r = omniDirLS[0] * material.spec[0];
+            const g = omniDirLS[1] * material.spec[1];
+            const b = omniDirLS[2] * material.spec[2];
             GL.uniform4f(loc5, r, g, b, material.shinyExponent);
         }
 

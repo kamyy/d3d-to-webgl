@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import './App.css'
+import './App.css';
 import { actionCreators } from './Actions';
 
 function RenderPanel(props) {
@@ -33,7 +33,7 @@ function RenderPanel(props) {
 }
 
 RenderPanel.propTypes = {
-    sceneState: PropTypes.object.isRequired,
+    sceneState: PropTypes.object,
     curSceneId: PropTypes.number.isRequired,
     onToggleWirefrm: PropTypes.func.isRequired,
     onToggleNormals: PropTypes.func.isRequired,
@@ -53,5 +53,4 @@ const ConnectedRenderPanel = connect(
     }
 )(RenderPanel);
 
-export default ConnectedLightsPanel;
-
+export default ConnectedRenderPanel;

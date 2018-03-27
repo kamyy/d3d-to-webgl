@@ -4,11 +4,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import App, { reduxStore } from './App';
+import ConnectedApp, { reduxStore } from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 ReactDOM.render(
-    <Provider store={reduxStore}><App/></Provider>, 
+    <Provider store={reduxStore}><ConnectedApp/></Provider>, 
     document.getElementById('root')
 );
 

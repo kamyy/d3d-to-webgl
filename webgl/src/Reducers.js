@@ -4,25 +4,20 @@ function onSceneLoad(scene) {
     const { 
         id, 
         cameras, 
-        cameraIdx, 
-        currentLS, 
         omniDirLS, 
-        ambientLS, 
-        drawWirefrm, 
-        drawNormals, 
         mapOfMaterials, 
     } = scene;
 
     return {
         id,
         cameras: cameras.map(cam => ({ fieldOfView: cam.fieldOfView, aspectRatio: cam.aspectRatio })),
-        cameraIdx,
-        currentLS,
+        cameraIdx: 0,
+        currentLS: 'Omni Directional',
         omniDirLS: [...omniDirLS.color],
-        lowerAmbientLS: [...ambientLS.lowerHemisphereColor],
-        upperAmbientLS: [...ambientLS.upperHemisphereColor],
-        drawWirefrm,
-        drawNormals,
+        lowerAmbientLS: [0.2, 0.2, 0.2],
+        upperAmbientLS: [0.2, 0.2, 0.2],
+        drawWirefrm: false,
+        drawNormals: false,
         mapOfMaterials,
         materialFilter: '',
         setOfMaterials: new Set(Array.from(mapOfMaterials.values())),
@@ -83,7 +78,7 @@ function sceneReducer(state, action) {
         return Object.assign({}, state, changeColor(state, action.value, 2));
 
     case actionTypes.toggleWirefrm:
-        return Object.assign({}, state, { drawWireFrm: !state.drawWireFrm });
+        return Object.assign({}, state, { drawWirefrm: !state.drawWirefrm });
     case actionTypes.toggleNormals:
         return Object.assign({}, state, { drawNormals: !state.drawNormals });
     
@@ -102,7 +97,7 @@ function curSceneIdReducer(state, action) {
     if (action.type === actionTypes.changeScene) {
         return action.id;
     }
-    return state;
+    return state
 }
 
 const initialState = {

@@ -14,8 +14,8 @@ export const actionTypes = Object.freeze({
 });
 
 export const actionCreators = Object.freeze({
-    onSceneLoad(scene) {
-        return { type: actionTypes.onSceneLoad, scene };
+    onSceneLoad(id, scene) {
+        return { type: actionTypes.onSceneLoad, id, scene };
     },
     changeScene(id) {
         return { type: actionTypes.changeScene, id };
