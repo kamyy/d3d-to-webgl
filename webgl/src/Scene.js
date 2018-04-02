@@ -12,6 +12,29 @@ const DRAW = Object.freeze({
     PIECES: Symbol("pieces")
 });
 
+function createXHR(url, mimeType = null) {
+    return new Promise(function(resolve, reject) {
+        const xhr = new XMLHttpRequest();
+        if (mimeType) {
+            xhr.overrideMimeType(mimeType);
+        }
+        xhr.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                switch (this.status) {
+                case 200:
+                    resolve(this.responseText);
+                    break;
+                default:
+                    reject(this.status);
+                    break;
+                }
+            }
+        };
+        xhr.open('GET', url, true);
+        xhr.send();
+    });
+}
+
 export default class Scene {
     constructor(id, name) {
         this.id   = id;
@@ -28,26 +51,24 @@ export default class Scene {
         if (GL && this.sceneLoadRequired) {
             this.sceneLoadRequired = false;
 
-            const request = new XMLHttpRequest();
-            request.overrideMimeType("application/json");
-            request.onreadystatechange = () => {
-                if (request.readyState === 4 && request.status === 200) {
-                    const json = JSON.parse(request.responseText);
+            const promise = createXHR(`/json/${this.name}.json`, 'application/json');
 
-                    this.initTextures(json.textures);
-                    this.initMaterials(json.materials);
-                    this.initSceneGraph(json.sceneRoot);
+            promise.then(responseText => {
+                const json = JSON.parse(responseText);
+                this.initTextures(json.textures);
+                this.initMaterials(json.materials);
+                this.initSceneGraph(json.sceneRoot);
+                reduxStore.dispatch(actionCreators.onSceneLoad(this.id, this));
 
-                    reduxStore.dispatch(actionCreators.onSceneLoad(this.id, this));
-
-                    const scene = sceneArray.curScene;
-                    if (scene.id === this.id) {
-                        scene.drawScene();
-                    }
+                const scene = sceneArray.curScene;
+                if (scene.id === this.id) {
+                    scene.drawScene();
                 }
-            };
-            request.open('GET', `/json/${this.name}.json`, true);
-            request.send();                    
+            });
+
+            promise.catch(status => {
+                console.error(`Failed to GET /json/${this.name}.json status(${status})`);
+            });
         }
     }
 
