@@ -8,61 +8,71 @@ import { GL, reduxStore, sceneArray } from './App';
 const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
 const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
 
+function createXHR(url) {
+    return new Promise(function(resolve, reject) {
+        const xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                switch (this.status) {
+                case 200:
+                    resolve(this.responseText);
+                    break;
+                default:
+                    reject({
+                        status: this.status, 
+                        url:    url
+                    });
+                    break;
+                }
+            }
+        };
+
+        xhr.open('GET', url, true);
+        xhr.send();
+    });
+}
+
 export default class Shader {
     constructor(vertShaderURL, fragShaderURL) {
-        this.vs = null;
-        this.fs = null;
         this.program = null;
         this.edgeBuffer = GL.createBuffer();
 
-        const initProgram = () => {
-            const program = GL.createProgram();
-            GL.attachShader(program, this.vs);
-            GL.attachShader(program, this.fs);
-            GL.linkProgram(program);
+        const promise = Promise.all([
+            createXHR(vertShaderURL),
+            createXHR(fragShaderURL),
+        ]);
+        
+        promise.then(responseTexts => {
+            const vs = GL.createShader(GL.VERTEX_SHADER);
+            const fs = GL.createShader(GL.FRAGMENT_SHADER);
+            GL.shaderSource(vs, responseTexts[0]);
+            GL.shaderSource(fs, responseTexts[1]);
+            GL.compileShader(vs);
+            GL.compileShader(fs);
 
-            if (!GL.getProgramParameter(program, GL.LINK_STATUS)) {
+            if (!GL.getShaderParameter(vs, GL.COMPILE_STATUS)) {
+                throw new Error('Error compiling ' + vertShaderURL + ' !\n' + GL.getShaderInfoLog(vs));
+            } 
+            if (!GL.getShaderParameter(fs, GL.COMPILE_STATUS)) {
+                throw new Error('Error compiling ' + fragShaderURL + ' !\n' + GL.getShaderInfoLog(fs));
+            } 
+
+            this.program = GL.createProgram();
+            GL.attachShader(this.program, vs);
+            GL.attachShader(this.program, fs);
+            GL.linkProgram(this.program);
+
+            if (!GL.getProgramParameter(this.program, GL.LINK_STATUS)) {
                 throw new Error('Error linking shader program!\n');
             }
-            return program;
-        }
+        });
 
-        const requestVS = new XMLHttpRequest();
-        requestVS.onreadystatechange = () => {
-            if (requestVS.readyState === 4 && requestVS.status === 200) {
-                this.vs = GL.createShader(GL.VERTEX_SHADER);
-                GL.shaderSource(this.vs, requestVS.responseText);
-                GL.compileShader(this.vs);
-
-                if (!GL.getShaderParameter(this.vs, GL.COMPILE_STATUS)) {
-                    throw new Error('Error compiling ' + vertShaderURL + ' !\n' + GL.getShaderInfoLog(this.vs));
-                } 
-                if (this.vs && this.fs && !this.program) {
-                    this.program = initProgram();
-                }
-            }
-        }
-        requestVS.open('GET', vertShaderURL, true);
-        requestVS.send();
-
-        const requestFS = new XMLHttpRequest();
-        requestFS.onreadystatechange = () => {
-            if (requestFS.readyState === 4 && requestFS.status === 200) {
-                this.fs = GL.createShader(GL.FRAGMENT_SHADER);
-                GL.shaderSource(this.fs, requestFS.responseText);
-                GL.compileShader(this.fs);
-
-                if (!GL.getShaderParameter(this.fs, GL.COMPILE_STATUS)) {
-                    throw new Error('Error compiling ' + fragShaderURL + ' !\n' + GL.getShaderInfoLog(this.fs));
-                } 
-                if (this.vs && this.fs && !this.program) {
-                    this.program = initProgram();
-                }
-            }
-        }
-        requestFS.open('GET', fragShaderURL, true);
-        requestFS.send();
+        promise.catch(({status, url}) => {
+            throw new Error(`Cannot GET ${url} status=${status}`);
+        });
     }
+
 
     drawTriangles(model, modelPiece) {
         if (this.program) {
