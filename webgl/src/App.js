@@ -178,4 +178,3 @@ const ConnectedApp = connect(
 )(App);
 
 export default ConnectedApp;
-
