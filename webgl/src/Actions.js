@@ -1,3 +1,5 @@
+// @flow
+
 export const actionTypes = Object.freeze({
     onSceneLoad: 'onSceneLoad',
     changeScene: 'changeScene',
@@ -14,44 +16,44 @@ export const actionTypes = Object.freeze({
 });
 
 export const actionCreators = Object.freeze({
-    onSceneLoad(id, scene) {
+    onSceneLoad(id: number, scene: Object) {
         return { type: actionTypes.onSceneLoad, id, scene };
     },
-    changeScene(id) {
+    changeScene(id: number) {
         return { type: actionTypes.changeScene, id };
     },
 
-    changeCamera(id, cameraIdx) {
+    changeCamera(id: number, cameraIdx: number) {
         return { type: actionTypes.changeCamera, id, cameraIdx };
     },
-    changeFieldOfView(id, fieldOfView) {
+    changeFieldOfView(id: number, fieldOfView: number) {
         return { type: actionTypes.changeFieldOfView, id, fieldOfView };
     },
-    changeAspectRatio(id, aspectRatio) {
+    changeAspectRatio(id: number, aspectRatio: number) {
         return { type: actionTypes.changeAspectRatio, id, aspectRatio };
     },
 
-    changeLightSource(id, lightSource) {
+    changeLightSource(id: number, lightSource: Array<number>) {
         return { type: actionTypes.changeLightSource, id, lightSource };
     },
-    changeR(id, value) {
+    changeR(id: number, value: number) {
         return { type: actionTypes.changeR, id, value };
     },
-    changeG(id, value) {
+    changeG(id: number, value: number) {
         return { type: actionTypes.changeG, id, value };
     },
-    changeB(id, value) {
+    changeB(id: number, value: number) {
         return { type: actionTypes.changeB, id, value };
     },
 
-    toggleWirefrm(id) {
+    toggleWirefrm(id: number) {
         return { type: actionTypes.toggleWirefrm, id };
     },
-    toggleNormals(id) {
+    toggleNormals(id: number) {
         return { type: actionTypes.toggleNormals, id };
     },
 
-    changeMaterialFilter(id, filter) {
+    changeMaterialFilter(id: number, filter: string) {
         return { type: actionTypes.changeMaterialFilter, id, filter };
     }
 });

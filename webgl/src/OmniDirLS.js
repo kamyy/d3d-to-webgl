@@ -1,7 +1,14 @@
+// @flow
+
 import RefFrame from './RefFrame';
 
 export default class OmniDirLS extends RefFrame {
-    constructor(parent, node) { 
+    color:  Array<number>;
+    coeff0: number;
+    coeff1: number;
+    coeff2: number;
+
+    constructor(parent: RefFrame, node: Object) { 
         super(parent, node); 
         this.color  = node.color;
         this.coeff0 = node.coeff0; 
@@ -9,4 +16,3 @@ export default class OmniDirLS extends RefFrame {
         this.coeff2 = node.coeff2;
     }
 }
-

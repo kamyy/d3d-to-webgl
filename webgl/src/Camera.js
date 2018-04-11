@@ -1,8 +1,16 @@
+// @flow
+
 import Matrix4x4 from './Matrix4x4';
 import RefFrame from './RefFrame';
 
 export default class Camera extends RefFrame {
-    constructor(parent, node) {
+    _fieldOfView: number;
+    _aspectRatio: number;
+    _clipDistanceN: number;
+    _clipDistanceF: number;
+    _fieldOfViewDegrees: number;
+
+    constructor(parent: RefFrame, node: Object) {
         super(parent, node);
         this._fieldOfView = node.fieldOfView;
         this._aspectRatio = node.aspectRatio;
@@ -11,40 +19,40 @@ export default class Camera extends RefFrame {
         this._fieldOfViewDegrees = node.fieldOfView / Math.PI * 180.0;
     }
 
-    set fieldOfView(degrees) {
+    set fieldOfView(degrees: number) {
         this._fieldOfViewDegrees = degrees;
         this._fieldOfView = Math.PI / 180.0 * degrees;
     }
 
-    get fieldOfView() {
-        return this._fieldOfViewDegrees;
-    }
-
-    set aspectRatio(val) {
+    set aspectRatio(val: number) {
         this._aspectRatio = val;
     }
 
-    get aspectRatio() {
-        return this._aspectRatio;
-    }
-
-    set clipDistanceN(val) {
+    set clipDistanceN(val: number) {
         this._clipDistanceN = val;
     }
 
-    get clipDistanceN() {
-        return this._clipDistanceN;
-    }
-
-    set clipDistanceF(val) {
+    set clipDistanceF(val: number) {
         this._clipDistanceF = val;
     }
 
-    get clipDistanceF() {
+    get fieldOfView(): number {
+        return this._fieldOfViewDegrees;
+    }
+
+    get aspectRatio(): number {
+        return this._aspectRatio;
+    }
+
+    get clipDistanceN(): number {
+        return this._clipDistanceN;
+    }
+
+    get clipDistanceF(): number {
         return this._clipDistanceF;
     }
 
-    get viewProjMatrix() {
+    get viewProjMatrix(): Matrix4x4 {
         const y = 1.0 / Math.tan(this._fieldOfView * 0.5);
         const x = y / this._aspectRatio;
         const z = ( this._clipDistanceF                      ) / (this._clipDistanceF - this._clipDistanceN);

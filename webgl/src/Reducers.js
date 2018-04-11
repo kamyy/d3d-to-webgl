@@ -1,6 +1,8 @@
+// @flow
+
 import { actionTypes } from './Actions';
 
-function onSceneLoad(scene) {
+function onSceneLoad(scene: Object) {
     const { 
         id, 
         cameras, 
@@ -24,15 +26,15 @@ function onSceneLoad(scene) {
     }
 }
 
-function changeFieldOfView(state, fieldOfView) {
+function changeFieldOfView(state: Object, fieldOfView: number) {
     return state.cameras.map((c, i) => (state.cameraIdx === i) ? { fieldOfView: fieldOfView, aspectRatio: c.aspectRatio } : c);
 }
 
-function changeAspectRatio(state, aspectRatio) {
+function changeAspectRatio(state: Object, aspectRatio: number) {
     return state.cameras.map((c, i) => (state.cameraIdx === i) ? { fieldOfView: c.fieldOfView, aspectRatio: aspectRatio } : c);
 }
 
-function changeColor(state, value, idx) {
+function changeColor(state: Object, value: number, idx: number) {
     switch (state.currentLS) {
     case 'Omni Directional':
         return { omniDirLS: state.omniDirLS.map((v, i) => (idx === i) ? value : v) };
@@ -45,7 +47,7 @@ function changeColor(state, value, idx) {
     }
 }
 
-function changeMaterialFilter(state, filter) {
+function changeMaterialFilter(state: Object, filter: string) {
     const lcFilter = filter.toLowerCase();
     const filterFn = m => m.name.toLowerCase().includes(lcFilter);
     const materialArray = Array.from(state.mapOfMaterials.values());
@@ -56,7 +58,7 @@ function changeMaterialFilter(state, filter) {
     };
 }
 
-function sceneReducer(state, action) {
+function sceneReducer(state: Object, action: Object) {
     switch (action.type) {
     case actionTypes.onSceneLoad:
         return onSceneLoad(action.scene);
@@ -105,7 +107,7 @@ const initialState = {
     curSceneId: 0,
 };
 
-export default function appReducer(state = initialState, action) {
+export default function appReducer(state: Object = initialState, action: Object) {
     return {
         sceneArray: sceneArrayReducer(state.sceneArray, action),
         curSceneId: curSceneIdReducer(state.curSceneId, action),

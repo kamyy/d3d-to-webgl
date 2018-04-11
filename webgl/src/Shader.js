@@ -1,3 +1,5 @@
+// @flow
+
 import Model from './Model';
 import Camera from './Camera';
 import Vector1x4 from './Vector1x4';
@@ -8,7 +10,7 @@ import { GL, reduxStore, sceneArray } from './App';
 const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
 const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
 
-function createXHR(url) {
+function createXHR(url: string): Object {
     return new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest();
 
@@ -34,15 +36,20 @@ function createXHR(url) {
 }
 
 export default class Shader {
-    constructor(vertShaderURL, fragShaderURL) {
-        this.program = null;
+    program             : Object | null;
+    edgeBuffer          : Object;
+    vertexElementCount  : number;
+    vertexAttributeDescs: Array<Object>;
+
+    constructor(vertShaderURL: string, fragShaderURL: string) {
+        this.program    = null;
         this.edgeBuffer = GL.createBuffer();
 
         const promise = Promise.all([
             createXHR(vertShaderURL),
             createXHR(fragShaderURL),
         ]);
-        
+ 
         promise.then(responseTexts => {
             const vs = GL.createShader(GL.VERTEX_SHADER);
             const fs = GL.createShader(GL.FRAGMENT_SHADER);
@@ -74,7 +81,7 @@ export default class Shader {
     }
 
 
-    drawTriangles(model, modelPiece) {
+    drawTriangles(model: Model, modelPiece: Object) {
         if (this.program) {
             const { material, vtxBuffer, idxBuffer } = modelPiece;
 
@@ -96,7 +103,7 @@ export default class Shader {
         }
     }
 
-    drawTriangleEdges(model, modelPiece) {
+    drawTriangleEdges(model: Model, modelPiece: Object) {
         const camPosition = sceneArray.curScene.activeCamera.mapPos(g_origin, model); // map camera position into model space
         const edgeIndices = []; // each pair of indices represents a triangle edge
 
@@ -140,7 +147,7 @@ export default class Shader {
         GL.drawElements(GL.LINES, edgeIndices.length, GL.UNSIGNED_SHORT, 0);
     }
 
-    setUniformVariablesInVertShader(model) {
+    setUniformVariablesInVertShader(model: Model) {
         const scene = sceneArray.curScene;
         const omniDirLS = scene.omniDirLS;
         const activeCam = scene.activeCamera;
@@ -176,7 +183,7 @@ export default class Shader {
         }
     }
 
-    setUniformVariablesInFragShader(model, material) {
+    setUniformVariablesInFragShader(model: Model, material: Object) {
         const {
             sceneArray,
             curSceneId,

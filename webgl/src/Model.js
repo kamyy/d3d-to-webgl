@@ -1,8 +1,11 @@
+// @flow
+
+import Scene from './Scene';
 import RefFrame from './RefFrame';
 import { GL, reduxStore } from './App';
 
 export default class Model extends RefFrame {
-    constructor(parent, node, scene) {
+    constructor(parent: RefFrame, node: Object, scene: Scene) {
         super(parent, node);
 
         this.shaderP3C3 = GL.mapOfShaders.get('P3C3');
@@ -52,7 +55,7 @@ export default class Model extends RefFrame {
         }
     }
 
-    drawPieces(forReflection, cacheTranslucentPiece) {
+    drawPieces(forReflection: number, cacheTranslucentPiece: (Object) => void) {
         const {
             sceneArray,
             curSceneId,
