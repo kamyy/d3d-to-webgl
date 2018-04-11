@@ -2,9 +2,15 @@
 
 import Scene from './Scene';
 import RefFrame from './RefFrame';
+import ShaderP3C3 from './ShaderP3C3';
 import { GL, reduxStore } from './App';
 
 export default class Model extends RefFrame {
+    shaderP3C3 : ShaderP3C3;
+    isTheFloor : boolean;
+    scene      : Scene;
+    modelPieces: Array<Object>;
+
     constructor(parent: RefFrame, node: Object, scene: Scene) {
         super(parent, node);
 
@@ -15,10 +21,12 @@ export default class Model extends RefFrame {
         if (node.hasOwnProperty('pieces')) {
             this.modelPieces = node.pieces;
             for (let piece of this.modelPieces) {
-                piece.material = scene.mapOfMaterials.get(piece.material);
-                if (piece.material.name === 'floor') {
+                const nameOfMaterial: string = piece.material;
+
+                if (nameOfMaterial === 'floor') {
                     this.isTheFloor = true;
                 }
+                piece.material = scene.mapOfMaterials.get(nameOfMaterial);
                 piece.nrmBuffer = GL.createBuffer();
                 piece.vtxBuffer = GL.createBuffer();
                 piece.idxBuffer = GL.createBuffer();

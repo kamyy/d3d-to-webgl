@@ -1,3 +1,5 @@
+// @flow
+
 import Model from './Model';
 import Camera from './Camera';
 import RefFrame from './RefFrame';
@@ -12,7 +14,7 @@ const DRAW = Object.freeze({
     PIECES: Symbol("pieces")
 });
 
-function createXHR(url, mimeType = null) {
+function createXHR(url: string, mimeType: string | null = null) {
     return new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest();
         if (mimeType) {
@@ -36,7 +38,23 @@ function createXHR(url, mimeType = null) {
 }
 
 export default class Scene {
-    constructor(id, name) {
+    id                  : number;
+    name                : string;
+    cameras             : Array<Camera>;
+    rootNode            : RefFrame;
+    omniDirLS           : OmniDirLS;
+    mirrorCam           : Camera;
+    mirrorObj           : Model;
+    translucentPieces   : Array<Object>;
+    sceneLoadRequired   : boolean;
+
+    mapOfTextures: Map<string, Object>;
+    mapOfMaterials: Map<string, Object>;
+
+    drawScene: () => void;
+    cacheTranslucentPiece: (Object) => void;
+
+    constructor(id: number, name: string) {
         this.id   = id;
         this.name = name;
         this.cameras = [];
@@ -72,7 +90,7 @@ export default class Scene {
         }
     }
 
-    initTextures(textures) {
+    initTextures(textures: Array<Object>) {
         this.mapOfTextures = new Map();
 
         const onLoad = (tex, png) => {
@@ -110,7 +128,7 @@ export default class Scene {
         }
     }
 
-    initMaterials(materials) {
+    initMaterials(materials: Array<Object>) {
         this.mapOfMaterials = new Map();
 
         for (let mat of materials) {
@@ -124,7 +142,7 @@ export default class Scene {
         }
     }
 
-    initSceneGraph(node, parent = null) {
+    initSceneGraph(node: Object, parent: any = null) {
         let refFrame = null;
 
         switch(node.nodeType) {
@@ -196,7 +214,7 @@ export default class Scene {
                 GL.depthMask(false);                      // disable depth buffer writes
                 GL.colorMask(false, false, false, false); // disable color buffer writes
                 
-                this.mirrorObj.drawPieces(1);      // draw mirror into stencil
+                this.mirrorObj.drawPieces(1, this.cacheTranslucentPiece); // draw mirror into stencil
 
                 GL.cullFace(GL.FRONT);         // cull CW triangles
                 GL.stencilFunc(GL.EQUAL,1,1);  // stencil test pass if stencil == 1
@@ -231,7 +249,7 @@ export default class Scene {
                 GL.enable(GL.BLEND);            // enable alpha blending
 
                 // draw mirror into color buffer
-                sceneState.drawWirefrm ? this.mirrorObj.drawEdges() : this.mirrorObj.drawPieces(1);
+                sceneState.drawWirefrm ? this.mirrorObj.drawEdges() : this.mirrorObj.drawPieces(1, this.cacheTranslucentPiece);
             }
 
             this.drawNode(this.rootNode, DRAW.PIECES, sceneState); // draw all models in scene graph
@@ -241,7 +259,7 @@ export default class Scene {
         }
     }
     
-    drawNode(node, mode, sceneState) {
+    drawNode(node: Object, mode: Symbol, sceneState: Object) {
         if (node) {
             if (node instanceof Model && node !== this.mirrorObj) {
                 switch (mode) {
@@ -274,19 +292,19 @@ export default class Scene {
         this.translucentPieces.length = 0;
     }
 
-    cacheTranslucentPiece(piece) {
+    cacheTranslucentPiece(piece: Object) {
         this.translucentPieces.push(piece);
     }
 
-    get activeCamera() { 
-        return this.cameras[this.activeCamIdx];
-    }
-
-    set activeCamera(cam) {
+    set activeCamera(cam: Camera) {
         this.cameras[this.activeCamIdx] = cam;
     }
 
-    get activeCamIdx() { 
+    get activeCamera(): Camera { 
+        return this.cameras[this.activeCamIdx];
+    }
+
+    get activeCamIdx(): number { 
         return reduxStore.getState().sceneArray[this.id].cameraIdx;
     }
 }

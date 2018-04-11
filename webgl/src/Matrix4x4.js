@@ -1,3 +1,5 @@
+// @flow
+
 export const _11 = 0; 
 export const _12 = 1; 
 export const _13 = 2; 
@@ -19,7 +21,9 @@ export const _43 = 14;
 export const _44 = 15;
 
 export default class Matrix4x4 {
-    constructor(elements) {
+    m: Array<number>;
+
+    constructor(elements: void | Matrix4x4 | Array<number>) {
         if (!elements) {
             this.m = Array.of(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         } else if (elements instanceof Matrix4x4) {
@@ -35,7 +39,7 @@ export default class Matrix4x4 {
         return new Matrix4x4();
     }
 
-    static createRx(theta) {
+    static createRx(theta: number) {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
@@ -46,7 +50,7 @@ export default class Matrix4x4 {
         ]);
     }
 
-    static createRy(theta) {
+    static createRy(theta: number) {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
@@ -57,7 +61,7 @@ export default class Matrix4x4 {
         ]);
     }
 
-    static createRz(theta) {
+    static createRz(theta: number) {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
@@ -68,7 +72,7 @@ export default class Matrix4x4 {
         ]);
     }
 
-    mul(rhs) {
+    mul(rhs: Matrix4x4) {
         if (rhs instanceof Matrix4x4) {
             return new Matrix4x4([
                 this.m[_11] * rhs.m[_11] + this.m[_12] * rhs.m[_21] + this.m[_13] * rhs.m[_31] + this.m[_14] * rhs.m[_41],
@@ -106,7 +110,7 @@ export default class Matrix4x4 {
         ]);
     }
 
-    postCatTxyz(tx, ty, tz) {
+    postCatTxyz(tx: number, ty: number, tz: number) {
         if (typeof tx === "number" && 
             typeof ty === "number" && 
             typeof tz === "number") {
@@ -120,7 +124,7 @@ export default class Matrix4x4 {
         throw new Error('RHS argument not a Matrix4x4!');
     }
 
-    postCatSxyz(sx, sy, sz) {
+    postCatSxyz(sx: number, sy: number, sz: number) {
         if (typeof sx === "number" && 
             typeof sy === "number" && 
             typeof sz === "number") {
