@@ -40,7 +40,7 @@ export default class Model extends RefFrame {
                 GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, piece.idxBuffer);
                 GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(piece.idxs), GL.STATIC_DRAW);
 
-                piece.nrmVtxCount = piece.nrms.length / this.shaderP3C3.vertexElementCount;
+                piece.nrmVtxCount = piece.nrms.length / this.shaderP3C3.constructor.vertexElementCount;
                 piece.triVtxCount = piece.idxs.length;
             }
         } else {

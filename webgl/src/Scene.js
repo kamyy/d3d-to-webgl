@@ -75,7 +75,7 @@ export default class Scene {
                 const json = JSON.parse(responseText);
                 this.initTextures(json.textures);
                 this.initMaterials(json.materials);
-                this.initSceneGraph(json.sceneRoot);
+                this.initSceneRoot(json.sceneRoot);
                 reduxStore.dispatch(actionCreators.onSceneLoad(this.id, this));
 
                 const scene = sceneArray.curScene;
@@ -142,17 +142,23 @@ export default class Scene {
         }
     }
 
-    initSceneGraph(node: Object, parent: any = null) {
+    initSceneRoot(node: Object) {
+        this.rootNode = new RefFrame(null, node); 
+
+        if (node.hasOwnProperty('children')) {
+            for (let child of node.children) {
+                this.initSceneGraph(child, this.rootNode);
+            }
+        }
+    }
+
+    initSceneGraph(node: Object, parent: OmniDirLS | Camera | Model | RefFrame) {
         let refFrame = null;
 
         switch(node.nodeType) {
         case 'OmniDirLS':
             refFrame = new OmniDirLS(parent, node); 
             this.omniDirLS = refFrame;
-            break;
-
-        case 'RefFrame':
-            refFrame = new RefFrame(parent, node); 
             break;
 
         case 'Camera':
@@ -175,6 +181,7 @@ export default class Scene {
             break;
 
         default:
+            refFrame = new RefFrame(parent, node); 
             break;
         }
 
@@ -182,10 +189,6 @@ export default class Scene {
             for (let child of node.children) {
                 this.initSceneGraph(child, refFrame);
             }
-        }
-
-        if (!parent && refFrame) {
-            this.rootNode = refFrame;
         }
     }
 

@@ -38,7 +38,6 @@ function createXHR(url: string): Object {
 export default class Shader {
     program             : Object | null;
     edgeBuffer          : Object;
-    vertexElementCount  : number;
 
     constructor(vertShaderURL: string, fragShaderURL: string) {
         this.program    = null;
@@ -79,7 +78,6 @@ export default class Shader {
         });
     }
 
-
     drawTriangles(model: Model, modelPiece: Object) {
         if (this.program) {
             const { material, vtxBuffer, idxBuffer } = modelPiece;
@@ -110,7 +108,7 @@ export default class Shader {
         const vtxs = modelPiece.vtxs; // array of vertices, there are several contignuous numbers in a vertex 
 
         for (let i = 0; i < idxs.length; i += 3) {
-            let j = idxs[i] * this.vertexElementCount; // index to 1st element of 1st vertex of triangle
+            let j = idxs[i] * this.constructor.vertexElementCount; // index to 1st element of 1st vertex of triangle
             const vx = camPosition.x - vtxs[j++];
             const vy = camPosition.y - vtxs[j++];
             const vz = camPosition.z - vtxs[j++];
@@ -253,6 +251,10 @@ export default class Shader {
 
     static get vertexAttributeDescs(): Object[] { // overriden in subclass
         return [];
+    }
+
+    static get vertexElementCount(): number { // overriden in subclass
+        return 0;
     }
 }
 
