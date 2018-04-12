@@ -1,3 +1,5 @@
+// @flow
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -16,13 +18,13 @@ function LightsPanel(props) {
     } = props;
 
     if (sceneState) {
-        let r, g, b;
+        let r: number, g: number, b: number;
 
         switch(sceneState.currentLS) {
             case 'Omni Directional': [r, g, b] = sceneState.omniDirLS; break;
             case 'Lower Ambient'   : [r, g, b] = sceneState.lowerAmbientLS; break;
             case 'Upper Ambient'   : [r, g, b] = sceneState.upperAmbientLS; break;
-            default: break;
+            default: r = g = b = 0; break;
         }
 
         return <div id='LightPanel' className='CanvasPanel'>
