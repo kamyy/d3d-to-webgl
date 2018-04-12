@@ -39,7 +39,6 @@ export default class Shader {
     program             : Object | null;
     edgeBuffer          : Object;
     vertexElementCount  : number;
-    vertexAttributeDescs: Array<Object>;
 
     constructor(vertShaderURL: string, fragShaderURL: string) {
         this.program    = null;
@@ -91,7 +90,7 @@ export default class Shader {
             GL.bindBuffer(GL.ARRAY_BUFFER,         vtxBuffer);
             GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, idxBuffer);
 
-            for (let desc of this.vertexAttributeDescs) {
+            for (let desc of this.constructor.vertexAttributeDescs) {
                 const loc = GL.getAttribLocation(this.program, desc.attrib);
                 if (loc !== -1) {
                     GL.vertexAttribPointer(loc, desc.length, GL.FLOAT, false, desc.stride, desc.offset);
@@ -136,7 +135,7 @@ export default class Shader {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.edgeBuffer);
         GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(edgeIndices), GL.STATIC_DRAW);
 
-        for (let desc of this.vertexAttributeDescs) {
+        for (let desc of this.constructor.vertexAttributeDescs) {
             const loc = GL.getAttribLocation(this.program, desc.attrib);
             if (loc !== -1) {
                 GL.vertexAttribPointer(loc, desc.length, GL.FLOAT, false, desc.stride, desc.offset);
@@ -250,6 +249,10 @@ export default class Shader {
             const dir = g_up.mul(model.modelMatrix.inverse());
             GL.uniform3f(loc8, dir.x, dir.y, dir.z);
         }
+    }
+
+    static get vertexAttributeDescs(): Object[] { // overriden in subclass
+        return [];
     }
 }
 

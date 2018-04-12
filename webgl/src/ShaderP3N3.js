@@ -1,20 +1,8 @@
+// @flow
+
 import Shader from './Shader';
 
-export default class ShaderP3N3 extends Shader {
-    constructor() {
-        super('/glsl/P3N3.vert', '/glsl/P3N3.frag');
-    }
-
-    get vertexAttributeDescs() {
-        return ShaderP3N3.vertexAttributeDescs;
-    }
-
-    get vertexElementCount() {
-        return 6;
-    }
-}
-
-ShaderP3N3.vertexAttributeDescs = Object.freeze([ 
+const vertexAttributeDescsP3N3 = Object.freeze([ 
     {   attrib: 'a_pos',
         length: 3,
         stride: 24,
@@ -26,3 +14,17 @@ ShaderP3N3.vertexAttributeDescs = Object.freeze([
         offset: 12
     }
 ]);
+
+export default class ShaderP3N3 extends Shader {
+    constructor() {
+        super('/glsl/P3N3.vert', '/glsl/P3N3.frag');
+    }
+
+    static get vertexAttributeDescs(): Object[] {
+        return vertexAttributeDescsP3N3;
+    }
+
+    static get vertexElementCount(): number {
+        return 6;
+    }
+}
