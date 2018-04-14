@@ -70,6 +70,12 @@ class App extends Component {
             <p className='ProjectInfo'>MIT License</p>
             <p className='ProjectInfo'><a href='https://github.com/kamyy/d3d-to-webgl'>Project @ GitHub</a></p>
             <p className='ProjectInfo'>Copyright &copy; 2018 <a href='mailto:kam.yin.yip@gmail.com'>Kam Y Yip</a></p>
+
+            <br/>
+
+            <p className='MouseInfo'><span className='MouseInfoBold'>* Rotate</span> Left click + drag.</p>
+            <p className='MouseInfo'><span className='MouseInfoBold'>* Translate</span> Right click + drag. Or ctrl + left click + drag.</p>
+            <p className='MouseInfo'><span className='MouseInfoBold'>* Dolly In/Out</span> Left + right click + drag. Or shift + left click + drag.</p>
         </div>
     }
 
