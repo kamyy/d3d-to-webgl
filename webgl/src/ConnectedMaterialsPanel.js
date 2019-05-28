@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import './App.css';
-import { actionCreators } from './Actions';
+import { sceneArray } from './App.js';
+import { actionCreators } from './Actions.js';
 
 function MaterialsPanel(props) {
     const {
@@ -17,6 +18,8 @@ function MaterialsPanel(props) {
     } = props;
 
     if (sceneState) {
+        sceneArray.curScene.requestDrawScene();
+
         return <div id='MaterialPanel' className='CanvasPanel'>
             <fieldset className='Fieldset'><legend className='Legend'>Filter By Material</legend>
                 <input  type='text' 

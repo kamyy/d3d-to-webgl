@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import './App.css';
-import { actionCreators } from './Actions';
+import { sceneArray } from './App.js';
+import { actionCreators } from './Actions.js';
 
 function CameraPanel(props) {
     const { 
@@ -17,6 +18,8 @@ function CameraPanel(props) {
     } = props;
 
     if (sceneState) {
+        sceneArray.curScene.requestDrawScene();
+
         const cameraChoice = (cam, idx) => { 
             const id = `Camera ${idx + 1}`;
             return <div key={id}> 

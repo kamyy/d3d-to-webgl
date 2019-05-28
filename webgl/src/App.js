@@ -3,20 +3,20 @@ import { createStore } from 'redux';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
 
-import Scene from './Scene';
-import Vector1x4 from './Vector1x4';
-import ShaderP3C3 from './ShaderP3C3';
-import ShaderP3N3 from './ShaderP3N3';
-import ShaderP3N3T2 from './ShaderP3N3T2';
-import ShaderP3N3B3T2 from './ShaderP3N3B3T2';
+import Scene from './Scene.js';
+import Vector1x4 from './Vector1x4.js';
+import ShaderP3C3 from './ShaderP3C3.js';
+import ShaderP3N3 from './ShaderP3N3.js';
+import ShaderP3N3T2 from './ShaderP3N3T2.js';
+import ShaderP3N3B3T2 from './ShaderP3N3B3T2.js';
 
-import ConnectedScenePanel from './ConnectedScenePanel';
-import ConnectedCameraPanel from './ConnectedCameraPanel';
-import ConnectedRenderPanel from './ConnectedRenderPanel';
-import ConnectedLightsPanel from './ConnectedLightsPanel';
-import ConnectedMaterialsPanel from './ConnectedMaterialsPanel';
+import ConnectedScenePanel from './ConnectedScenePanel.js';
+import ConnectedCameraPanel from './ConnectedCameraPanel.js';
+import ConnectedRenderPanel from './ConnectedRenderPanel.js';
+import ConnectedLightsPanel from './ConnectedLightsPanel.js';
+import ConnectedMaterialsPanel from './ConnectedMaterialsPanel.js';
 
-import appReducer from './Reducers';
+import appReducer from './Reducers.js';
 
 export let GL         = null;
 export let reduxStore = createStore(appReducer);
@@ -111,7 +111,6 @@ class App extends Component {
             ]));
 
             sceneArray.curScene.loadScene();
-            sceneArray.curScene.drawScene();
         }
     }
 
@@ -157,6 +156,8 @@ class App extends Component {
                     camera.translate(new Vector1x4(0, (x - this.lx) * this.TXYZ_SCALAR, 0));
                     this.lx = x;
                     this.ly = y;
+                    sceneArray.curScene.requestDrawScene();
+
                 } else if ((this.lButtonDown && event.ctrlKey) || this.rButtonDown) { // move
                     const dx = (this.lx - x) * this.TXYZ_SCALAR;
                     const dz = (y - this.ly) * this.TXYZ_SCALAR;
@@ -164,11 +165,15 @@ class App extends Component {
                     target.translate(dv) // move target along own axes
                     this.lx = x;
                     this.ly = y;
+                    sceneArray.curScene.requestDrawScene();
+
                 } else if (this.lButtonDown) { // rotate
                     target.rotateZ(this.degreesToRadians(this.lx - x) * this.RXYZ_SCALAR); // yaw camera target around it's own z-axis
                     camera.rotateX(this.degreesToRadians(this.ly - y) * this.RXYZ_SCALAR, target); // pitch around camera target's x-axis
                     this.lx = x;
                     this.ly = y;
+                    sceneArray.curScene.requestDrawScene();
+
                 }
             }
         }

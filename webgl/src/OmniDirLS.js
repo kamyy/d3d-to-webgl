@@ -1,6 +1,6 @@
 // @flow
 
-import RefFrame from './RefFrame';
+import RefFrame from './RefFrame.js';
 
 export default class OmniDirLS extends RefFrame {
     color:  Array<number>;

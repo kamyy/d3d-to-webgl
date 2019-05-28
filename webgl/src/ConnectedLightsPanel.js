@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import './App.css';
-import { actionCreators } from './Actions';
+import { sceneArray } from './App.js';
+import { actionCreators } from './Actions.js';
 
 function LightsPanel(props) {
     const { 
@@ -19,6 +20,8 @@ function LightsPanel(props) {
 
     if (sceneState) {
         let r: number, g: number, b: number;
+
+        sceneArray.curScene.requestDrawScene();
 
         switch(sceneState.currentLS) {
             case 'Omni Directional': [r, g, b] = sceneState.omniDirLS; break;

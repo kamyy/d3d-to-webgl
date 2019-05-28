@@ -1,7 +1,7 @@
 // @flow
 
-import Matrix4x4 from './Matrix4x4';
-import RefFrame from './RefFrame';
+import Matrix4x4 from './Matrix4x4.js';
+import RefFrame from './RefFrame.js';
 
 export default class Camera extends RefFrame {
     _fieldOfView: number;

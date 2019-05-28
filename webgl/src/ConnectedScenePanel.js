@@ -5,15 +5,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import './App.css';
-import { sceneArray } from './App';
-import { actionCreators } from './Actions';
+import { sceneArray } from './App.js';
+import { actionCreators } from './Actions.js';
 
 function ScenePanel(props) {
-    const {  curSceneId, onChangeScene } = props;
+    const { curSceneId, onChangeScene } = props;
 
     const scene = sceneArray[curSceneId];
     scene.loadScene();
-    scene.drawScene();
+    scene.requestDrawScene();
 
     return <div id='ScenePanel' className='CanvasPanel'> {
         sceneArray.map((scene, id) => {

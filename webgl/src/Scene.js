@@ -1,10 +1,10 @@
 // @flow
 
-import Model from './Model';
-import Camera from './Camera';
-import RefFrame from './RefFrame';
-import OmniDirLS from './OmniDirLS';
-import Matrix4x4 from './Matrix4x4';
+import Model from './Model.js';
+import Camera from './Camera.js';
+import RefFrame from './RefFrame.js';
+import OmniDirLS from './OmniDirLS.js';
+import Matrix4x4 from './Matrix4x4.js';
 
 import { GL, reduxStore, sceneArray } from './App';
 import { actionCreators } from './Actions';
@@ -73,15 +73,15 @@ export default class Scene {
 
             promise.then(responseText => {
                 const json = JSON.parse(responseText);
-                this.initTextures(json.textures);
+                this.initTextures(json.textures).then(() => {
+                    const scene = sceneArray.curScene;
+                    if (scene.id === this.id) {
+                        scene.requestDrawScene();
+                    }
+                });
                 this.initMaterials(json.materials);
                 this.initSceneRoot(json.sceneRoot);
                 reduxStore.dispatch(actionCreators.onSceneLoad(this.id, this));
-
-                const scene = sceneArray.curScene;
-                if (scene.id === this.id) {
-                    scene.drawScene();
-                }
             });
 
             promise.catch(status => {
@@ -90,26 +90,14 @@ export default class Scene {
         }
     }
 
-    initTextures(textures: Array<Object>) {
+    initTextures(textures: Array<Object>): Promise<void> {
         this.mapOfTextures = new Map();
 
-        const onLoad = (tex, png) => {
-            return () => { // higher order function
-                GL.bindTexture(GL.TEXTURE_2D, this.mapOfTextures.get(tex.name));
-                if (tex.hasAlpha) {
-                    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, png);
-                } else {
-                    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB,  GL.RGB,  GL.UNSIGNED_BYTE, png);
-                }
-                GL.generateMipmap(GL.TEXTURE_2D);
-            };
-        };
-
-        for (let tex of textures) {
+        const promises = textures.map(tex => {
+            const image = new Image(); 
             const glTex = GL.createTexture();
-            GL.bindTexture(GL.TEXTURE_2D, glTex);
-            this.mapOfTextures.set(tex.name, glTex);
 
+            GL.bindTexture(GL.TEXTURE_2D, glTex);
             GL.texImage2D(
                 GL.TEXTURE_2D, 
                 0, 
@@ -122,10 +110,23 @@ export default class Scene {
                 new Uint8Array([0, 0, 255, 255])
             );
 
-            const png  = new Image(); 
-            png.onload = onLoad(tex, png);
-            png.src    = `/textures/${tex.name}.png`;
-        }
+            this.mapOfTextures.set(tex.name, glTex);
+            return new Promise((resolve) => {
+                image.onload = () => {
+                    GL.bindTexture(GL.TEXTURE_2D, this.mapOfTextures.get(tex.name));
+                    if (tex.hasAlpha) {
+                        GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image);
+                    } else {
+                        GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB,  GL.RGB,  GL.UNSIGNED_BYTE, image);
+                    }
+                    GL.generateMipmap(GL.TEXTURE_2D);
+                    resolve();
+                }
+                image.src = `/textures/${tex.name}.png`;
+            });
+        });
+
+        return Promise.all(promises);
     }
 
     initMaterials(materials: Array<Object>) {
@@ -190,6 +191,10 @@ export default class Scene {
                 this.initSceneGraph(child, refFrame);
             }
         }
+    }
+
+    requestDrawScene() {
+        requestAnimationFrame(this.drawScene);
     }
 
     drawScene() {
@@ -257,8 +262,6 @@ export default class Scene {
 
             this.drawNode(this.rootNode, DRAW.PIECES, sceneState); // draw all models in scene graph
             this.drawTranslucentPieces();
-
-            requestAnimationFrame(this.drawScene);
         }
     }
     

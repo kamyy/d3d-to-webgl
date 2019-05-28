@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import './App.css';
-import { actionCreators } from './Actions';
+import { sceneArray } from './App.js';
+import { actionCreators } from './Actions.js';
 
 function RenderPanel(props) {
     const {
@@ -16,6 +17,8 @@ function RenderPanel(props) {
     } = props;
 
     if (sceneState) {
+        sceneArray.curScene.requestDrawScene();
+
         const id0 = 'wirefrmCheckbox';
         const id1 = 'normalsCheckbox';
 

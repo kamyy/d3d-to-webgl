@@ -1,6 +1,6 @@
 // @flow
 
-import Shader from './Shader';
+import Shader from './Shader.js';
 
 const vertexAttributeDescsP3N3B3T2 = Object.freeze([ 
     {   attrib: 'a_pos',

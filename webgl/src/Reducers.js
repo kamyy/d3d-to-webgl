@@ -1,6 +1,6 @@
 // @flow
 
-import { actionTypes } from './Actions';
+import { actionTypes } from './Actions.js';
 
 function onSceneLoad(scene: Object) {
     const { 

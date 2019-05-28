@@ -1,9 +1,9 @@
 // @flow
 
-import Scene from './Scene';
-import RefFrame from './RefFrame';
-import ShaderP3C3 from './ShaderP3C3';
-import { GL, reduxStore } from './App';
+import Scene from './Scene.js';
+import RefFrame from './RefFrame.js';
+import ShaderP3C3 from './ShaderP3C3.js';
+import { GL, reduxStore } from './App.js';
 
 export default class Model extends RefFrame {
     shaderP3C3 : ShaderP3C3;

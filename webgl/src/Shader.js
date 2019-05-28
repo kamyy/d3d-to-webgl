@@ -1,9 +1,9 @@
 // @flow
 
-import Model from './Model';
-import Camera from './Camera';
-import Vector1x4 from './Vector1x4';
-import OmniDirLS from './OmniDirLS';
+import Model from './Model.js';
+import Camera from './Camera.js';
+import Vector1x4 from './Vector1x4.js';
+import OmniDirLS from './OmniDirLS.js';
 
 import { GL, reduxStore, sceneArray } from './App';
 

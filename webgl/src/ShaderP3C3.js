@@ -1,8 +1,8 @@
 // @flow
 
-import Model from './Model';
-import Shader from './Shader';
-import { GL } from './App';
+import Model from './Model.js';
+import Shader from './Shader.js';
+import { GL } from './App.js';
 
 const vertexAttributeDescsP3C3 = Object.freeze([ 
     {   attrib: 'a_pos',
