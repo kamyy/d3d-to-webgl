@@ -69,28 +69,27 @@ export default class Scene {
         if (GL && this.sceneLoadRequired) {
             this.sceneLoadRequired = false;
 
-            const promise = createXHR(`/json/${this.name}.json`, 'application/json');
-
-            promise.then(responseText => {
+            createXHR(`/json/${this.name}.json`, 'application/json')
+            .then(async responseText => {
                 const json = JSON.parse(responseText);
-                this.initTextures(json.textures).then(() => {
-                    const scene = sceneArray.curScene;
-                    if (scene.id === this.id) {
-                        scene.requestDrawScene();
-                    }
-                });
+
+                await this.initTextures(json.textures);
                 this.initMaterials(json.materials);
                 this.initSceneRoot(json.sceneRoot);
                 reduxStore.dispatch(actionCreators.onSceneLoad(this.id, this));
-            });
 
-            promise.catch(status => {
+                const scene = sceneArray.curScene;
+                if (scene.id === this.id) {
+                    scene.requestDrawScene();
+                }
+            })
+            .catch(status => {
                 console.error(`Failed to GET /json/${this.name}.json status(${status})`);
-            });
+            })
         }
     }
 
-    initTextures(textures: Array<Object>): Promise<void> {
+    initTextures(textures: Array<Object>): Promise<void[]> {
         this.mapOfTextures = new Map();
 
         const promises = textures.map(tex => {
@@ -153,8 +152,8 @@ export default class Scene {
         }
     }
 
-    initSceneGraph(node: Object, parent: OmniDirLS | Camera | Model | RefFrame) {
-        let refFrame = null;
+    initSceneGraph(node: Object, parent: RefFrame) {
+        let refFrame;
 
         switch(node.nodeType) {
         case 'OmniDirLS':
@@ -187,9 +186,7 @@ export default class Scene {
         }
 
         if (node.hasOwnProperty('children')) {
-            for (let child of node.children) {
-                this.initSceneGraph(child, refFrame);
-            }
+            node.children.forEach(child => this.initSceneGraph(child, refFrame));
         }
     }
 
