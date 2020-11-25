@@ -1,17 +1,10 @@
-// @flow
-
 import Scene from './Scene.js';
 import RefFrame from './RefFrame.js';
 import ShaderP3C3 from './ShaderP3C3.js';
 import { GL, reduxStore } from './App.js';
 
 export default class Model extends RefFrame {
-    shaderP3C3 : ShaderP3C3;
-    isTheFloor : boolean;
-    scene      : Scene;
-    modelPieces: Array<Object>;
-
-    constructor(parent: RefFrame, node: Object, scene: Scene) {
+    constructor(parent, node, scene) {
         super(parent, node);
 
         this.shaderP3C3 = GL.mapOfShaders.get('P3C3');
@@ -21,7 +14,7 @@ export default class Model extends RefFrame {
         if (node.hasOwnProperty('pieces')) {
             this.modelPieces = node.pieces;
             for (let piece of this.modelPieces) {
-                const nameOfMaterial: string = piece.material;
+                const nameOfMaterial = piece.material;
 
                 if (nameOfMaterial === 'floor') {
                     this.isTheFloor = true;
@@ -63,7 +56,7 @@ export default class Model extends RefFrame {
         }
     }
 
-    drawPieces(forReflection: number, cacheTranslucentPiece: (Object) => void) {
+    drawPieces(forReflection, cacheTranslucentPiece) {
         const {
             sceneArray,
             curSceneId,

@@ -1,5 +1,3 @@
-// @flow
-
 import Model from './Model.js';
 import Camera from './Camera.js';
 import RefFrame from './RefFrame.js';
@@ -14,7 +12,7 @@ const DRAW = Object.freeze({
     PIECES: Symbol("pieces")
 });
 
-function createXHR(url: string, mimeType: string | null = null) {
+function createXHR(url, mimeTypel = null) {
     return new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest();
         if (mimeType) {
@@ -38,23 +36,7 @@ function createXHR(url: string, mimeType: string | null = null) {
 }
 
 export default class Scene {
-    id                  : number;
-    name                : string;
-    cameras             : Array<Camera>;
-    rootNode            : RefFrame;
-    omniDirLS           : OmniDirLS;
-    mirrorCam           : Camera;
-    mirrorObj           : Model;
-    translucentPieces   : Array<Object>;
-    sceneLoadRequired   : boolean;
-
-    mapOfTextures: Map<string, Object>;
-    mapOfMaterials: Map<string, Object>;
-
-    drawScene: () => void;
-    cacheTranslucentPiece: (Object) => void;
-
-    constructor(id: number, name: string) {
+    constructor(id, name) {
         this.id   = id;
         this.name = name;
         this.cameras = [];
@@ -89,7 +71,7 @@ export default class Scene {
         }
     }
 
-    initTextures(textures: Array<Object>): Promise<void[]> {
+    initTextures(textures) {
         this.mapOfTextures = new Map();
 
         const promises = textures.map(tex => {
@@ -128,7 +110,7 @@ export default class Scene {
         return Promise.all(promises);
     }
 
-    initMaterials(materials: Array<Object>) {
+    initMaterials(materials) {
         this.mapOfMaterials = new Map();
 
         for (let mat of materials) {
@@ -142,7 +124,7 @@ export default class Scene {
         }
     }
 
-    initSceneRoot(node: Object) {
+    initSceneRoot(node) {
         this.rootNode = new RefFrame(null, node); 
 
         if (node.hasOwnProperty('children')) {
@@ -152,7 +134,7 @@ export default class Scene {
         }
     }
 
-    initSceneGraph(node: Object, parent: RefFrame) {
+    initSceneGraph(node, parent) {
         let refFrame;
 
         switch(node.nodeType) {
@@ -262,7 +244,7 @@ export default class Scene {
         }
     }
     
-    drawNode(node: Object, mode: Symbol, sceneState: Object) {
+    drawNode(node, mode, sceneState) {
         if (node) {
             if (node instanceof Model && node !== this.mirrorObj) {
                 switch (mode) {
@@ -295,19 +277,19 @@ export default class Scene {
         this.translucentPieces.length = 0;
     }
 
-    cacheTranslucentPiece(piece: Object) {
+    cacheTranslucentPiece(piece) {
         this.translucentPieces.push(piece);
     }
 
-    set activeCamera(cam: Camera) {
+    set activeCamera(cam) {
         this.cameras[this.activeCamIdx] = cam;
     }
 
-    get activeCamera(): Camera { 
+    get activeCamera() { 
         return this.cameras[this.activeCamIdx];
     }
 
-    get activeCamIdx(): number { 
+    get activeCamIdx() { 
         return reduxStore.getState().sceneArray[this.id].cameraIdx;
     }
 }

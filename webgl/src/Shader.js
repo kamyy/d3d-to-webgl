@@ -1,5 +1,3 @@
-// @flow
-
 import Model from './Model.js';
 import Camera from './Camera.js';
 import Vector1x4 from './Vector1x4.js';
@@ -10,7 +8,7 @@ import { GL, reduxStore, sceneArray } from './App';
 const g_up     = new Vector1x4(0.0, 0.0, 1.0, 0.0);
 const g_origin = new Vector1x4(0.0, 0.0, 0.0, 1.0);
 
-function createXHR(url: string): Object {
+function createXHR(url) {
     return new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest();
 
@@ -36,10 +34,7 @@ function createXHR(url: string): Object {
 }
 
 export default class Shader {
-    program             : Object | null;
-    edgeBuffer          : Object;
-
-    constructor(vertShaderURL: string, fragShaderURL: string) {
+    constructor(vertShaderURL, fragShaderURL) {
         this.program    = null;
         this.edgeBuffer = GL.createBuffer();
 
@@ -78,7 +73,7 @@ export default class Shader {
         });
     }
 
-    drawTriangles(model: Model, modelPiece: Object) {
+    drawTriangles(model, modelPiece) {
         if (this.program) {
             const { material, vtxBuffer, idxBuffer } = modelPiece;
 
@@ -100,7 +95,7 @@ export default class Shader {
         }
     }
 
-    drawTriangleEdges(model: Model, modelPiece: Object) {
+    drawTriangleEdges(model, modelPiece) {
         const camPosition = sceneArray.curScene.activeCamera.mapPos(g_origin, model); // map camera position into model space
         const edgeIndices = []; // each pair of indices represents a triangle edge
 
@@ -144,7 +139,7 @@ export default class Shader {
         GL.drawElements(GL.LINES, edgeIndices.length, GL.UNSIGNED_SHORT, 0);
     }
 
-    setUniformVariablesInVertShader(model: Model) {
+    setUniformVariablesInVertShader(model) {
         const scene = sceneArray.curScene;
         const omniDirLS = scene.omniDirLS;
         const activeCam = scene.activeCamera;
@@ -180,7 +175,7 @@ export default class Shader {
         }
     }
 
-    setUniformVariablesInFragShader(model: Model, material: Object) {
+    setUniformVariablesInFragShader(model, material) {
         const {
             sceneArray,
             curSceneId,
@@ -249,11 +244,11 @@ export default class Shader {
         }
     }
 
-    static get vertexAttributeDescs(): Object[] { // overriden in subclass
+    static get vertexAttributeDescs() { // overriden in subclass
         return [];
     }
 
-    static get vertexElementCount(): number { // overriden in subclass
+    static get vertexElementCount() { // overriden in subclass
         return 0;
     }
 }

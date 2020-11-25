@@ -1,5 +1,3 @@
-// @flow
-
 export const _11 = 0; 
 export const _12 = 1; 
 export const _13 = 2; 
@@ -21,9 +19,7 @@ export const _43 = 14;
 export const _44 = 15;
 
 export default class Matrix4x4 {
-    m: Array<number>;
-
-    constructor(elements: void | Matrix4x4 | Array<number>) {
+    constructor(elements) {
         if (!elements) {
             this.m = Array.of(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         } else if (elements instanceof Matrix4x4) {
@@ -39,7 +35,7 @@ export default class Matrix4x4 {
         return new Matrix4x4();
     }
 
-    static createRx(theta: number) {
+    static createRx(theta) {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
@@ -50,7 +46,7 @@ export default class Matrix4x4 {
         ]);
     }
 
-    static createRy(theta: number) {
+    static createRy(theta) {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
@@ -61,7 +57,7 @@ export default class Matrix4x4 {
         ]);
     }
 
-    static createRz(theta: number) {
+    static createRz(theta) {
         const cosTheta = Math.cos(theta);
         const sinTheta = Math.sin(theta);
         return new Matrix4x4([
@@ -72,7 +68,7 @@ export default class Matrix4x4 {
         ]);
     }
 
-    mul(rhs: Matrix4x4) {
+    mul(rhs) {
         if (rhs instanceof Matrix4x4) {
             return new Matrix4x4([
                 this.m[_11] * rhs.m[_11] + this.m[_12] * rhs.m[_21] + this.m[_13] * rhs.m[_31] + this.m[_14] * rhs.m[_41],
@@ -110,7 +106,7 @@ export default class Matrix4x4 {
         ]);
     }
 
-    postCatTxyz(tx: number, ty: number, tz: number) {
+    postCatTxyz(tx, ty, tz) {
         if (typeof tx === "number" && 
             typeof ty === "number" && 
             typeof tz === "number") {
@@ -124,7 +120,7 @@ export default class Matrix4x4 {
         throw new Error('RHS argument not a Matrix4x4!');
     }
 
-    postCatSxyz(sx: number, sy: number, sz: number) {
+    postCatSxyz(sx, sy, sz) {
         if (typeof sx === "number" && 
             typeof sy === "number" && 
             typeof sz === "number") {
@@ -150,4 +146,3 @@ export default class Matrix4x4 {
                 this.m[_41] + ", " + this.m[_42] + ", " + this.m[_43] + ", " + this.m[_44] + "]";
     }
 }
-

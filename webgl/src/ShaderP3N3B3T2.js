@@ -1,5 +1,3 @@
-// @flow
-
 import Shader from './Shader.js';
 
 const vertexAttributeDescsP3N3B3T2 = Object.freeze([ 
@@ -30,11 +28,11 @@ export default class ShaderP3N3B3T2 extends Shader {
         super('/glsl/P3N3B3T2.vert', '/glsl/P3N3B3T2.frag');
     }
 
-    static get vertexAttributeDescs(): Object[] {
+    static get vertexAttributeDescs() {
         return vertexAttributeDescsP3N3B3T2;
     }
 
-    static get vertexElementCount(): number {
+    static get vertexElementCount() {
         return 11;
     }
 }

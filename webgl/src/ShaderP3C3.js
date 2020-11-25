@@ -1,6 +1,3 @@
-// @flow
-
-import Model from './Model.js';
 import Shader from './Shader.js';
 import { GL } from './App.js';
 
@@ -18,14 +15,11 @@ const vertexAttributeDescsP3C3 = Object.freeze([
 ]);
 
 export default class ShaderP3C3 extends Shader { 
-    setUniformVariablesInVertShader: (Model) => void;
-    setUniformVariablesInFragShader: (Model) => void;
-
     constructor() {
         super('/glsl/P3C3.vert', '/glsl/P3C3.frag');
     }
 
-    drawNormals(model: Model, modelPiece: Object) {
+    drawNormals(model, modelPiece) {
         if (this.program) {
             GL.useProgram(this.program);
             this.setUniformVariablesInVertShader(model);
@@ -45,11 +39,11 @@ export default class ShaderP3C3 extends Shader {
         }
     }
 
-    static get vertexAttributeDescs(): Object[] {
+    static get vertexAttributeDescs() {
         return vertexAttributeDescsP3C3;
     }
 
-    static get vertexElementCount(): number {
+    static get vertexElementCount() {
         return 6;
     }
 }

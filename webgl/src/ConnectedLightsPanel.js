@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -19,7 +17,7 @@ function LightsPanel(props) {
     } = props;
 
     if (sceneState) {
-        let r: number, g: number, b: number;
+        let r, g, b;
 
         sceneArray.curScene.requestDrawScene();
 

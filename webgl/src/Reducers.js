@@ -1,8 +1,6 @@
-// @flow
-
 import { actionTypes } from './Actions.js';
 
-function onSceneLoad(scene: Object) {
+function onSceneLoad(scene) {
     const { 
         id, 
         cameras, 
@@ -26,15 +24,15 @@ function onSceneLoad(scene: Object) {
     }
 }
 
-function changeFieldOfView(state: Object, fieldOfView: number) {
+function changeFieldOfView(state, fieldOfView) {
     return state.cameras.map((c, i) => (state.cameraIdx === i) ? { fieldOfView: fieldOfView, aspectRatio: c.aspectRatio } : c);
 }
 
-function changeAspectRatio(state: Object, aspectRatio: number) {
+function changeAspectRatio(state, aspectRatio) {
     return state.cameras.map((c, i) => (state.cameraIdx === i) ? { fieldOfView: c.fieldOfView, aspectRatio: aspectRatio } : c);
 }
 
-function changeColor(state: Object, value: number, idx: number) {
+function changeColor(state, value, idx) {
     switch (state.currentLS) {
     case 'Omni Directional':
         return { omniDirLS: state.omniDirLS.map((v, i) => (idx === i) ? value : v) };
@@ -47,7 +45,7 @@ function changeColor(state: Object, value: number, idx: number) {
     }
 }
 
-function changeMaterialFilter(state: Object, filter: string) {
+function changeMaterialFilter(state, filter) {
     const lcFilter = filter.toLowerCase();
     const filterFn = m => m.name.toLowerCase().includes(lcFilter);
     const materialArray = Array.from(state.mapOfMaterials.values());
@@ -58,7 +56,7 @@ function changeMaterialFilter(state: Object, filter: string) {
     };
 }
 
-function sceneReducer(state: Object, action: Object) {
+function sceneReducer(state, action) {
     switch (action.type) {
     case actionTypes.onSceneLoad:
         return onSceneLoad(action.scene);
@@ -107,7 +105,7 @@ const initialState = {
     curSceneId: 0,
 };
 
-export default function appReducer(state: Object = initialState, action: Object) {
+export default function appReducer(state = initialState, action) {
     return {
         sceneArray: sceneArrayReducer(state.sceneArray, action),
         curSceneId: curSceneIdReducer(state.curSceneId, action),
