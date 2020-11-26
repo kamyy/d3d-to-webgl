@@ -117,7 +117,7 @@ export default class Scene {
   initSceneRoot(node) {
     this.rootNode = new RefFrame(null, node)
 
-    if (node.hasOwnProperty('children')) {
+    if ('children' in node) {
       for (let child of node.children) {
         this.initSceneGraph(child, this.rootNode)
       }
@@ -155,7 +155,7 @@ export default class Scene {
         break
     }
 
-    if (node.hasOwnProperty('children')) {
+    if ('children' in node) {
       node.children.forEach((child) => this.initSceneGraph(child, refFrame))
     }
   }

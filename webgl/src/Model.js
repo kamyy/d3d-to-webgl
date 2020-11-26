@@ -9,7 +9,7 @@ export default class Model extends RefFrame {
     this.isTheFloor = false
     this.scene = scene
 
-    if (node.hasOwnProperty('pieces')) {
+    if ('pieces' in node) {
       this.modelPieces = node.pieces
       for (let piece of this.modelPieces) {
         const nameOfMaterial = piece.material

@@ -1,7 +1,9 @@
-import './App.css'
+import React, { Component } from 'react'
 import { createStore } from 'redux'
 import { connect } from 'react-redux'
-import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
+import './App.css'
 
 import Scene from './Scene.js'
 import Vector1x4 from './Vector1x4.js'
@@ -202,6 +204,10 @@ class App extends Component {
       }
     }
   }
+}
+
+App.propTypes = {
+  sceneState: PropTypes.object,
 }
 
 const ConnectedApp = connect(function ({ sceneArray, curSceneId }) {
