@@ -1,5 +1,5 @@
 import Shader from './Shader.js'
-import { GL } from './App.js'
+import { GL } from '../App.js'
 
 const vertexAttributeDescsP3C3 = Object.freeze([
   { attrib: 'a_pos', length: 3, stride: 24, offset: 0 },

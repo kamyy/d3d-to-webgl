@@ -1,16 +1,16 @@
-import './index.css'
-
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 
 import * as serviceWorker from './serviceWorker'
-import ConnectedApp, { reduxStore } from './App.js'
+import appStore from './store/appStore.js'
+import App from './App.js'
+import './index.css'
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={reduxStore}>
-      <ConnectedApp />
+    <Provider store={appStore}>
+      <App />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

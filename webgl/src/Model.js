@@ -1,5 +1,6 @@
+import { getCurrScene } from './store/appStore.js'
 import RefFrame from './RefFrame.js'
-import { GL, reduxStore } from './App.js'
+import { GL } from './App.js'
 
 export default class Model extends RefFrame {
   constructor(parent, node, scene) {
@@ -40,42 +41,36 @@ export default class Model extends RefFrame {
   }
 
   drawNormals() {
-    const { sceneArray, curSceneId } = reduxStore.getState()
+    const currScene = getCurrScene()
 
-    const setOfMaterials = sceneArray[curSceneId].setOfMaterials
-
-    for (let piece of this.modelPieces) {
-      if (setOfMaterials.has(piece.material)) {
+    this.modelPieces.forEach((piece) => {
+      if (currScene.filteredMaterials.includes(piece.material)) {
         this.shaderP3C3.drawNormals(this, piece)
       }
-    }
+    })
   }
 
   drawPieces(forReflection, cacheTranslucentPiece) {
-    const { sceneArray, curSceneId } = reduxStore.getState()
+    const currScene = getCurrScene()
 
-    const setOfMaterials = sceneArray[curSceneId].setOfMaterials
-
-    for (let piece of this.modelPieces) {
-      if (setOfMaterials.has(piece.material)) {
+    this.modelPieces.forEach((piece) => {
+      if (currScene.filteredMaterials.includes(piece.material)) {
         if (!forReflection && piece.material.isTranslucent) {
           cacheTranslucentPiece({ model: this, piece: piece })
         } else {
           piece.material.shader.drawTriangles(this, piece)
         }
       }
-    }
+    })
   }
 
   drawEdges() {
-    const { sceneArray, curSceneId } = reduxStore.getState()
+    const currScene = getCurrScene()
 
-    const setOfMaterials = sceneArray[curSceneId].setOfMaterials
-
-    for (let piece of this.modelPieces) {
-      if (setOfMaterials.has(piece.material)) {
+    this.modelPieces.forEach((piece) => {
+      if (currScene.filteredMaterials.includes(piece.material)) {
         piece.material.shader.drawTriangleEdges(this, piece)
       }
-    }
+    })
   }
 }

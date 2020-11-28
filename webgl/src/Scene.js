@@ -1,11 +1,12 @@
+import { GL, rawScenes } from './App'
+import { sceneLoaded } from './store/sceneSlice.js'
+import appStore, { getCurrScene } from './store/appStore.js'
+
 import Model from './Model.js'
 import Camera from './Camera.js'
 import RefFrame from './RefFrame.js'
 import OmniDirLS from './OmniDirLS.js'
 import Matrix4x4 from './Matrix4x4.js'
-
-import { GL, reduxStore, sceneArray } from './App'
-import { actionCreators } from './Actions'
 
 const DRAW = Object.freeze({
   MIRROR: Symbol('mirror'),
@@ -54,15 +55,17 @@ export default class Scene {
       createXHR(`/json/${this.name}.json`, 'application/json')
         .then(async (responseText) => {
           const json = JSON.parse(responseText)
+          const id = this.id
 
           await this.initTextures(json.textures)
           this.initMaterials(json.materials)
           this.initSceneRoot(json.sceneRoot)
-          reduxStore.dispatch(actionCreators.onSceneLoad(this.id, this))
 
-          const scene = sceneArray.curScene
-          if (scene.id === this.id) {
-            scene.requestDrawScene()
+          appStore.dispatch(sceneLoaded({ id, scene: this }))
+          const currScene = getCurrScene()
+
+          if (currScene && currScene.id === id) {
+            rawScenes[id].requestDrawScene()
           }
         })
         .catch((status) => {
@@ -165,15 +168,13 @@ export default class Scene {
   }
 
   drawScene() {
-    const { sceneArray, curSceneId } = reduxStore.getState()
+    const currScene = getCurrScene()
 
-    const sceneState = sceneArray[this.id]
-
-    if (sceneState && curSceneId === this.id) {
+    if (currScene && currScene.id === this.id) {
       GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT)
 
-      this.activeCamera.fieldOfView = sceneState.cameras[this.activeCamIdx].fieldOfView
-      this.activeCamera.aspectRatio = sceneState.cameras[this.activeCamIdx].aspectRatio
+      this.activeCamera.fieldOfView = currScene.cameras[this.activeCamIdx].fieldOfView
+      this.activeCamera.aspectRatio = currScene.cameras[this.activeCamIdx].aspectRatio
 
       if (this.mirrorObj) {
         GL.disable(GL.BLEND) // disable alpha blending
@@ -216,7 +217,7 @@ export default class Scene {
         this.activeCamera = this.mirrorCam // make mirror camera rendering camera
         this.activeCamera.modelMatrix = m // apply mirror xform to mirror camera
 
-        this.drawNode(this.rootNode, DRAW.MIRROR, sceneState) // draw reflection of model pieces into color buffer
+        this.drawNode(this.rootNode, DRAW.MIRROR, currScene) // draw reflection of model pieces into color buffer
         this.activeCamera = savedCamera // restore default camera
 
         GL.clear(GL.DEPTH_BUFFER_BIT) // clear depth buffer
@@ -225,25 +226,25 @@ export default class Scene {
         GL.enable(GL.BLEND) // enable alpha blending
 
         // draw mirror into color buffer
-        sceneState.drawWirefrm ? this.mirrorObj.drawEdges() : this.mirrorObj.drawPieces(1, this.cacheTranslucentPiece)
+        currScene.drawWirefrm ? this.mirrorObj.drawEdges() : this.mirrorObj.drawPieces(1, this.cacheTranslucentPiece)
       }
 
-      this.drawNode(this.rootNode, DRAW.PIECES, sceneState) // draw all models in scene graph
+      this.drawNode(this.rootNode, DRAW.PIECES, currScene) // draw all models in scene graph
       this.drawTranslucentPieces()
     }
   }
 
-  drawNode(node, mode, sceneState) {
+  drawNode(node, mode, currScene) {
     if (node) {
       if (node instanceof Model && node !== this.mirrorObj) {
         switch (mode) {
           case DRAW.MIRROR:
-            sceneState.drawWirefrm ? node.drawEdges() : node.drawPieces(1, this.cacheTranslucentPiece)
+            currScene.drawWirefrm ? node.drawEdges() : node.drawPieces(1, this.cacheTranslucentPiece)
             break
 
           case DRAW.PIECES:
-            sceneState.drawWirefrm ? node.drawEdges() : node.drawPieces(0, this.cacheTranslucentPiece)
-            if (sceneState.drawNormals) {
+            currScene.drawWirefrm ? node.drawEdges() : node.drawPieces(0, this.cacheTranslucentPiece)
+            if (currScene.drawNormals) {
               node.drawNormals()
             }
             break
@@ -254,7 +255,7 @@ export default class Scene {
       }
 
       for (let child of node.children()) {
-        this.drawNode(child, mode, sceneState) // recurse
+        this.drawNode(child, mode, currScene) // recurse
       }
     }
   }
@@ -279,6 +280,6 @@ export default class Scene {
   }
 
   get activeCamIdx() {
-    return reduxStore.getState().sceneArray[this.id].cameraIdx
+    return appStore.getState().allScenes[this.id].cameraIdx
   }
 }
