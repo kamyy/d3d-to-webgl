@@ -8,6 +8,7 @@ import ShaderP3C3 from "./shader/ShaderP3C3"
 export default class Model extends RefFrame {
   shaderP3C3: ShaderP3C3
   isTheFloor: boolean
+  drawTriangleEdgesOnly: boolean
   scene: Scene
   modelPieces: ModelPiece[]
 
@@ -21,13 +22,14 @@ export default class Model extends RefFrame {
 
     this.shaderP3C3 = gl.mapOfShaders.get("P3C3") as ShaderP3C3
     this.isTheFloor = false
+    this.drawTriangleEdgesOnly = node.drawTriangleEdgesOnly ?? false
     this.scene = scene
 
     if (node.pieces) {
       this.modelPieces = node.pieces.map((piece) => {
         const nameOfMaterial = piece.material
 
-        if (nameOfMaterial === "floor") {
+        if (nameOfMaterial === "floor" && !this.drawTriangleEdgesOnly) {
           this.isTheFloor = true
         }
 
@@ -62,16 +64,23 @@ export default class Model extends RefFrame {
   }
 
   drawNormals() {
-    const currScene = getCurrScene()
+    if (!this.drawTriangleEdgesOnly) {
+      const currScene = getCurrScene()
 
-    this.modelPieces.forEach((piece) => {
-      if (currScene?.filteredMaterials.includes(piece.material)) {
-        this.shaderP3C3.drawNormals(this, piece)
-      }
-    })
+      this.modelPieces.forEach((piece) => {
+        if (currScene?.filteredMaterials.includes(piece.material)) {
+          this.shaderP3C3.drawNormals(this, piece)
+        }
+      })
+    }
   }
 
   drawPieces(forReflection: number, cacheTranslucentPiece: (entry: TranslucentPieceEntry) => void) {
+    if (this.drawTriangleEdgesOnly) {
+      this.drawEdges()
+      return
+    }
+
     const currScene = getCurrScene()
 
     this.modelPieces.forEach((piece) => {
@@ -85,12 +94,13 @@ export default class Model extends RefFrame {
     })
   }
 
-  drawEdges() {
+  drawEdges(cullBackFacing?: boolean) {
     const currScene = getCurrScene()
+    const shouldCullBackFacing = cullBackFacing ?? !this.drawTriangleEdgesOnly
 
     this.modelPieces.forEach((piece) => {
       if (currScene?.filteredMaterials.includes(piece.material)) {
-        piece.material.shader.drawTriangleEdges(this, piece)
+        piece.material.shader.drawTriangleEdges(this, piece, shouldCullBackFacing)
       }
     })
   }

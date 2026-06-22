@@ -6,7 +6,7 @@ import { getCurrScene } from "./store/appStore"
 import "./App.css"
 
 import Scene from "./Scene"
-import Vector1x4 from "./Vector1x4"
+import CameraControls from "./CameraControls"
 import ShaderP3C3 from "./shader/ShaderP3C3"
 import ShaderP3N3 from "./shader/ShaderP3N3"
 import ShaderP3N3T2 from "./shader/ShaderP3N3T2"
@@ -23,95 +23,6 @@ import Shader from "./shader/Shader"
 export const rawScenes = [new Scene(0, "hardwood"), new Scene(1, "biplane"), new Scene(2, "goku")]
 export let GL: AppWebGLContext | null = null
 
-let lButtonDown = false
-let rButtonDown = false
-let lx = 0
-let ly = 0
-
-function degreesToRadians(degrees: number) {
-  return (degrees * Math.PI) / 180.0
-}
-
-function onMouseDown(event: MouseEvent) {
-  const canvas = document.getElementById("Canvas") as HTMLCanvasElement | null
-  if (!canvas) {
-    return
-  }
-  const rect = canvas.getBoundingClientRect()
-  const x = event.clientX
-  const y = event.clientY
-
-  if (x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
-    switch (event.button) {
-      case 0:
-        lButtonDown = true
-        break
-      case 2:
-        rButtonDown = true
-        break
-      default:
-        break
-    }
-    lx = x
-    ly = y
-  }
-}
-
-function onMouseUp(event: MouseEvent) {
-  switch (event.button) {
-    case 0:
-      lButtonDown = false
-      break
-    case 2:
-      rButtonDown = false
-      break
-    default:
-      break
-  }
-}
-
-function onMouseMove(event: MouseEvent) {
-  if (lButtonDown || rButtonDown) {
-    const currScene = getCurrScene()
-
-    if (currScene) {
-      const scene = rawScenes[currScene.id]
-      const camera = scene.activeCamera
-
-      if (camera) {
-        const TXYZ_SCALAR = 0.01
-        const RXYZ_SCALAR = 0.25
-        const x = event.clientX
-        const y = event.clientY
-        const target = camera.parent
-
-        if ((lButtonDown && rButtonDown) || (lButtonDown && event.shiftKey)) {
-          camera.translate(new Vector1x4(0, (x - lx) * TXYZ_SCALAR, 0))
-          lx = x
-          ly = y
-          scene.requestDrawScene()
-        } else if ((lButtonDown && event.ctrlKey) || rButtonDown) {
-          const dx = (lx - x) * TXYZ_SCALAR
-          const dz = (y - ly) * TXYZ_SCALAR
-          const dv = camera.mapPos(new Vector1x4(dx, 0, dz, 0), target ?? undefined)
-          if (target) {
-            target.translate(dv)
-          }
-          lx = x
-          ly = y
-          scene.requestDrawScene()
-        } else if (lButtonDown) {
-          target?.rotateZ(degreesToRadians(lx - x) * RXYZ_SCALAR)
-          camera.rotateX(degreesToRadians(ly - y) * RXYZ_SCALAR, target ?? undefined)
-          lx = x
-          ly = y
-          scene.requestDrawScene()
-        }
-      }
-    }
-  }
-}
-
 export default function App() {
   useEffect(() => {
     const canvas = document.getElementById("Canvas") as HTMLCanvasElement | null
@@ -119,7 +30,7 @@ export default function App() {
       return
     }
 
-    const context = canvas.getContext("experimental-webgl", {
+    const context = canvas.getContext("webgl", {
       depth: true,
       alpha: false,
       stencil: true,
@@ -127,10 +38,10 @@ export default function App() {
 
     if (context) {
       GL = context as AppWebGLContext
-      canvas.oncontextmenu = (event) => event.preventDefault()
-      canvas.onmousedown = onMouseDown
-      window.onmousemove = onMouseMove
-      window.onmouseup = onMouseUp
+      new CameraControls(canvas, () => {
+        const currScene = getCurrScene()
+        return currScene ? rawScenes[currScene.id] : null
+      })
 
       GL.depthFunc(GL.LESS)
       GL.enable(GL.DEPTH_TEST)
@@ -194,10 +105,10 @@ export default function App() {
         <span className="MouseInfoBold">* Rotate</span> Left click + drag.
       </p>
       <p className="MouseInfo">
-        <span className="MouseInfoBold">* Translate</span> Right click + drag. Or ctrl + left click + drag.
+        <span className="MouseInfoBold">* Translate</span> Right click + drag.
       </p>
       <p className="MouseInfo">
-        <span className="MouseInfoBold">* Dolly In/Out</span> Left + right click + drag. Or shift + left click + drag.
+        <span className="MouseInfoBold">* Zoom</span> Mouse wheel. Or middle click + drag up/down.
       </p>
     </div>
   )

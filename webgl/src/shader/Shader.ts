@@ -92,9 +92,9 @@ export default class Shader {
     }
   }
 
-  drawTriangleEdges(model: Model, modelPiece: ModelPiece) {
+  drawTriangleEdges(model: Model, modelPiece: ModelPiece, cullBackFacing = true) {
     const currScene = getCurrScene()
-    if (currScene && GL) {
+    if (currScene && GL && this.program) {
       const camPosition = rawScenes[currScene.id].activeCamera.mapPos(g_origin, model)
       const edgeIndices: number[] = []
 
@@ -110,7 +110,7 @@ export default class Shader {
         const ny = vtxs[j++]
         const nz = vtxs[j]
 
-        if (vx * nx + vy * ny + vz * nz > 0) {
+        if (!cullBackFacing || vx * nx + vy * ny + vz * nz > 0) {
           edgeIndices.push(idxs[i])
           edgeIndices.push(idxs[i + 1])
           edgeIndices.push(idxs[i + 1])
@@ -128,7 +128,7 @@ export default class Shader {
       GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(edgeIndices), GL.STATIC_DRAW)
 
       for (const desc of (this.constructor as typeof Shader).vertexAttributeDescs) {
-        const loc = GL.getAttribLocation(this.program!, desc.attrib)
+        const loc = GL.getAttribLocation(this.program, desc.attrib)
         if (loc !== -1) {
           GL.vertexAttribPointer(loc, desc.length, GL.FLOAT, false, desc.stride, desc.offset)
           GL.enableVertexAttribArray(loc)

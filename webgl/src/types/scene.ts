@@ -27,6 +27,7 @@ export interface SceneNodeJson {
   modelMatrix?: number[]
   children?: SceneNodeJson[]
   pieces?: ModelPieceJson[]
+  drawTriangleEdgesOnly?: boolean
   fieldOfView?: number
   aspectRatio?: number
   clipDistanceN?: number
