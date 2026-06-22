@@ -1,8 +1,7 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from "react-redux"
 
-import '../App.css'
-import { rawScenes } from '../App.js'
+import "../App.css"
+import { rawScenes } from "../App"
 import {
   lightSourceChanged,
   rChanged,
@@ -13,7 +12,8 @@ import {
   selectLightSourceR,
   selectLightSourceG,
   selectLightSourceB,
-} from '../store/sceneSlice.js'
+} from "../store/sceneSlice"
+import { LightSourceType } from "../types/redux"
 
 export default function LightsPanel() {
   const dispatch = useDispatch()
@@ -24,7 +24,7 @@ export default function LightsPanel() {
   const g = useSelector(selectLightSourceG)
   const b = useSelector(selectLightSourceB)
 
-  if (curScene) {
+  if (curScene && currentLS && r !== undefined && g !== undefined && b !== undefined) {
     rawScenes[curScene.id].requestDrawScene()
 
     return (
@@ -34,7 +34,7 @@ export default function LightsPanel() {
           <select
             className="LightSelect"
             value={currentLS}
-            onChange={(event) => dispatch(lightSourceChanged(event.target.value))}
+            onChange={(event) => dispatch(lightSourceChanged(event.target.value as LightSourceType))}
           >
             <option>Omni Directional</option>
             <option>Lower Ambient</option>
@@ -42,8 +42,8 @@ export default function LightsPanel() {
           </select>
         </fieldset>
 
-        <fieldset style={{ borderColor: 'red' }} className="Fieldset">
-          <legend style={{ color: 'red' }} className="Legend">
+        <fieldset style={{ borderColor: "red" }} className="Fieldset">
+          <legend style={{ color: "red" }} className="Legend">
             R <span>{(r * 255.0).toFixed(0)}</span>
           </legend>
           <input
@@ -52,12 +52,12 @@ export default function LightsPanel() {
             min="0"
             max="255"
             value={r * 255.0}
-            onChange={(event) => dispatch(rChanged(event.target.value / 255.0))}
+            onChange={(event) => dispatch(rChanged(parseFloat(event.target.value) / 255.0))}
           />
         </fieldset>
 
-        <fieldset style={{ borderColor: 'green' }} className="Fieldset">
-          <legend style={{ color: 'green' }} className="Legend">
+        <fieldset style={{ borderColor: "green" }} className="Fieldset">
+          <legend style={{ color: "green" }} className="Legend">
             G <span>{(g * 255.0).toFixed(0)}</span>
           </legend>
           <input
@@ -66,12 +66,12 @@ export default function LightsPanel() {
             min="0"
             max="255"
             value={g * 255.0}
-            onChange={(event) => dispatch(gChanged(event.target.value / 255.0))}
+            onChange={(event) => dispatch(gChanged(parseFloat(event.target.value) / 255.0))}
           />
         </fieldset>
 
-        <fieldset style={{ borderColor: 'blue' }} className="Fieldset">
-          <legend style={{ color: 'blue' }} className="Legend">
+        <fieldset style={{ borderColor: "blue" }} className="Fieldset">
+          <legend style={{ color: "blue" }} className="Legend">
             B <span>{(b * 255.0).toFixed(0)}</span>
           </legend>
           <input
@@ -80,11 +80,12 @@ export default function LightsPanel() {
             min="0"
             max="255"
             value={b * 255.0}
-            onChange={(event) => dispatch(bChanged(event.target.value / 255.0))}
+            onChange={(event) => dispatch(bChanged(parseFloat(event.target.value) / 255.0))}
           />
         </fieldset>
       </div>
     )
   }
+
   return null
 }

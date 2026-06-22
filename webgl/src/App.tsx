@@ -1,37 +1,42 @@
-import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect } from "react"
+import { useSelector } from "react-redux"
 
-import { selectCurrScene } from './store/sceneSlice.js'
-import { getCurrScene } from './store/appStore.js'
-import './App.css'
+import { selectCurrScene } from "./store/sceneSlice"
+import { getCurrScene } from "./store/appStore"
+import "./App.css"
 
-import Scene from './Scene.js'
-import Vector1x4 from './Vector1x4.js'
-import ShaderP3C3 from './shader/ShaderP3C3.js'
-import ShaderP3N3 from './shader/ShaderP3N3.js'
-import ShaderP3N3T2 from './shader/ShaderP3N3T2.js'
-import ShaderP3N3B3T2 from './shader/ShaderP3N3B3T2.js'
+import Scene from "./Scene"
+import Vector1x4 from "./Vector1x4"
+import ShaderP3C3 from "./shader/ShaderP3C3"
+import ShaderP3N3 from "./shader/ShaderP3N3"
+import ShaderP3N3T2 from "./shader/ShaderP3N3T2"
+import ShaderP3N3B3T2 from "./shader/ShaderP3N3B3T2"
 
-import ScenePanel from './panel/ScenePanel.js'
-import CameraPanel from './panel/CameraPanel.js'
-import RenderPanel from './panel/RenderPanel.js'
-import LightsPanel from './panel/LightsPanel.js'
-import MaterialsPanel from './panel/MaterialsPanel.js'
+import ScenePanel from "./panel/ScenePanel"
+import CameraPanel from "./panel/CameraPanel"
+import RenderPanel from "./panel/RenderPanel"
+import LightsPanel from "./panel/LightsPanel"
+import MaterialsPanel from "./panel/MaterialsPanel"
+import { AppWebGLContext, ShaderProgramName } from "./types/webgl"
+import Shader from "./shader/Shader"
 
-export let rawScenes = [new Scene(0, 'hardwood'), new Scene(1, 'biplane'), new Scene(2, 'goku')]
-export let GL = null
+export const rawScenes = [new Scene(0, "hardwood"), new Scene(1, "biplane"), new Scene(2, "goku")]
+export let GL: AppWebGLContext | null = null
 
 let lButtonDown = false
 let rButtonDown = false
 let lx = 0
 let ly = 0
 
-function degreesToRadians(degrees) {
+function degreesToRadians(degrees: number) {
   return (degrees * Math.PI) / 180.0
 }
 
-function onMouseDown(event) {
-  const canvas = document.getElementById('Canvas')
+function onMouseDown(event: MouseEvent) {
+  const canvas = document.getElementById("Canvas") as HTMLCanvasElement | null
+  if (!canvas) {
+    return
+  }
   const rect = canvas.getBoundingClientRect()
   const x = event.clientX
   const y = event.clientY
@@ -52,7 +57,7 @@ function onMouseDown(event) {
   }
 }
 
-function onMouseUp(event) {
+function onMouseUp(event: MouseEvent) {
   switch (event.button) {
     case 0:
       lButtonDown = false
@@ -65,7 +70,7 @@ function onMouseUp(event) {
   }
 }
 
-function onMouseMove(event) {
+function onMouseMove(event: MouseEvent) {
   if (lButtonDown || rButtonDown) {
     const currScene = getCurrScene()
 
@@ -81,24 +86,23 @@ function onMouseMove(event) {
         const target = camera.parent
 
         if ((lButtonDown && rButtonDown) || (lButtonDown && event.shiftKey)) {
-          // dolly
           camera.translate(new Vector1x4(0, (x - lx) * TXYZ_SCALAR, 0))
           lx = x
           ly = y
           scene.requestDrawScene()
         } else if ((lButtonDown && event.ctrlKey) || rButtonDown) {
-          // move
           const dx = (lx - x) * TXYZ_SCALAR
           const dz = (y - ly) * TXYZ_SCALAR
-          const dv = camera.mapPos(new Vector1x4(dx, 0, dz, 0), target)
-          target.translate(dv) // move target along own axes
+          const dv = camera.mapPos(new Vector1x4(dx, 0, dz, 0), target ?? undefined)
+          if (target) {
+            target.translate(dv)
+          }
           lx = x
           ly = y
           scene.requestDrawScene()
         } else if (lButtonDown) {
-          // rotate
-          target.rotateZ(degreesToRadians(lx - x) * RXYZ_SCALAR) // yaw camera target around it's own z-axis
-          camera.rotateX(degreesToRadians(ly - y) * RXYZ_SCALAR, target) // pitch around camera target's x-axis
+          target?.rotateZ(degreesToRadians(lx - x) * RXYZ_SCALAR)
+          camera.rotateX(degreesToRadians(ly - y) * RXYZ_SCALAR, target ?? undefined)
           lx = x
           ly = y
           scene.requestDrawScene()
@@ -109,47 +113,46 @@ function onMouseMove(event) {
 }
 
 export default function App() {
-  const [initial, setInitial] = useState(true)
-
   useEffect(() => {
-    if (initial) {
-      const canvas = document.getElementById('Canvas')
-      GL = canvas.getContext('experimental-webgl', {
-        depth: true,
-        alpha: false,
-        stencil: true,
-      })
-
-      if (GL) {
-        canvas.oncontextmenu = (event) => event.preventDefault() // disable right click context menu
-        canvas.onmousedown = onMouseDown
-        window.onmousemove = onMouseMove
-        window.onmouseup = onMouseUp
-
-        GL.depthFunc(GL.LESS) // less than depth test
-        GL.enable(GL.DEPTH_TEST) // enable depth testing
-        GL.enable(GL.CULL_FACE) // enable backface culling
-        GL.enable(GL.BLEND) // enable alpha blending
-        GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA)
-
-        GL.clearColor(0.392156899, 0.58431375, 0.929411829, 1.0) // cornflower blue
-        GL.clearDepth(1.0) // depth buffer clear value
-        GL.clearStencil(0) // stencil buffer clear value
-
-        GL.mapOfShaders = Object.freeze(
-          new Map([
-            ['P3C3', new ShaderP3C3()],
-            ['P3N3', new ShaderP3N3()],
-            ['P3N3T2', new ShaderP3N3T2()],
-            ['P3N3B3T2', new ShaderP3N3B3T2()],
-          ])
-        )
-
-        rawScenes[0].loadScene()
-        setInitial(false)
-      }
+    const canvas = document.getElementById("Canvas") as HTMLCanvasElement | null
+    if (!canvas) {
+      return
     }
-  })
+
+    const context = canvas.getContext("experimental-webgl", {
+      depth: true,
+      alpha: false,
+      stencil: true,
+    })
+
+    if (context) {
+      GL = context as AppWebGLContext
+      canvas.oncontextmenu = (event) => event.preventDefault()
+      canvas.onmousedown = onMouseDown
+      window.onmousemove = onMouseMove
+      window.onmouseup = onMouseUp
+
+      GL.depthFunc(GL.LESS)
+      GL.enable(GL.DEPTH_TEST)
+      GL.enable(GL.CULL_FACE)
+      GL.enable(GL.BLEND)
+      GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA)
+
+      GL.clearColor(0.392156899, 0.58431375, 0.929411829, 1.0)
+      GL.clearDepth(1.0)
+      GL.clearStencil(0)
+
+      const shaders = new Map<ShaderProgramName, Shader>([
+        ["P3C3", new ShaderP3C3()],
+        ["P3N3", new ShaderP3N3()],
+        ["P3N3T2", new ShaderP3N3T2()],
+        ["P3N3B3T2", new ShaderP3N3B3T2()],
+      ])
+      GL.mapOfShaders = Object.freeze(shaders)
+
+      rawScenes[0].loadScene()
+    }
+  }, [])
 
   const currScene = useSelector(selectCurrScene)
 

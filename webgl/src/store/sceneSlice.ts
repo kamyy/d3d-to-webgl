@@ -1,105 +1,113 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import Scene from "../Scene"
+import { LightSourceType, RootState } from "../types/redux"
+
+const initialState: RootState = {
+  allScenes: [null, null, null],
+  currIndex: 0,
+}
 
 const sceneSlice = createSlice({
-  name: 'scene',
+  name: "scene",
 
-  initialState: {
-    allScenes: [null, null, null],
-    currIndex: 0,
-  },
+  initialState,
 
   reducers: {
-    sceneLoaded(state, { payload: { id, scene } }) {
+    sceneLoaded(state, { payload: { id, scene } }: PayloadAction<{ id: number; scene: Scene }>) {
       const { cameras, omniDirLS, mapOfMaterials } = scene
       state.allScenes[id] = {
         id,
         cameras: cameras.map((cam) => ({ fieldOfView: cam.fieldOfView, aspectRatio: cam.aspectRatio })),
         cameraIdx: 0,
-        currentLS: 'Omni Directional',
+        currentLS: "Omni Directional",
         omniDirLS: [...omniDirLS.color],
         lowerAmbientLS: [0.2, 0.2, 0.2],
         upperAmbientLS: [0.2, 0.2, 0.2],
         drawWirefrm: false,
         drawNormals: false,
-        materialFilter: '',
+        materialFilter: "",
         originalMaterials: Array.from(mapOfMaterials.values()),
         filteredMaterials: Array.from(mapOfMaterials.values()),
       }
     },
 
-    sceneChanged(state, { payload: id }) {
+    sceneChanged(state, { payload: id }: PayloadAction<number>) {
       state.currIndex = id
     },
 
-    cameraChanged(state, { payload: cameraIdx }) {
-      state.allScenes[state.currIndex].cameraIdx = cameraIdx
+    cameraChanged(state, { payload: cameraIdx }: PayloadAction<number>) {
+      const scene = state.allScenes[state.currIndex]
+      if (scene) {
+        scene.cameraIdx = cameraIdx
+      }
     },
 
-    fieldOfViewChanged(state, { payload: fieldOfView }) {
+    fieldOfViewChanged(state, { payload: fieldOfView }: PayloadAction<number>) {
       const scene = state.allScenes[state.currIndex]
       if (scene) {
         scene.cameras[scene.cameraIdx].fieldOfView = fieldOfView
       }
     },
 
-    aspectRatioChanged(state, { payload: aspectRatio }) {
+    aspectRatioChanged(state, { payload: aspectRatio }: PayloadAction<number>) {
       const scene = state.allScenes[state.currIndex]
       if (scene) {
         scene.cameras[scene.cameraIdx].aspectRatio = aspectRatio
       }
     },
 
-    lightSourceChanged(state, { payload: lightSource }) {
-      if (state.allScenes[state.currIndex]) {
-        state.allScenes[state.currIndex].currentLS = lightSource
+    lightSourceChanged(state, { payload: lightSource }: PayloadAction<LightSourceType>) {
+      const scene = state.allScenes[state.currIndex]
+      if (scene) {
+        scene.currentLS = lightSource
       }
     },
 
-    rChanged(state, { payload: value }) {
+    rChanged(state, { payload: value }: PayloadAction<number>) {
       const scene = state.allScenes[state.currIndex]
       if (scene) {
         switch (scene.currentLS) {
-          case 'Omni Directional':
+          case "Omni Directional":
             scene.omniDirLS[0] = value
             break
-          case 'Lower Ambient':
+          case "Lower Ambient":
             scene.lowerAmbientLS[0] = value
             break
-          case 'Upper Ambient':
+          case "Upper Ambient":
             scene.upperAmbientLS[0] = value
             break
         }
       }
     },
 
-    gChanged(state, { payload: value }) {
+    gChanged(state, { payload: value }: PayloadAction<number>) {
       const scene = state.allScenes[state.currIndex]
       if (scene) {
         switch (scene.currentLS) {
-          case 'Omni Directional':
+          case "Omni Directional":
             scene.omniDirLS[1] = value
             break
-          case 'Lower Ambient':
+          case "Lower Ambient":
             scene.lowerAmbientLS[1] = value
             break
-          case 'Upper Ambient':
+          case "Upper Ambient":
             scene.upperAmbientLS[1] = value
             break
         }
       }
     },
 
-    bChanged(state, { payload: value }) {
+    bChanged(state, { payload: value }: PayloadAction<number>) {
       const scene = state.allScenes[state.currIndex]
       if (scene) {
         switch (scene.currentLS) {
-          case 'Omni Directional':
+          case "Omni Directional":
             scene.omniDirLS[2] = value
             break
-          case 'Lower Ambient':
+          case "Lower Ambient":
             scene.lowerAmbientLS[2] = value
             break
-          case 'Upper Ambient':
+          case "Upper Ambient":
             scene.upperAmbientLS[2] = value
             break
         }
@@ -120,11 +128,11 @@ const sceneSlice = createSlice({
       }
     },
 
-    materialFilterChanged(state, { payload: filter }) {
+    materialFilterChanged(state, { payload: filter }: PayloadAction<string>) {
       const scene = state.allScenes[state.currIndex]
       if (scene) {
         const lcFilter = filter.toLowerCase()
-        const filterFn = (material) => material.name.toLowerCase().includes(lcFilter)
+        const filterFn = (material: { name: string }) => material.name.toLowerCase().includes(lcFilter)
 
         scene.materialFilter = filter
         scene.filteredMaterials = scene.originalMaterials.filter(filterFn)
@@ -150,69 +158,86 @@ export const {
   materialFilterChanged,
 } = sceneSlice.actions
 
-export const selectCurrScene = (state) => state.allScenes[state.currIndex]
+export function selectCurrScene(state: RootState) {
+  return state.allScenes[state.currIndex]
+}
 
-export const selectCameraIdx = (state) => state.allScenes[state.currIndex]?.cameraIdx
+export function selectCameraIdx(state: RootState) {
+  return state.allScenes[state.currIndex]?.cameraIdx
+}
 
-export const selectFieldOfView = (state) => {
+export function selectFieldOfView(state: RootState) {
   const scene = state.allScenes[state.currIndex]
   return scene?.cameras[scene.cameraIdx].fieldOfView
 }
 
-export const selectAspectRatio = (state) => {
+export function selectAspectRatio(state: RootState) {
   const scene = state.allScenes[state.currIndex]
   return scene?.cameras[scene.cameraIdx].aspectRatio
 }
 
-export const selectLightSource = (state) => state.allScenes[state.currIndex]?.currentLS
+export function selectLightSource(state: RootState) {
+  return state.allScenes[state.currIndex]?.currentLS
+}
 
-export const selectLightSourceR = (state) => {
+export function selectLightSourceR(state: RootState) {
   const currScene = state.allScenes[state.currIndex]
   if (currScene) {
     switch (currScene.currentLS) {
-      case 'Omni Directional':
+      case "Omni Directional":
         return currScene.omniDirLS[0]
-      case 'Lower Ambient':
+      case "Lower Ambient":
         return currScene.lowerAmbientLS[0]
-      case 'Upper Ambient':
+      case "Upper Ambient":
         return currScene.upperAmbientLS[0]
     }
   }
+
   return undefined
 }
 
-export const selectLightSourceG = (state) => {
+export function selectLightSourceG(state: RootState) {
   const currScene = state.allScenes[state.currIndex]
   if (currScene) {
     switch (currScene.currentLS) {
-      case 'Omni Directional':
+      case "Omni Directional":
         return currScene.omniDirLS[1]
-      case 'Lower Ambient':
+      case "Lower Ambient":
         return currScene.lowerAmbientLS[1]
-      case 'Upper Ambient':
+      case "Upper Ambient":
         return currScene.upperAmbientLS[1]
     }
   }
   return undefined
 }
 
-export const selectLightSourceB = (state) => {
+export function selectLightSourceB(state: RootState) {
   const currScene = state.allScenes[state.currIndex]
   if (currScene) {
     switch (currScene.currentLS) {
-      case 'Omni Directional':
+      case "Omni Directional":
         return currScene.omniDirLS[2]
-      case 'Lower Ambient':
+      case "Lower Ambient":
         return currScene.lowerAmbientLS[2]
-      case 'Upper Ambient':
+      case "Upper Ambient":
         return currScene.upperAmbientLS[2]
     }
   }
   return undefined
 }
 
-export const selectDrawWirefrm = (state) => state.allScenes[state.currIndex]?.drawWirefrm
-export const selectDrawNormals = (state) => state.allScenes[state.currIndex]?.drawNormals
+export function selectDrawWirefrm(state: RootState) {
+  return state.allScenes[state.currIndex]?.drawWirefrm
+}
 
-export const selectMaterialFilter = (state) => state.allScenes[state.currIndex]?.materialFilter
-export const selectMaterialsSelector = (state) => state.allScenes[state.currIndex]?.filteredMaterials
+export function selectDrawNormals(state: RootState) {
+  return state.allScenes[state.currIndex]?.drawNormals
+}
+
+export function selectMaterialFilter(state: RootState) {
+  return state.allScenes[state.currIndex]?.materialFilter
+}
+
+export function selectMaterialsSelector(state: RootState) {
+  return state.allScenes[state.currIndex]?.filteredMaterials
+}

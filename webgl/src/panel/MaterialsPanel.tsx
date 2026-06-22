@@ -1,14 +1,13 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from "react-redux"
 
-import '../App.css'
-import { rawScenes } from '../App.js'
+import "../App.css"
+import { rawScenes } from "../App"
 import {
   materialFilterChanged,
   selectCurrScene,
   selectMaterialFilter,
   selectMaterialsSelector,
-} from '../store/sceneSlice.js'
+} from "../store/sceneSlice"
 
 export default function MaterialsPanel() {
   const dispatch = useDispatch()
@@ -16,7 +15,7 @@ export default function MaterialsPanel() {
   const materialFilter = useSelector(selectMaterialFilter)
   const setOfMaterials = useSelector(selectMaterialsSelector)
 
-  if (curScene) {
+  if (curScene && materialFilter !== undefined && setOfMaterials) {
     rawScenes[curScene.id].requestDrawScene()
 
     return (
@@ -30,18 +29,18 @@ export default function MaterialsPanel() {
             onChange={(event) => dispatch(materialFilterChanged(event.target.value))}
             className="MaterialInput"
           />
-          <span id="Clear" onClick={() => dispatch(materialFilterChanged(''))}>
+          <span id="Clear" onClick={() => dispatch(materialFilterChanged(""))}>
             &times;
           </span>
         </fieldset>
 
         <fieldset className="Fieldset">
-          <legend className="Legend">Materials</legend>{' '}
+          <legend className="Legend">Materials</legend>{" "}
           {[...setOfMaterials].map((m) => (
             <div key={m.name} className="MaterialItem" onClick={() => dispatch(materialFilterChanged(m.name))}>
               {m.name}
             </div>
-          ))}{' '}
+          ))}{" "}
         </fieldset>
       </div>
     )

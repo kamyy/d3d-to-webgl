@@ -1,8 +1,7 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from "react-redux"
 
-import '../App.css'
-import { rawScenes } from '../App.js'
+import "../App.css"
+import { rawScenes } from "../App"
 import {
   cameraChanged,
   fieldOfViewChanged,
@@ -11,7 +10,8 @@ import {
   selectCameraIdx,
   selectFieldOfView,
   selectAspectRatio,
-} from '../store/sceneSlice.js'
+} from "../store/sceneSlice"
+import { CameraState } from "../types/redux"
 
 export default function CameraPanel() {
   const dispatch = useDispatch()
@@ -20,10 +20,10 @@ export default function CameraPanel() {
   const fieldOfView = useSelector(selectFieldOfView)
   const aspectRatio = useSelector(selectAspectRatio)
 
-  if (curScene) {
+  if (curScene && fieldOfView !== undefined && aspectRatio !== undefined && cameraIdx !== undefined) {
     rawScenes[curScene.id].requestDrawScene()
 
-    const cameraChoice = (cam, idx) => {
+    const cameraChoice = (_cam: CameraState, idx: number) => {
       const id = `Camera ${idx + 1}`
       return (
         <div key={id}>
@@ -35,7 +35,7 @@ export default function CameraPanel() {
             onChange={() => dispatch(cameraChanged(idx))}
           />
           <label htmlFor={id} className="CameraButtonLabel">
-            {id}{' '}
+            {id}{" "}
           </label>
         </div>
       )
@@ -44,9 +44,9 @@ export default function CameraPanel() {
     return (
       <div id="CameraPanel" className="CanvasPanel">
         {curScene.cameras.length > 1 ? (
-          <div style={{ marginBottom: '8px' }}>{curScene.cameras.map(cameraChoice)}</div>
+          <div style={{ marginBottom: "8px" }}>{curScene.cameras.map(cameraChoice)}</div>
         ) : (
-          <div style={{ marginBottom: '4px' }} />
+          <div style={{ marginBottom: "4px" }} />
         )}
 
         <fieldset className="Fieldset">
@@ -79,5 +79,6 @@ export default function CameraPanel() {
       </div>
     )
   }
+
   return null
 }

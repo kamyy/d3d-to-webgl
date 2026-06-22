@@ -1,30 +1,37 @@
-import Matrix4x4 from './Matrix4x4.js'
-import RefFrame from './RefFrame.js'
+import Matrix4x4 from "./Matrix4x4"
+import RefFrame from "./RefFrame"
+import { SceneNodeJson } from "./types/scene"
 
 export default class Camera extends RefFrame {
-  constructor(parent, node) {
+  private _fieldOfView: number
+  private _aspectRatio: number
+  private _clipDistanceN: number
+  private _clipDistanceF: number
+  private _fieldOfViewDegrees: number
+
+  constructor(parent: RefFrame, node: SceneNodeJson) {
     super(parent, node)
-    this._fieldOfView = node.fieldOfView
-    this._aspectRatio = node.aspectRatio
-    this._clipDistanceN = node.clipDistanceN
-    this._clipDistanceF = node.clipDistanceF
-    this._fieldOfViewDegrees = (node.fieldOfView / Math.PI) * 180.0
+    this._fieldOfView = node.fieldOfView ?? Math.PI / 4
+    this._aspectRatio = node.aspectRatio ?? 16 / 9
+    this._clipDistanceN = node.clipDistanceN ?? 0.1
+    this._clipDistanceF = node.clipDistanceF ?? 1000
+    this._fieldOfViewDegrees = (this._fieldOfView / Math.PI) * 180.0
   }
 
-  set fieldOfView(degrees) {
+  set fieldOfView(degrees: number) {
     this._fieldOfViewDegrees = degrees
     this._fieldOfView = (Math.PI / 180.0) * degrees
   }
 
-  set aspectRatio(val) {
+  set aspectRatio(val: number) {
     this._aspectRatio = val
   }
 
-  set clipDistanceN(val) {
+  set clipDistanceN(val: number) {
     this._clipDistanceN = val
   }
 
-  set clipDistanceF(val) {
+  set clipDistanceF(val: number) {
     this._clipDistanceF = val
   }
 

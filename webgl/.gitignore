@@ -8,6 +8,7 @@
 
 # production
 /build
+/dist
 
 # visual studio code
 /.vscode
