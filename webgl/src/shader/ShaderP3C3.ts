@@ -1,25 +1,27 @@
-import Shader from './Shader.js'
-import { GL } from '../App.js'
+import Shader, { VertexAttributeDesc } from "./Shader"
+import { GL } from "../App"
+import Model from "../Model"
+import { ModelPiece } from "../types/scene"
 
-const vertexAttributeDescsP3C3 = Object.freeze([
-  { attrib: 'a_pos', length: 3, stride: 24, offset: 0 },
-  { attrib: 'a_col', length: 3, stride: 24, offset: 12 },
-])
+const vertexAttributeDescsP3C3: VertexAttributeDesc[] = [
+  { attrib: "a_pos", length: 3, stride: 24, offset: 0 },
+  { attrib: "a_col", length: 3, stride: 24, offset: 12 },
+]
 
 export default class ShaderP3C3 extends Shader {
   constructor() {
-    super('/glsl/P3C3.vert', '/glsl/P3C3.frag')
+    super("/glsl/P3C3.vert", "/glsl/P3C3.frag")
   }
 
-  drawNormals(model, modelPiece) {
-    if (this.program) {
+  drawNormals(model: Model, modelPiece: ModelPiece) {
+    if (this.program && GL) {
       GL.useProgram(this.program)
       this.setUniformVariablesInVertShader(model)
       this.setUniformVariablesInFragShader(model)
 
       GL.bindBuffer(GL.ARRAY_BUFFER, modelPiece.nrmBuffer)
 
-      for (let desc of this.constructor.vertexAttributeDescs) {
+      for (const desc of ShaderP3C3.vertexAttributeDescs) {
         const loc = GL.getAttribLocation(this.program, desc.attrib)
         if (loc !== -1) {
           GL.vertexAttribPointer(loc, desc.length, GL.FLOAT, false, desc.stride, desc.offset)
@@ -31,11 +33,11 @@ export default class ShaderP3C3 extends Shader {
     }
   }
 
-  static get vertexAttributeDescs() {
+  static get vertexAttributeDescs(): VertexAttributeDesc[] {
     return vertexAttributeDescsP3C3
   }
 
-  static get vertexElementCount() {
+  static get vertexElementCount(): number {
     return 6
   }
 }

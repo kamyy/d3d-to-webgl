@@ -11,8 +11,8 @@ Ultimately, the port to WebGL was successful and I learnt a lot of cool stuff ab
 
 ## Getting Up and Running
 
-The easiest way to view the app is to visit [https://d3d-to-webgl.orky.net](https://d3d-to-webgl.orky.net). Or, you can use **node.js**, v12.x or higher, to serve the content from your own computer.
+The easiest way to view the app is to visit [https://d3d-to-webgl.orky.net](https://d3d-to-webgl.orky.net). Or, you can use **node.js**, v24.x or higher, to serve the content from your own computer.
 
-After cloning the repo, in a command shell, **cd** into the **d3d-to-webgl/webgl** folder and type **npm install** [enter] to resolve all package dependencies. Then type **npm start** [enter] to boot up a local web server that will serve the content. The single page application can then be viewed in a browser at **localhost:3000**. The content has been tested on several browsers including Firefox, Safari and Google Chrome.
+After cloning the repo, in a command shell, **cd** into the **d3d-to-webgl/webgl** folder and type **npm install** [enter] to resolve all package dependencies. Then type **npm start** [enter] to boot up a local web server that will serve the content. The content has been tested on several browsers including Firefox, Safari and Google Chrome.
 
 ![goku screenshot](./screenshots/goku.png)

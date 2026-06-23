@@ -1,15 +1,14 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from "react-redux"
 
-import '../App.css'
-import { rawScenes } from '../App.js'
+import "../App.css"
+import { rawScenes } from "../App"
 import {
   wirefrmToggled,
   normalsToggled,
   selectCurrScene,
   selectDrawWirefrm,
   selectDrawNormals,
-} from '../store/sceneSlice.js'
+} from "../store/sceneSlice"
 
 export default function RenderPanel() {
   const dispatch = useDispatch()
@@ -17,9 +16,9 @@ export default function RenderPanel() {
   const drawWirefrm = useSelector(selectDrawWirefrm)
   const drawNormals = useSelector(selectDrawNormals)
 
-  if (curScene) {
-    const id0 = 'wirefrmCheckbox'
-    const id1 = 'normalsCheckbox'
+  if (curScene && drawWirefrm !== undefined && drawNormals !== undefined) {
+    const id0 = "wirefrmCheckbox"
+    const id1 = "normalsCheckbox"
 
     rawScenes[curScene.id].requestDrawScene()
 

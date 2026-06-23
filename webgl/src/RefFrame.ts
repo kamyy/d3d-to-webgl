@@ -1,8 +1,16 @@
-import Matrix4x4, { _11, _12, _13, _21, _22, _23, _31, _32, _33, _41, _42, _43 } from './Matrix4x4.js'
-import Vector1x4 from './Vector1x4.js'
+import Matrix4x4, { _11, _12, _13, _21, _22, _23, _31, _32, _33, _41, _42, _43 } from "./Matrix4x4"
+import Vector1x4 from "./Vector1x4"
+import { SceneNodeJson } from "./types/scene"
 
 export default class RefFrame {
-  constructor(parent = null, node = null) {
+  validSubtree: boolean
+  parent: RefFrame | null
+  child: RefFrame | null
+  next: RefFrame | null
+  localM: Matrix4x4
+  modelM: Matrix4x4
+
+  constructor(parent: RefFrame | null = null, node: SceneNodeJson | null = null) {
     this.validSubtree = true
     this.parent = null
     this.child = null
@@ -17,7 +25,7 @@ export default class RefFrame {
       this.parent.child = this
     }
 
-    if (node) {
+    if (node?.modelMatrix) {
       this.modelMatrix = new Matrix4x4(node.modelMatrix)
     }
   }
@@ -41,7 +49,7 @@ export default class RefFrame {
     }
   }
 
-  *children() {
+  *children(): Generator<RefFrame> {
     for (let sibling = this.child; sibling !== null; sibling = sibling.next) {
       yield sibling
     }
@@ -51,7 +59,7 @@ export default class RefFrame {
     return this.localM
   }
 
-  set localMatrix(matrix) {
+  set localMatrix(matrix: Matrix4x4) {
     this.localM = new Matrix4x4(matrix)
     this.invalidateSubtree()
   }
@@ -61,18 +69,15 @@ export default class RefFrame {
     return this.modelM
   }
 
-  set modelMatrix(matrix) {
-    // worldMatrix = localMatrix * parent->worldMatrix
-    // worldMatrix / parent->worldMatrix = localMatrix
+  set modelMatrix(matrix: Matrix4x4) {
     if (this.parent instanceof RefFrame) {
       this.localM = matrix.mul(this.parent.modelMatrix.inverse())
       this.invalidateSubtree()
     }
   }
 
-  translate(v, relative2) {
+  translate(v: Vector1x4, relative2?: RefFrame) {
     if (relative2 === this || !relative2) {
-      // relative to own axes
       const x = this.localM.m[_41]
       const y = this.localM.m[_42]
       const z = this.localM.m[_43]
@@ -80,19 +85,16 @@ export default class RefFrame {
       this.localM.m[_42] = y + v.x * this.localM.m[_12] + v.y * this.localM.m[_22] + v.z * this.localM.m[_32]
       this.localM.m[_43] = z + v.x * this.localM.m[_13] + v.y * this.localM.m[_23] + v.z * this.localM.m[_33]
     } else if (relative2.parent === null) {
-      // relative to root axes
-      const d = relative2.mapPos(new Vector1x4(v.x, v.y, v.z, 0.0), this.parent)
+      const d = relative2.mapPos(new Vector1x4(v.x, v.y, v.z, 0.0), this.parent ?? undefined)
       this.localM.m[_41] += d.x
       this.localM.m[_42] += d.y
       this.localM.m[_43] += d.z
     } else if (relative2 === this.parent) {
-      // relative to parent axes
       this.localM.m[_41] += v.x
       this.localM.m[_42] += v.y
       this.localM.m[_43] += v.z
     } else {
-      // relative to arbitrary axes
-      const d = relative2.mapPos(new Vector1x4(v.x, v.y, v.z, 0.0), this.parent)
+      const d = relative2.mapPos(new Vector1x4(v.x, v.y, v.z, 0.0), this.parent ?? undefined)
       this.localM.m[_41] += d.x
       this.localM.m[_42] += d.y
       this.localM.m[_43] += d.z
@@ -100,61 +102,55 @@ export default class RefFrame {
     this.invalidateSubtree()
   }
 
-  rotateX(theta, relative2) {
+  rotateX(theta: number, relative2?: RefFrame) {
     if (relative2 === this || !relative2) {
-      // relative to own axes
       const rotx = Matrix4x4.createRx(theta)
       this.localMatrix = rotx.mul(this.localMatrix)
     } else if (relative2 === this.parent) {
-      // relative to parent
       const rotx = Matrix4x4.createRx(theta)
       this.localMatrix = this.localMatrix.mul(rotx)
     } else {
-      // relative to arbitrary axes
-      throw new Error('Cannot rotate relative to arbitrary axis!')
+      throw new Error("Cannot rotate relative to arbitrary axis!")
     }
     this.invalidateSubtree()
   }
 
-  rotateY(theta, relative2) {
+  rotateY(theta: number, relative2?: RefFrame) {
     if (relative2 === this || !relative2) {
-      // relative to own axes
       const roty = Matrix4x4.createRy(theta)
       this.localMatrix = roty.mul(this.localMatrix)
     } else if (relative2 === this.parent) {
-      // relative to parent
       const roty = Matrix4x4.createRy(theta)
       this.localMatrix = this.localMatrix.mul(roty)
     } else {
-      // relative to arbitrary axes
-      throw new Error('Cannot rotate relative to arbitrary axis!')
+      throw new Error("Cannot rotate relative to arbitrary axis!")
     }
     this.invalidateSubtree()
   }
 
-  rotateZ(theta, relative2) {
+  rotateZ(theta: number, relative2?: RefFrame) {
     if (relative2 === this || !relative2) {
-      // relative to own axes
       const rotz = Matrix4x4.createRz(theta)
       this.localMatrix = rotz.mul(this.localMatrix)
     } else if (relative2 === this.parent) {
-      // relative to parent
       const rotz = Matrix4x4.createRz(theta)
       this.localMatrix = this.localMatrix.mul(rotz)
     } else {
-      // relative to arbitrary axes
-      throw new Error('Cannot rotate relative to arbitrary axis!')
+      throw new Error("Cannot rotate relative to arbitrary axis!")
     }
     this.invalidateSubtree()
   }
 
-  mapPos(v, tgt) {
+  mapPos(v: Vector1x4, tgt?: RefFrame) {
     if (tgt === this.parent) {
       return v.mul(this.localMatrix)
-    } else if (tgt.parent === null) {
+    }
+    if (tgt && tgt.parent === null) {
       return v.mul(this.modelMatrix)
-    } else {
+    }
+    if (tgt) {
       return v.mul(this.modelMatrix).mul(tgt.modelMatrix.inverse())
     }
+    return v.mul(this.modelMatrix)
   }
 }
