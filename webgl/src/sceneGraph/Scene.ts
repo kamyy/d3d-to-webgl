@@ -1,16 +1,16 @@
-import { GL, rawScenes } from "./App"
-import { sceneLoaded } from "./store/sceneSlice"
-import appStore, { getCurrScene } from "./store/appStore"
+import { GL, rawScenes } from "../app/App"
+import { sceneLoaded } from "../store/sceneSlice"
+import appStore, { getCurrScene } from "../store/appStore"
 
 import Model from "./Model"
 import Camera from "./Camera"
 import RefFrame from "./RefFrame"
 import OmniDirLS from "./OmniDirLS"
-import Matrix4x4 from "./Matrix4x4"
-import { Material, MaterialJson, SceneJson, SceneNodeJson, TextureJson, TranslucentPieceEntry } from "./types/scene"
-import { SceneState } from "./types/redux"
-import { ShaderProgramName } from "./types/webgl"
-import Shader from "./shader/Shader"
+import Matrix4x4 from "../math/Matrix4x4"
+import { Material, MaterialJson, SceneJson, SceneNodeJson, TextureJson, TranslucentPieceEntry } from "../types/scene"
+import { SceneState } from "../store/redux"
+import { ShaderProgramName } from "../types/webgl"
+import Shader from "../shader/Shader"
 
 const DRAW = Object.freeze({
   MIRROR: Symbol("mirror"),

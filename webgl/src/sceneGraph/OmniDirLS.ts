@@ -1,5 +1,5 @@
 import RefFrame from "./RefFrame"
-import { SceneNodeJson } from "./types/scene"
+import { SceneNodeJson } from "../types/scene"
 
 export default class OmniDirLS extends RefFrame {
   color: [number, number, number]

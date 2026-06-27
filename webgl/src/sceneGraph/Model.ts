@@ -1,9 +1,9 @@
-import { getCurrScene } from "./store/appStore"
+import { getCurrScene } from "../store/appStore"
 import RefFrame from "./RefFrame"
-import { GL } from "./App"
+import { GL } from "../app/App"
 import Scene from "./Scene"
-import { Material, ModelPiece, SceneNodeJson, TranslucentPieceEntry } from "./types/scene"
-import ShaderP3C3 from "./shader/ShaderP3C3"
+import { Material, ModelPiece, SceneNodeJson, TranslucentPieceEntry } from "../types/scene"
+import ShaderP3C3 from "../shader/ShaderP3C3"
 
 export default class Model extends RefFrame {
   shaderP3C3: ShaderP3C3

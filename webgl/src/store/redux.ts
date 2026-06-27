@@ -1,4 +1,4 @@
-import { Material } from "./scene"
+import { Material } from "../types/scene"
 
 export interface CameraState {
   fieldOfView: number

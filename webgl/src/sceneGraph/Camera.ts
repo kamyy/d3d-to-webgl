@@ -1,6 +1,6 @@
-import Matrix4x4 from "./Matrix4x4"
+import Matrix4x4 from "../math/Matrix4x4"
 import RefFrame from "./RefFrame"
-import { SceneNodeJson } from "./types/scene"
+import { SceneNodeJson } from "../types/scene"
 
 export default class Camera extends RefFrame {
   private _fieldOfView: number

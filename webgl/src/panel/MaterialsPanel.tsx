@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux"
 
-import "../App.css"
-import { rawScenes } from "../App"
+import "../app/App.css"
+import { rawScenes } from "../app/App"
 import {
   materialFilterChanged,
   selectCurrScene,

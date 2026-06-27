@@ -1,5 +1,5 @@
-import Camera from "./Camera"
-import Vector1x4 from "./Vector1x4"
+import Camera from "../sceneGraph/Camera"
+import Vector1x4 from "../math/Vector1x4"
 
 const TXYZ_SCALAR = 0.01
 const RXYZ_SCALAR = 0.25

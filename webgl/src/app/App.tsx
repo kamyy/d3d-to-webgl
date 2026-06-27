@@ -1,24 +1,24 @@
 import { useEffect } from "react"
 import { useSelector } from "react-redux"
 
-import { selectCurrScene } from "./store/sceneSlice"
-import { getCurrScene } from "./store/appStore"
+import { selectCurrScene } from "../store/sceneSlice"
+import { getCurrScene } from "../store/appStore"
 import "./App.css"
 
-import Scene from "./Scene"
+import Scene from "../sceneGraph/Scene"
 import CameraControls from "./CameraControls"
-import ShaderP3C3 from "./shader/ShaderP3C3"
-import ShaderP3N3 from "./shader/ShaderP3N3"
-import ShaderP3N3T2 from "./shader/ShaderP3N3T2"
-import ShaderP3N3B3T2 from "./shader/ShaderP3N3B3T2"
+import ShaderP3C3 from "../shader/ShaderP3C3"
+import ShaderP3N3 from "../shader/ShaderP3N3"
+import ShaderP3N3T2 from "../shader/ShaderP3N3T2"
+import ShaderP3N3B3T2 from "../shader/ShaderP3N3B3T2"
 
-import ScenePanel from "./panel/ScenePanel"
-import CameraPanel from "./panel/CameraPanel"
-import RenderPanel from "./panel/RenderPanel"
-import LightsPanel from "./panel/LightsPanel"
-import MaterialsPanel from "./panel/MaterialsPanel"
-import { AppWebGLContext, ShaderProgramName } from "./types/webgl"
-import Shader from "./shader/Shader"
+import ScenePanel from "../panel/ScenePanel"
+import CameraPanel from "../panel/CameraPanel"
+import RenderPanel from "../panel/RenderPanel"
+import LightsPanel from "../panel/LightsPanel"
+import MaterialsPanel from "../panel/MaterialsPanel"
+import { AppWebGLContext, ShaderProgramName } from "../types/webgl"
+import Shader from "../shader/Shader"
 
 export const rawScenes = [new Scene(0, "hardwood"), new Scene(1, "biplane"), new Scene(2, "goku")]
 export let GL: AppWebGLContext | null = null

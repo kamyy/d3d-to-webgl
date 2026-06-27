@@ -1,6 +1,6 @@
-import Matrix4x4, { _11, _12, _13, _21, _22, _23, _31, _32, _33, _41, _42, _43 } from "./Matrix4x4"
-import Vector1x4 from "./Vector1x4"
-import { SceneNodeJson } from "./types/scene"
+import Matrix4x4, { _11, _12, _13, _21, _22, _23, _31, _32, _33, _41, _42, _43 } from "../math/Matrix4x4"
+import Vector1x4 from "../math/Vector1x4"
+import { SceneNodeJson } from "../types/scene"
 
 export default class RefFrame {
   validSubtree: boolean

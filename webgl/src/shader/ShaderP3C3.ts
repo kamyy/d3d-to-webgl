@@ -1,6 +1,6 @@
 import Shader, { VertexAttributeDesc } from "./Shader"
-import { GL } from "../App"
-import Model from "../Model"
+import { GL } from "../app/App"
+import Model from "../sceneGraph/Model"
 import { ModelPiece } from "../types/scene"
 
 const vertexAttributeDescsP3C3: VertexAttributeDesc[] = [

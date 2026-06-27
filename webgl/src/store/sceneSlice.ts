@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import Scene from "../Scene"
-import { LightSourceType, RootState } from "../types/redux"
+import Scene from "../sceneGraph/Scene"
+import { LightSourceType, RootState } from "./redux"
 
 const initialState: RootState = {
   allScenes: [null, null, null],

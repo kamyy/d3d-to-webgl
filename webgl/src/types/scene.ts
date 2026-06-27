@@ -62,6 +62,6 @@ export interface ModelPiece {
 }
 
 export interface TranslucentPieceEntry {
-  model: import("../Model").default
+  model: import("../sceneGraph/Model").default
   piece: ModelPiece
 }

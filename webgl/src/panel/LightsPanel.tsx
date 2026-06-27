@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux"
 
-import "../App.css"
-import { rawScenes } from "../App"
+import "../app/App.css"
+import { rawScenes } from "../app/App"
 import {
   lightSourceChanged,
   rChanged,
@@ -13,7 +13,7 @@ import {
   selectLightSourceG,
   selectLightSourceB,
 } from "../store/sceneSlice"
-import { LightSourceType } from "../types/redux"
+import { LightSourceType } from "../store/redux"
 
 export default function LightsPanel() {
   const dispatch = useDispatch()

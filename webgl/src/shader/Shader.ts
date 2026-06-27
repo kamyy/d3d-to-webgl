@@ -1,10 +1,10 @@
-import { GL, rawScenes } from "../App"
+import { GL, rawScenes } from "../app/App"
 import { getCurrScene } from "../store/appStore"
 
-import Model from "../Model"
-import Camera from "../Camera"
-import Vector1x4 from "../Vector1x4"
-import OmniDirLS from "../OmniDirLS"
+import Model from "../sceneGraph/Model"
+import Camera from "../sceneGraph/Camera"
+import Vector1x4 from "../math/Vector1x4"
+import OmniDirLS from "../sceneGraph/OmniDirLS"
 import { Material, ModelPiece } from "../types/scene"
 
 const g_up = new Vector1x4(0.0, 0.0, 1.0, 0.0)
