@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e209016a7fe9cdc2cf2a6b40df781ab827539c475c75cfe45ee778528cdca2ee
-size 617
+{
+  // Compiler behavior for TypeScript source files in this Vite React app.
+  "compilerOptions": {
+    // Emit and type-check against modern JavaScript syntax supported by the app's tooling.
+    "target": "ES2022",
+    // Include browser APIs, iterable DOM collections, and ES2022 built-ins in the type environment.
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    // Avoid type-checking declaration files from dependencies to keep builds faster and less noisy.
+    "skipLibCheck": true,
+    // Improve CommonJS/ES module interop for default imports from packages.
+    "esModuleInterop": true,
+    // Enable TypeScript's strict type-checking rules.
+    "strict": true,
+    // Preserve ES module syntax so Vite can bundle it.
+    "module": "ESNext",
+    // Resolve imports the way modern bundlers like Vite do.
+    "moduleResolution": "Bundler",
+    // Ensure each file can be safely transformed independently by the Vite toolchain.
+    "isolatedModules": true,
+    // Use TypeScript for type-checking only; Vite handles code output.
+    "noEmit": true,
+    // Use React's automatic JSX runtime.
+    "jsx": "react-jsx"
+  },
+  // Type-check only the application source tree.
+  "include": ["src"]
+}

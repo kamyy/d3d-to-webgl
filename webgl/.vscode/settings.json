@@ -1,3 +1,8 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:971a8b30b05a95f1f45e414b4513c120d339067fefb86519aca9edbb00435377
-size 106
+{
+  // Use the TypeScript version installed in this project's node_modules.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  // Ask VS Code/Cursor to use the workspace TypeScript SDK instead of the editor's bundled version.
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  // Hide files and folders already ignored by Git, such as dist.
+  "explorer.excludeGitIgnore": true
+}

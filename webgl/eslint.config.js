@@ -3,14 +3,13 @@ import globals from "globals"
 import reactHooks from "eslint-plugin-react-hooks"
 import reactRefresh from "eslint-plugin-react-refresh"
 import tseslint from "typescript-eslint"
-import prettier from "eslint-plugin-prettier/recommended"
 
 export default tseslint.config(
   // Skip generated folders and installed dependencies.
   { ignores: ["dist", "node_modules"] },
   {
-    // Start with the standard JavaScript, TypeScript, and Prettier rules.
-    extends: [js.configs.recommended, ...tseslint.configs.recommended, prettier],
+    // Start with the standard JavaScript and TypeScript rules.
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       // Match the JavaScript version that TypeScript compiles this project to.
@@ -18,8 +17,6 @@ export default tseslint.config(
       globals: {
         // Browser names like window, document, and WebGLRenderingContext.
         ...globals.browser,
-        // Test names like describe, it, and expect.
-        ...globals.vitest,
       },
     },
     rules: {
