@@ -1,19 +1,18 @@
-import { useSelector, useDispatch } from "react-redux"
-
 import "../app/App.css"
 import { rawScenes } from "../app/App"
 import {
   materialFilterChanged,
   selectCurrScene,
   selectMaterialFilter,
-  selectMaterialsSelector,
-} from "../store/sceneSlice"
+  selectFilteredMaterials,
+} from "../redux/sceneSlice"
+import { useAppDispatch, useAppSelector } from "../redux/hooks"
 
 export default function MaterialsPanel() {
-  const dispatch = useDispatch()
-  const curScene = useSelector(selectCurrScene)
-  const materialFilter = useSelector(selectMaterialFilter)
-  const setOfMaterials = useSelector(selectMaterialsSelector)
+  const dispatch = useAppDispatch()
+  const curScene = useAppSelector(selectCurrScene)
+  const materialFilter = useAppSelector(selectMaterialFilter)
+  const setOfMaterials = useAppSelector(selectFilteredMaterials)
 
   if (curScene && materialFilter !== undefined && setOfMaterials) {
     rawScenes[curScene.id].requestDrawScene()

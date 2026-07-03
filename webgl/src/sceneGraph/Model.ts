@@ -1,4 +1,4 @@
-import { getCurrScene } from "../store/appStore"
+import { getCurrScene } from "../redux/store"
 import RefFrame from "./RefFrame"
 import { GL } from "../app/App"
 import Scene from "./Scene"

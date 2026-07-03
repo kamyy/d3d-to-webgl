@@ -1,5 +1,5 @@
 import { GL, rawScenes } from "../app/App"
-import { getCurrScene } from "../store/appStore"
+import { getCurrScene } from "../redux/store"
 
 import Model from "../sceneGraph/Model"
 import Camera from "../sceneGraph/Camera"
@@ -181,7 +181,7 @@ export default class Shader {
   setUniformVariablesInFragShader(model: Model, material?: Material) {
     const currScene = getCurrScene()
     if (currScene && GL) {
-      const { omniDirLS, lowerAmbientLS, upperAmbientLS } = currScene
+      const { omniDirRGB: omniDirLS, lowerAmbientRGB: lowerAmbientLS, upperAmbientRGB: upperAmbientLS } = currScene
 
       const loc0 = GL.getUniformLocation(this.program!, "u_int")
       if (loc0) {

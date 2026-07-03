@@ -1,28 +1,25 @@
-import { useSelector, useDispatch } from "react-redux"
-
 import "../app/App.css"
 import { rawScenes } from "../app/App"
 import {
   lightSourceChanged,
-  rChanged,
-  gChanged,
-  bChanged,
+  lightColorChannelChanged,
   selectCurrScene,
   selectLightSource,
-  selectLightSourceR,
-  selectLightSourceG,
-  selectLightSourceB,
-} from "../store/sceneSlice"
-import { LightSourceType } from "../store/redux"
+  selectLightSourceRed,
+  selectLightSourceGreen,
+  selectLightSourceBlue,
+  type LightSourceType,
+} from "../redux/sceneSlice"
+import { useAppDispatch, useAppSelector } from "../redux/hooks"
 
 export default function LightsPanel() {
-  const dispatch = useDispatch()
-  const curScene = useSelector(selectCurrScene)
+  const dispatch = useAppDispatch()
+  const curScene = useAppSelector(selectCurrScene)
 
-  const currentLS = useSelector(selectLightSource)
-  const r = useSelector(selectLightSourceR)
-  const g = useSelector(selectLightSourceG)
-  const b = useSelector(selectLightSourceB)
+  const currentLS = useAppSelector(selectLightSource)
+  const r = useAppSelector(selectLightSourceRed)
+  const g = useAppSelector(selectLightSourceGreen)
+  const b = useAppSelector(selectLightSourceBlue)
 
   if (curScene && currentLS && r !== undefined && g !== undefined && b !== undefined) {
     rawScenes[curScene.id].requestDrawScene()
@@ -52,7 +49,9 @@ export default function LightsPanel() {
             min="0"
             max="255"
             value={r * 255.0}
-            onChange={(event) => dispatch(rChanged(parseFloat(event.target.value) / 255.0))}
+            onChange={(event) =>
+              dispatch(lightColorChannelChanged({ channel: 0, value: parseFloat(event.target.value) / 255.0 }))
+            }
           />
         </fieldset>
 
@@ -66,7 +65,9 @@ export default function LightsPanel() {
             min="0"
             max="255"
             value={g * 255.0}
-            onChange={(event) => dispatch(gChanged(parseFloat(event.target.value) / 255.0))}
+            onChange={(event) =>
+              dispatch(lightColorChannelChanged({ channel: 1, value: parseFloat(event.target.value) / 255.0 }))
+            }
           />
         </fieldset>
 
@@ -80,7 +81,9 @@ export default function LightsPanel() {
             min="0"
             max="255"
             value={b * 255.0}
-            onChange={(event) => dispatch(bChanged(parseFloat(event.target.value) / 255.0))}
+            onChange={(event) =>
+              dispatch(lightColorChannelChanged({ channel: 2, value: parseFloat(event.target.value) / 255.0 }))
+            }
           />
         </fieldset>
       </div>

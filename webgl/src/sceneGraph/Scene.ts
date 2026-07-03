@@ -1,6 +1,6 @@
 import { GL, rawScenes } from "../app/App"
-import { sceneLoaded } from "../store/sceneSlice"
-import appStore, { getCurrScene } from "../store/appStore"
+import { sceneLoaded, type SceneState } from "../redux/sceneSlice"
+import store, { getCurrScene } from "../redux/store"
 
 import Model from "./Model"
 import Camera from "./Camera"
@@ -8,7 +8,6 @@ import RefFrame from "./RefFrame"
 import OmniDirLS from "./OmniDirLS"
 import Matrix4x4 from "../math/Matrix4x4"
 import { Material, MaterialJson, SceneJson, SceneNodeJson, TextureJson, TranslucentPieceEntry } from "../types/scene"
-import { SceneState } from "../store/redux"
 import { ShaderProgramName } from "../types/webgl"
 import Shader from "../shader/Shader"
 
@@ -64,7 +63,7 @@ export default class Scene {
           this.initMaterials(json.materials)
           this.initSceneRoot(json.sceneRoot)
 
-          appStore.dispatch(sceneLoaded({ id, scene: this }))
+          store.dispatch(sceneLoaded({ id, scene: this }))
           const currScene = getCurrScene()
 
           if (currScene && currScene.id === id) {
@@ -225,7 +224,7 @@ export default class Scene {
         GL.cullFace(GL.BACK)
         GL.enable(GL.BLEND)
 
-        if (currScene.drawWirefrm) {
+        if (currScene.drawWireframe) {
           this.mirrorObj.drawEdges()
         } else {
           this.mirrorObj.drawPieces(1, this.cacheTranslucentPiece)
@@ -242,7 +241,7 @@ export default class Scene {
       if (node instanceof Model && node !== this.mirrorObj) {
         switch (mode) {
           case DRAW.MIRROR:
-            if (currScene.drawWirefrm) {
+            if (currScene.drawWireframe) {
               node.drawEdges()
             } else {
               node.drawPieces(1, this.cacheTranslucentPiece)
@@ -250,7 +249,7 @@ export default class Scene {
             break
 
           case DRAW.PIECES:
-            if (currScene.drawWirefrm) {
+            if (currScene.drawWireframe) {
               node.drawEdges()
             } else {
               node.drawPieces(0, this.cacheTranslucentPiece)
@@ -288,6 +287,6 @@ export default class Scene {
   }
 
   get activeCamIdx(): number {
-    return appStore.getState().allScenes[this.id]?.cameraIdx ?? 0
+    return store.getState().allScenes[this.id]?.cameraIdx ?? 0
   }
 }

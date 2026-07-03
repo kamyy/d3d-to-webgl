@@ -1,23 +1,22 @@
-import { useSelector, useDispatch } from "react-redux"
-
 import "../app/App.css"
 import { rawScenes } from "../app/App"
 import {
-  wirefrmToggled,
+  wireframeToggled,
   normalsToggled,
   selectCurrScene,
-  selectDrawWirefrm,
+  selectDrawWireframe,
   selectDrawNormals,
-} from "../store/sceneSlice"
+} from "../redux/sceneSlice"
+import { useAppDispatch, useAppSelector } from "../redux/hooks"
 
 export default function RenderPanel() {
-  const dispatch = useDispatch()
-  const curScene = useSelector(selectCurrScene)
-  const drawWirefrm = useSelector(selectDrawWirefrm)
-  const drawNormals = useSelector(selectDrawNormals)
+  const dispatch = useAppDispatch()
+  const curScene = useAppSelector(selectCurrScene)
+  const drawWireframe = useAppSelector(selectDrawWireframe)
+  const drawNormals = useAppSelector(selectDrawNormals)
 
-  if (curScene && drawWirefrm !== undefined && drawNormals !== undefined) {
-    const id0 = "wirefrmCheckbox"
+  if (curScene && drawWireframe !== undefined && drawNormals !== undefined) {
+    const id0 = "wireframeCheckbox"
     const id1 = "normalsCheckbox"
 
     rawScenes[curScene.id].requestDrawScene()
@@ -28,8 +27,8 @@ export default function RenderPanel() {
           <input
             id={id0}
             type="checkbox"
-            checked={drawWirefrm}
-            onChange={() => dispatch(wirefrmToggled())}
+            checked={drawWireframe}
+            onChange={() => dispatch(wireframeToggled())}
             className="Checkbox"
           />
           <label htmlFor={id0} className="CheckboxLabel">

@@ -1,5 +1,3 @@
-import { useSelector, useDispatch } from "react-redux"
-
 import "../app/App.css"
 import { rawScenes } from "../app/App"
 import {
@@ -10,15 +8,16 @@ import {
   selectCameraIdx,
   selectFieldOfView,
   selectAspectRatio,
-} from "../store/sceneSlice"
-import { CameraState } from "../store/redux"
+  type CameraState,
+} from "../redux/sceneSlice"
+import { useAppDispatch, useAppSelector } from "../redux/hooks"
 
 export default function CameraPanel() {
-  const dispatch = useDispatch()
-  const curScene = useSelector(selectCurrScene)
-  const cameraIdx = useSelector(selectCameraIdx)
-  const fieldOfView = useSelector(selectFieldOfView)
-  const aspectRatio = useSelector(selectAspectRatio)
+  const dispatch = useAppDispatch()
+  const curScene = useAppSelector(selectCurrScene)
+  const cameraIdx = useAppSelector(selectCameraIdx)
+  const fieldOfView = useAppSelector(selectFieldOfView)
+  const aspectRatio = useAppSelector(selectAspectRatio)
 
   if (curScene && fieldOfView !== undefined && aspectRatio !== undefined && cameraIdx !== undefined) {
     rawScenes[curScene.id].requestDrawScene()

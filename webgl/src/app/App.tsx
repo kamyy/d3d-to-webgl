@@ -1,8 +1,8 @@
 import { useEffect } from "react"
-import { useSelector } from "react-redux"
 
-import { selectCurrScene } from "../store/sceneSlice"
-import { getCurrScene } from "../store/appStore"
+import { selectCurrScene } from "../redux/sceneSlice"
+import { getCurrScene } from "../redux/store"
+import { useAppSelector } from "../redux/hooks"
 import "./App.css"
 
 import Scene from "../sceneGraph/Scene"
@@ -65,7 +65,7 @@ export default function App() {
     }
   }, [])
 
-  const currScene = useSelector(selectCurrScene)
+  const currScene = useAppSelector(selectCurrScene)
 
   return (
     <div className="App">

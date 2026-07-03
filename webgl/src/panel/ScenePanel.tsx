@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { useDispatch } from "react-redux"
 
 import "../app/App.css"
 import { rawScenes } from "../app/App"
-import { sceneChanged } from "../store/sceneSlice"
+import { sceneChanged } from "../redux/sceneSlice"
+import { useAppDispatch } from "../redux/hooks"
 
 export default function ScenePanel() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const [currSceneId, setCurrSceneId] = useState(0)
 
   rawScenes[currSceneId].loadScene()
